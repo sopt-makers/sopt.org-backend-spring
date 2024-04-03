@@ -10,24 +10,29 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sopt.org.homepage.dto.response.SemestersListResponse;
+import sopt.org.homepage.mapper.ResponseMapper;
 import sopt.org.homepage.service.SemestersService;
+
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("semesters")
 @Tag(name = "Semester")
 public class SemestersController {
+    private final ResponseMapper responseMapper;
     private final SemestersService semestersService;
 
     @GetMapping("")
     public ResponseEntity<SemestersListResponse> getSemesters (
-            @RequestParam(required = false, name = "limit") Integer limit,
-            @RequestParam(required = false, name = "page") Integer page
+            @RequestParam(required = true, name = "limit") Integer limit,
+            @RequestParam(required = true, defaultValue = "1", name = "page") Integer page
     ) {
         val semesters = semestersService.findAll(limit, page);
         val count = semestersService.countAll();
+        val semestersResponse = semesters.stream().map(responseMapper::toSemestersResponse).toList();
         val response = new SemestersListResponse(
-            page, limit, count, semesters
+            page, limit, count, semestersResponse
         );
 
         return ResponseEntity.status(HttpStatus.OK).body(response);

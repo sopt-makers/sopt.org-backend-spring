@@ -20,7 +20,7 @@ public class SemestersQueryRepository {
 
         return queryFactory.select(new QSemesterDao(
                     semester.id, semester.color, semester.logo, semester.background, semester.name, semester.year
-                ))
+                )).from(semester)
                 .offset(skip)
                 .limit(limit)
                 .orderBy(semester.id.desc())
