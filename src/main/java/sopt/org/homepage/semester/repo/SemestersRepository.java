@@ -1,4 +1,4 @@
-package sopt.org.homepage.repository;
+package sopt.org.homepage.semester.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import sopt.org.homepage.entity.SemesterEntity;

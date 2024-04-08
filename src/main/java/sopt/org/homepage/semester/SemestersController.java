@@ -1,4 +1,4 @@
-package sopt.org.homepage.controller;
+package sopt.org.homepage.semester;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import sopt.org.homepage.dto.response.SemestersListResponse;
+import sopt.org.homepage.semester.dto.response.SemestersListResponse;
 import sopt.org.homepage.mapper.ResponseMapper;
-import sopt.org.homepage.service.SemestersService;
-
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor

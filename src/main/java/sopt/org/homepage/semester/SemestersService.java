@@ -1,15 +1,13 @@
-package sopt.org.homepage.service;
+package sopt.org.homepage.semester;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.dto.SemesterDao;
-import sopt.org.homepage.entity.SemesterEntity;
-import sopt.org.homepage.repository.SemestersQueryRepository;
-import sopt.org.homepage.repository.SemestersRepository;
+import sopt.org.homepage.semester.dto.SemesterDao;
+import sopt.org.homepage.semester.repo.SemestersQueryRepository;
+import sopt.org.homepage.semester.repo.SemestersRepository;
 
 import java.util.List;
-import lombok.val;
 
 @RequiredArgsConstructor
 @Service

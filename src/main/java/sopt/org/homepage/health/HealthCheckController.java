@@ -1,4 +1,4 @@
-package sopt.org.homepage.controller;
+package sopt.org.homepage.health;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

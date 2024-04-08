@@ -1,4 +1,4 @@
-package sopt.org.homepage.dto.response;
+package sopt.org.homepage.semester.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

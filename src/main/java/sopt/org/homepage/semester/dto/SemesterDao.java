@@ -1,4 +1,4 @@
-package sopt.org.homepage.dto;
+package sopt.org.homepage.semester.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
 
