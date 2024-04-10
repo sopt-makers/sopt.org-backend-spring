@@ -18,8 +18,28 @@ spring:
         use_sql_comments: true
         default_schema: public
 
-
-
 springdoc:
   swagger-ui:
     path: /api-docs
+
+aws:
+  region: test
+  credentials:
+    access-key: test
+    secret-key: test
+  bucket:
+    image: test
+
+internal:
+  playground:
+    url: test
+    token: test
+  crew:
+    url: test
+
+jwt:
+  access: test
+  refresh: test
+
+official:
+  apikey: test
