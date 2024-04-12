@@ -18,18 +18,26 @@ import java.net.URLEncoder;
 public class CrewService {
     private final CrewClient crewClient;
     private final ResponseMapper responseMapper;
+    private final String studyCategory = URLEncoder.encode("스터디", StandardCharsets.UTF_8);
+    private final Integer PREV_GEN = 33;
 
     public List<StudyResponse> getAllStudy(Integer generation){
         val MAX_TAKE_COUNT = 50;
-        val PREV_GEN = 33;
-        val activeGen = (generation != null) ? generation : PREV_GEN;
-        val active = activeGen != PREV_GEN;
-
-        val studyCategory = URLEncoder.encode("스터디", StandardCharsets.UTF_8);
+         val activeGen = (generation != null) ? generation : PREV_GEN;
+        val active = !activeGen.equals(PREV_GEN);
 
         val crewApiResponse = crewClient.getAllStudy(1, MAX_TAKE_COUNT, activeGen, active, studyCategory);
 
         return crewApiResponse.data().meetings().stream().map(responseMapper::toStudyResponse).toList();
+    }
+
+    public Integer getStudyCount(Integer generation) {
+        val activeGen = (generation != null) ? generation : PREV_GEN;
+        val active = !activeGen.equals(PREV_GEN);
+
+        val crewApiResponse = crewClient.getAllStudy(1, 1, activeGen, active, studyCategory);
+
+        return crewApiResponse.data().meta().itemCount();
     }
 
 
