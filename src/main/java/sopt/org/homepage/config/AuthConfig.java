@@ -19,5 +19,9 @@ public class AuthConfig {
     @Value("${jwt.refresh}")
     private String refreshToken;
 
+    @Value("${internal.playground.token}")
+    private String playgroundToken;
+
+
 
 }

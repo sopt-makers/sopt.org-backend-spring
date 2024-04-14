@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.stereotype.Service;
 import sopt.org.homepage.internal.crew.dto.StudyResponse;
-import sopt.org.homepage.mapper.ResponseMapper;
+import sopt.org.homepage.common.mapper.ResponseMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;

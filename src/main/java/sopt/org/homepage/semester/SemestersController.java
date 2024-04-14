@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import sopt.org.homepage.semester.dto.response.SemestersListResponse;
-import sopt.org.homepage.mapper.ResponseMapper;
+import sopt.org.homepage.semester.dto.SemestersListResponse;
+import sopt.org.homepage.common.mapper.ResponseMapper;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +22,8 @@ public class SemestersController {
 
     @GetMapping("")
     public ResponseEntity<SemestersListResponse> getSemesters (
-            @RequestParam(required = true, name = "limit") Integer limit,
-            @RequestParam(required = true, defaultValue = "1", name = "page") Integer page
+            @RequestParam(name = "limit") Integer limit,
+            @RequestParam(defaultValue = "1", name = "page") Integer page
     ) {
         val semesters = semestersService.findAll(limit, page);
         val count = semestersService.countAll();
