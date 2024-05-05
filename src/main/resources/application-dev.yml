@@ -24,6 +24,14 @@ spring:
 springdoc:
   swagger-ui:
     path: /api-docs
+    operations-sorter: alpha
+  api-docs:
+    path: /api-docs
+    groups:
+      enabled: true
+
+
+
 
 aws:
   region: ap-northeast-2

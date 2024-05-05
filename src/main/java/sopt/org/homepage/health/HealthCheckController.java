@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
-@Tag(name = "Default")
+@RequestMapping("health")
+@Tag(name = "HealthCheck")
 public class HealthCheckController {
     @GetMapping("")
     public ResponseEntity<String> healthCheck () {
