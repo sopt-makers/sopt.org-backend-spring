@@ -1,0 +1,48 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC;
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        use_sql_comments: true
+        default_schema: public
+
+springdoc:
+  swagger-ui:
+    path: /api-docs
+
+aws:
+  region: ap-northeast-2
+  credentials:
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+  bucket:
+    image: ${BUCKET_NAME}
+
+internal:
+  playground:
+    url: ${PLAYGROUND_API_URL}
+    token: ${PLAYGROUND_API_URL_JWT_TOKEN}
+  crew:
+    url: ${CREW_API_URL}
+
+jwt:
+  access: ${ACCESS_TOKEN_SECRET}
+  refresh: ${REFRESH_TOKEN_SECRET}
+
+official:
+  apikey: ${OFFICIAL_API_KEY}
