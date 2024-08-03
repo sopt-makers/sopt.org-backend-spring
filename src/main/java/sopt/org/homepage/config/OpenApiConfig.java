@@ -1,31 +1,44 @@
 package sopt.org.homepage.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.servers.Server;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
-@Profile("!prod")
-@OpenAPIDefinition(
-        servers = {
-                @Server(url = "http://localhost:8080", description = "로컬 환경")
-        },
-        info = @Info(
-                title = "SOPT Official API Docs",
-                description = "The SOPT official page API description"
-        )
-)
-@SecurityScheme(
-        name = "Authorization",
-        type = SecuritySchemeType.HTTP,
-        in = SecuritySchemeIn.HEADER,
-        scheme = "bearer",
-        bearerFormat = "JWT"
+import static io.swagger.v3.oas.models.security.SecurityScheme.Type.HTTP;
 
-)
-@Component
-public class OpenApiConfig {}
+import io.swagger.v3.oas.models.servers.Server;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
+
+@Configuration
+public class OpenApiConfig {
+
+        @Bean
+        public OpenAPI openAPI() {
+
+                Info info = new Info().title("SOPT 공식홈페이지")
+                        .description("Spring V2 API 문서");
+
+                String jwtSchemeName = "Authorization";
+                SecurityRequirement securityRequirement =
+                        new SecurityRequirement().addList(jwtSchemeName);
+
+                Components components = new Components().addSecuritySchemes(jwtSchemeName,
+                        new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer")
+                        .bearerFormat("JWT")
+                        .in(SecurityScheme.In.HEADER)
+                        .name(jwtSchemeName)
+                );
+
+                List<Server> serverV2 = List.of(new Server().url("/v2"));
+
+                return new OpenAPI().info(info).addSecurityItem(securityRequirement)
+                        .components(components).servers(serverV2);
+        }
+}

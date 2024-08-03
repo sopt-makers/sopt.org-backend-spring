@@ -30,6 +30,9 @@ springdoc:
     groups:
       enabled: true
 
+server:
+  servlet:
+    context-path: /v2
 
 
 

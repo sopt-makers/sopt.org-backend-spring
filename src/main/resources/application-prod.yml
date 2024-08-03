@@ -31,6 +31,10 @@ springdoc:
       enabled: true
 
 
+server:
+  servlet:
+    context-path: /v2
+
 aws:
   region: ap-northeast-2
   credentials:
