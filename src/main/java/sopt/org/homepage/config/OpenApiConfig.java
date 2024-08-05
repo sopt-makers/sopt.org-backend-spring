@@ -11,6 +11,7 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import sopt.org.homepage.common.constants.SecurityConstants;
 
 import java.util.List;
 
@@ -23,9 +24,7 @@ public class OpenApiConfig {
                 Info info = new Info().title("SOPT 공식홈페이지")
                         .description("Spring V2 API 문서");
 
-                String jwtSchemeName = "Authorization";
-                SecurityRequirement securityRequirement =
-                        new SecurityRequirement().addList(jwtSchemeName);
+                String jwtSchemeName = SecurityConstants.SCHEME_NAME;
 
                 Components components = new Components().addSecuritySchemes(jwtSchemeName,
                         new SecurityScheme()
@@ -36,9 +35,11 @@ public class OpenApiConfig {
                         .name(jwtSchemeName)
                 );
 
+                // To Add JWT Authorization Header, add this annotation to API
+                // @SecurityRequirement(name = SecurityConstants.SCHEME_NAME)
+
                 List<Server> serverV2 = List.of(new Server().url("/v2"));
 
-                return new OpenAPI().info(info).addSecurityItem(securityRequirement)
-                        .components(components).servers(serverV2);
+                return new OpenAPI().info(info).components(components).servers(serverV2);
         }
 }

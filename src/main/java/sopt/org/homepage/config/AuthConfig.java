@@ -13,15 +13,8 @@ public class AuthConfig {
     @Value("${official.apikey}")
     private String apiKey;
 
-    @Value("${jwt.access}")
-    private String accessToken;
-
-    @Value("${jwt.refresh}")
-    private String refreshToken;
-
     @Value("${internal.playground.token}")
     private String playgroundToken;
-
 
 
 }
