@@ -14,16 +14,16 @@ import java.util.Date;
 public class RegisterNotificationResponseDto {
 
     @Schema(description = "Notification ID", requiredMode = Schema.RequiredMode.REQUIRED)
-    private int id;
+    private final int id;
 
     @Schema(description = "기수 (Generation)", requiredMode = Schema.RequiredMode.REQUIRED)
-    private int generation;
+    private final int generation;
 
     @Schema(description = "이메일 (Email)", requiredMode = Schema.RequiredMode.REQUIRED)
-    private String email;
+    private final String email;
 
     @Schema(description = "생성일자 (Creation Date)", requiredMode = Schema.RequiredMode.REQUIRED)
-    private Date createdAt;
+    private final Date createdAt;
 
     public RegisterNotificationResponseDto(int id, int generation, String email, Date createdAt) {
         this.id = id;

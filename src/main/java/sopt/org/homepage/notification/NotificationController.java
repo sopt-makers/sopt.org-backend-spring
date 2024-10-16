@@ -23,7 +23,7 @@ public class NotificationController {
             @ParameterObject @ModelAttribute RegisterNotificationRequestDto registerNotificationRequestDto
     ) {
         RegisterNotificationResponseDto result = notificationService.registerNotification(registerNotificationRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
     @GetMapping("/list")
     public ResponseEntity<GetNotificationListResponseDto> getAllProject (

@@ -10,9 +10,9 @@ import sopt.org.homepage.notification.dto.GetNotificationListResponseDto;
 import sopt.org.homepage.notification.dto.RegisterNotificationRequestDto;
 import sopt.org.homepage.notification.dto.RegisterNotificationResponseDto;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.sql.Timestamp;
 
 @RequiredArgsConstructor
 @Service
@@ -30,13 +30,11 @@ public class NotificationService {
                     "Already Registered Email: " + registerNotificationRequestDto.getEmail());
         }
 
-        // Create a new Notification entity from the DTO
         NotificationEntity notification = new NotificationEntity();
         notification.setGeneration(registerNotificationRequestDto.getGeneration());
         notification.setEmail(registerNotificationRequestDto.getEmail());
-        notification.setCreatedAt(new Timestamp(System.currentTimeMillis())); // Assuming createdAt is of type Timestamp
+        notification.setCreatedAt(new Timestamp(System.currentTimeMillis()));
 
-        // Save the new notification and return the response DTO
         NotificationEntity savedNotification = notificationRepository.save(notification);
 
         return new RegisterNotificationResponseDto(
