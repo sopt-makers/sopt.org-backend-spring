@@ -1,4 +1,4 @@
-package sopt.org.homepage.entity;
+package sopt.org.homepage.notification;
 
 import jakarta.persistence.*;
 import lombok.Getter;

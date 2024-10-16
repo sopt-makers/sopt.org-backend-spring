@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import sopt.org.homepage.entity.NotificationEntity;
 import sopt.org.homepage.notification.dto.GetNotificationListResponseDto;
 import sopt.org.homepage.notification.dto.RegisterNotificationRequestDto;
 import sopt.org.homepage.notification.dto.RegisterNotificationResponseDto;

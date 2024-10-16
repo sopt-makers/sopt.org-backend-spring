@@ -1,7 +1,6 @@
 package sopt.org.homepage.notification;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import sopt.org.homepage.entity.NotificationEntity;
 
 import java.util.List;
 
