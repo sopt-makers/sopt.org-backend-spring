@@ -9,10 +9,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import sopt.org.homepage.common.filter.JwtAuthenticationFilter;
+import sopt.org.homepage.common.filter.JwtExceptionFilter;
+
 
 import java.util.stream.Stream;
 
@@ -36,25 +40,31 @@ public class SecurityConfig {
     private static final String[] WHITELIST_URL = {
             "/**" // Todo. 추후 배포 안정화 시, 사용되는 API Route 직접 명시해주어야 함
     };
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtExceptionFilter jwtExceptionFilter;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .httpBasic(AbstractHttpConfigurer::disable)
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(
-                        authorize -> authorize.requestMatchers(Stream
-                                        .of(SWAGGER_URL)
-                                        .map(AntPathRequestMatcher::antMatcher)
-                                        .toArray(AntPathRequestMatcher[]::new)).permitAll()
-                                .requestMatchers(Stream
-                                        .of(WHITELIST_URL)
-                                        .map(AntPathRequestMatcher::antMatcher)
-                                        .toArray(AntPathRequestMatcher[]::new)).permitAll()
-                )
-                .build();
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .csrf(AbstractHttpConfigurer::disable)
+            .formLogin(AbstractHttpConfigurer::disable)
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(
+                authorize -> authorize.requestMatchers(Stream
+                    .of(SWAGGER_URL)
+                    .map(AntPathRequestMatcher::antMatcher)
+                    .toArray(AntPathRequestMatcher[]::new)).permitAll()
+                        .requestMatchers(Stream
+                            .of(WHITELIST_URL)
+                            .map(AntPathRequestMatcher::antMatcher)
+                            .toArray(AntPathRequestMatcher[]::new)).permitAll()
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
+            .build();
     }
 
     @Bean

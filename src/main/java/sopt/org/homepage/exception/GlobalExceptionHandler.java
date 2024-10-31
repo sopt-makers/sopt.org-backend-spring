@@ -57,8 +57,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FeignException.class)
     public ResponseEntity<String> feignClientException(FeignException ex) {
         return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<String> tokenException(TokenException ex) {
+        return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Invalid External API Request :: " + ex.getMessage());
+                .body(ex.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)

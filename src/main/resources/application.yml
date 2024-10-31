@@ -49,6 +49,7 @@ internal:
 jwt:
   access: test
   refresh: test
+  admin: test
 
 official:
   apikey: test
