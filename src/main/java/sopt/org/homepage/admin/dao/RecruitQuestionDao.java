@@ -4,12 +4,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 public class RecruitQuestionDao {
     private String part;
-    private String questions;
-    private String description;
-    private Boolean required;
+    private List<Question> questions;
+}
+
+@Getter
+@Setter
+@NoArgsConstructor
+class Question {
+    private String question;
+    private String answer;
 }

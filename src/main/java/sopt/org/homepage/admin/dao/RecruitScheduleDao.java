@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class RecruitScheduleDao {
     private String type;           // "OB" or "YB"
     private Schedule schedule;
@@ -20,7 +19,6 @@ public class RecruitScheduleDao {
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 class Schedule {
     private String applicationStartTime;
     private String applicationEndTime;

@@ -7,6 +7,10 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
     username: root
     password: root
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
 
   jpa:
     hibernate:

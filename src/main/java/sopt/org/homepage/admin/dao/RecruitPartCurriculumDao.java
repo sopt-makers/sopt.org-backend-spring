@@ -11,14 +11,14 @@ import java.util.List;
 @NoArgsConstructor
 public class RecruitPartCurriculumDao {
     private String part;
-    private List<Question> questions;
+    private List<Introduction> introduction;
 }
-
 
 @Getter
 @Setter
 @NoArgsConstructor
-class Question {
-    private String question;
-    private String answer;
+class Introduction {
+    private String content;
+    private String preference;
 }
+
