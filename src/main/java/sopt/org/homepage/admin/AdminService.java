@@ -3,7 +3,6 @@ package sopt.org.homepage.admin;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.stereotype.Service;
 import sopt.org.homepage.admin.dto.request.AddMainNewsRequestDto;
 import sopt.org.homepage.admin.dto.request.AddMainRequestDto;
@@ -11,6 +10,7 @@ import sopt.org.homepage.admin.dto.request.DeleteMainNewsRequestDto;
 import sopt.org.homepage.admin.dto.request.GetMainNewsRequestDto;
 import sopt.org.homepage.admin.dto.response.GetMainNewsResponseDto;
 import sopt.org.homepage.aws.s3.S3Service;
+import sopt.org.homepage.cache.CacheService;
 import sopt.org.homepage.exception.ClientBadRequestException;
 
 @RequiredArgsConstructor
@@ -21,6 +21,7 @@ public class AdminService {
     private final MainNewsRepository mainNewsRepository;
 
     private final S3Service s3Service;
+    private final CacheService cacheService;
 
     @Transactional
     public String addMainData(AddMainRequestDto addMainRequestDto) {
