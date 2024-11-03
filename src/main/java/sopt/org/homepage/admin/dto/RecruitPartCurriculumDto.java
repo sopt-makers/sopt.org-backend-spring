@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sopt.org.homepage.admin.dao.RecruitPartCurriculumDao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Schema(description = "모집 파트 커리큘럼")
 @Getter
@@ -21,5 +23,18 @@ public class RecruitPartCurriculumDto {
     @NotEmpty(message = "소개글은 필수입니다")
     @Valid
     private IntroductionDto introduction;
+
+    public RecruitPartCurriculumDao toDao() {
+        return RecruitPartCurriculumDao.builder()
+                .part(this.part)
+                .introduction(this.introduction.toDao())
+                .build();
+    }
+
+    public static List<RecruitPartCurriculumDao> toDaoList(List<RecruitPartCurriculumDto> dtos) {
+        return dtos.stream()
+                .map(RecruitPartCurriculumDto::toDao)
+                .collect(Collectors.toList());
+    }
 }
 

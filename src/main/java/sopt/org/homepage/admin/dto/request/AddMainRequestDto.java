@@ -32,9 +32,19 @@ public class AddMainRequestDto {
     private BrandingColorDto brandingColor;
     private MainButtonDto mainButton;
     private List<PartIntroductionDto> partIntroduction;
+
+    @Schema(description = "헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "header.png")
+    @NotEmpty(message = "headerImageFileName must not be empty")
+    private String headerImageFileName;
+
     private List<CoreValueDto> coreValue;
     private List<PartCurriculumDto> partCurriculum;
     private List<MemberDto> member;
+
+    @Schema(description = "지원하기 헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "recruit_header.png")
+    @NotEmpty(message = "recruitHeaderImageFileName must not be empty")
+    private String recruitHeaderImageFileName;
+
     private List<RecruitPartCurriculumDto> recruitPartCurriculum;
     private List<RecruitQuestionDto> recruitQuestion;
 }

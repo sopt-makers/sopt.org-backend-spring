@@ -1,9 +1,9 @@
 package sopt.org.homepage.admin.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sopt.org.homepage.admin.dao.ScheduleDao;
 
 @Schema(description = "상세 일정")
 @Getter
@@ -26,4 +26,15 @@ public class ScheduleDto {
 
     @Schema(description = "최종 결과 발표 시간", example = "2024-02-10 12:00:00", requiredMode = Schema.RequiredMode.REQUIRED)
     private String finalResultTime;
+
+    public ScheduleDao toDao() {
+        return ScheduleDao.builder()
+                .applicationStartTime(this.applicationStartTime)
+                .applicationEndTime(this.applicationEndTime)
+                .applicationResultTime(this.applicationResultTime)
+                .interviewStartTime(this.interviewStartTime)
+                .interviewEndTime(this.interviewEndTime)
+                .finalResultTime(this.finalResultTime)
+                .build();
+    }
 }

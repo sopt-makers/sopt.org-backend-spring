@@ -6,8 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MainButtonDao {
-    private String text;
-    private String keyColor;
-    private String subColor;
+public class IntroductionDao {
+    private String content;
+    private String preference;
 }

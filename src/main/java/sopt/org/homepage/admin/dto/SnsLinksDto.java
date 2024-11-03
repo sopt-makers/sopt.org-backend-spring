@@ -2,10 +2,10 @@ package sopt.org.homepage.admin.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sopt.org.homepage.admin.dao.SnsLinksDao;
 
 @Schema(description = "SNS 링크 정보")
 @Getter
@@ -26,4 +26,13 @@ class SnsLinksDto {
     @Schema(description = "비핸스 URL", example = "https://www.behance.net/example")
     @Pattern(regexp = "^https?://.*", message = "올바른 URL을 입력해주세요")
     private String behance;
+
+    public SnsLinksDao toDao() {
+        return SnsLinksDao.builder()
+                .email(this.email)
+                .linkedin(this.linkedin)
+                .github(this.github)
+                .behance(this.behance)
+                .build();
+    }
 }

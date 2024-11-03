@@ -5,8 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sopt.org.homepage.admin.dao.PartCurriculumDao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Schema(description = "파트별 커리큘럼")
 @Getter
@@ -19,4 +21,17 @@ public class PartCurriculumDto {
     @Schema(description = "주차별 커리큘럼", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "커리큘럼을 입력해주세요")
     private List<CurriculumWeekDto> weeks;
+
+    public PartCurriculumDao toDao() {
+        return PartCurriculumDao.builder()
+                .part(this.part)
+                .weeks(CurriculumWeekDto.toDaoList(this.weeks))
+                .build();
+    }
+
+    public static List<PartCurriculumDao> toDaoList(List<PartCurriculumDto> dtos) {
+        return dtos.stream()
+                .map(PartCurriculumDto::toDao)
+                .collect(Collectors.toList());
+    }
 }

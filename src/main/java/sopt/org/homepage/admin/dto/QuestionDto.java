@@ -4,6 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sopt.org.homepage.admin.dao.QuestionDao;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Schema(description = "질문과 답변")
 @Getter
@@ -16,4 +20,17 @@ public class QuestionDto {
     @Schema(description = "답변", example = "10명 뽑아요.", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "답변을 입력해주세요")
     private String answer;
+
+    public QuestionDao toDao() {
+        return QuestionDao.builder()
+                .question(this.question)
+                .answer(this.answer)
+                .build();
+    }
+
+    public static List<QuestionDao> toDaoList(List<QuestionDto> dtos) {
+        return dtos.stream()
+                .map(QuestionDto::toDao)
+                .collect(Collectors.toList());
+    }
 }

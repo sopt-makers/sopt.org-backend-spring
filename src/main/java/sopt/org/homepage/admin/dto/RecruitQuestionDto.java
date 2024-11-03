@@ -6,8 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sopt.org.homepage.admin.dao.RecruitQuestionDao;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Schema(description = "모집 질문")
 @Getter
@@ -21,5 +23,18 @@ public class RecruitQuestionDto {
     @NotEmpty(message = "질문은 필수입니다")
     @Valid
     private List<QuestionDto> questions;
+
+    public RecruitQuestionDao toDao() {
+        return RecruitQuestionDao.builder()
+                .part(this.part)
+                .questions(QuestionDto.toDaoList(this.questions))
+                .build();
+    }
+
+    public static List<RecruitQuestionDao> toDaoList(List<RecruitQuestionDto> dtos) {
+        return dtos.stream()
+                .map(RecruitQuestionDto::toDao)
+                .collect(Collectors.toList());
+    }
 }
 

@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sopt.org.homepage.admin.dto.request.*;
+import sopt.org.homepage.admin.dto.response.AddMainResponseDto;
 import sopt.org.homepage.admin.dto.response.GetMainNewsResponseDto;
 import sopt.org.homepage.common.constants.SecurityConstants;
 
@@ -22,13 +23,22 @@ import sopt.org.homepage.common.constants.SecurityConstants;
 public class AdminController {
     private final AdminService adminService;
 
-    @Operation(summary = "어드민 메인 정보 추가", description = "어드민 메인 정보를 추가합니다")
+    @Operation(summary = "어드민 메인 데이터 배포", description = "어드민 메인 데이터를 배포합니다")
     @PostMapping("")
-    public ResponseEntity<String> addMain (
+    public ResponseEntity<AddMainResponseDto> addMain (
             @RequestBody @Valid AddMainRequestDto addMainRequestDto
     ) {
-        String result = adminService.addMainData(addMainRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("success");
+        AddMainResponseDto result = adminService.addMainData(addMainRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @Operation(summary = "어드민 메인 데이터 배포 확인", description = "어드민 메인 데이터 배포를 확인합니다")
+    @PostMapping("confirm")
+    public ResponseEntity<String> addMainConfirm (
+            @RequestBody @Valid AddMainConfirmRequestDto addMainRequestDto
+    ) {
+        adminService.addMainDataConfirm(addMainRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body("Success");
     }
 
     @Operation(summary = "어드민 메인 정보 조회", description = "어드민 메인 정보를 조회합니다")

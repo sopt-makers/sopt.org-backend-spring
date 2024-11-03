@@ -17,6 +17,8 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -32,8 +34,9 @@ public class S3Service {
     @Value("${aws.bucket.dir}")
     private String baseDir;
 
-    public String generatePresignedUrl(String fileName, String contentType, String path) {
+    public String generatePresignedUrl(String fileName, String path) {
         try {
+            String contentType = getContentTypeFromFileName(fileName);
             String key = baseDir + path + fileName;
 
             PutObjectRequest objectRequest = PutObjectRequest.builder()
@@ -116,5 +119,26 @@ public class S3Service {
 
     private String createFileName(String originalFileName) {
         return UUID.randomUUID().toString() + "_" + originalFileName;
+    }
+
+    private String getContentTypeFromFileName(String fileName) {
+        Map<String, String> contentTypeMap = new HashMap<>();
+        contentTypeMap.put("jpg", "image/jpeg");
+        contentTypeMap.put("jpeg", "image/jpeg");
+        contentTypeMap.put("png", "image/png");
+        contentTypeMap.put("gif", "image/gif");
+        contentTypeMap.put("pdf", "application/pdf");
+        contentTypeMap.put("txt", "text/plain");
+        contentTypeMap.put("html", "text/html");
+        contentTypeMap.put("json", "application/json");
+        // 필요한 파일타입 추가
+
+        String extension = getFileExtension(fileName);
+        return contentTypeMap.getOrDefault(extension, "application/octet-stream");
+    }
+
+    private String getFileExtension(String fileName) {
+        int lastIndexOfDot = fileName.lastIndexOf(".");
+        return (lastIndexOfDot == -1) ? "" : fileName.substring(lastIndexOfDot + 1).toLowerCase();
     }
 }

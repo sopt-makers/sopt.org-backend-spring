@@ -5,6 +5,10 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sopt.org.homepage.admin.dao.RecruitScheduleDao;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Schema(description = "모집 일정")
 @Getter
@@ -17,5 +21,18 @@ public class RecruitScheduleDto {
     @Schema(description = "일정", requiredMode = Schema.RequiredMode.REQUIRED)
     @Valid
     private ScheduleDto schedule;
+
+    public RecruitScheduleDao toDao() {
+        return RecruitScheduleDao.builder()
+                .type(this.type)
+                .schedule(this.schedule.toDao())
+                .build();
+    }
+
+    public static List<RecruitScheduleDao> toDaoList(List<RecruitScheduleDto> dtos) {
+        return dtos.stream()
+                .map(RecruitScheduleDto::toDao)
+                .collect(Collectors.toList());
+    }
 }
 
