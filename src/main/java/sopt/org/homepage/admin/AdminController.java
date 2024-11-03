@@ -44,7 +44,8 @@ public class AdminController {
     public ResponseEntity<String> addMainNews(
             @ModelAttribute @Valid AddMainNewsRequestDto addMainNewsRequestDto
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body("success");
+        adminService.addMainNews(addMainNewsRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("최신소식을 추가 성공");
     }
 
     @Operation(summary = "최신소식 삭제", description = "최신소식을 삭제합니다")
@@ -52,7 +53,7 @@ public class AdminController {
     public ResponseEntity<String> deleteMainNews(
             @RequestBody @Valid DeleteMainNewsRequestDto deleteMainNewsRequestDto
     ) {
-
+        adminService.deleteMainNews(deleteMainNewsRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body("success");
     }
 
@@ -61,8 +62,8 @@ public class AdminController {
     public ResponseEntity<GetMainNewsResponseDto> getMainNews(
             @ParameterObject @ModelAttribute GetMainNewsRequestDto getMainNewsRequestDto
     ) {
-
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+        GetMainNewsResponseDto result = adminService.getMainNews(getMainNewsRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     // TODO. 각 API 서비스 로직 + 이미지 업로드 확인 API + S3 이미지 업로드 + S3 PresignedUrl 생성

@@ -43,6 +43,7 @@ aws:
     secret-key: ${AWS_SECRET_ACCESS_KEY}
   bucket:
     image: ${BUCKET_NAME}
+    dir: develop/
 
 internal:
   playground:

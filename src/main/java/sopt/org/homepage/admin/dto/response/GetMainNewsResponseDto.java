@@ -3,6 +3,7 @@ package sopt.org.homepage.admin.dto.response;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -11,8 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Validated
 @Schema(description = "최신소식 조회하기")
 @Getter
+@Builder
 @RequiredArgsConstructor
 public class GetMainNewsResponseDto {
+    @Schema(description = "이미지 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
+    private final int id;
+
     @Schema(description = "이미지 링크", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://image.url")
     private final String image;
 
