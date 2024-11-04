@@ -1,4 +1,4 @@
-package sopt.org.homepage.admin;
+package sopt.org.homepage.admin.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -19,7 +19,6 @@ import java.util.List;
 public class MainEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "\"generation\"", nullable = false)
     private Integer generation;
 

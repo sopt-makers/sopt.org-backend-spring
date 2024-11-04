@@ -1,10 +1,8 @@
-package sopt.org.homepage.admin;
+package sopt.org.homepage.admin.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
+import sopt.org.homepage.admin.entity.MainNewsEntity;
 
 public interface MainNewsRepository extends JpaRepository<MainNewsEntity, Integer> {
     MainNewsEntity findById(int id);
-
 }

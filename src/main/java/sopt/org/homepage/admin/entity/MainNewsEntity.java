@@ -1,4 +1,4 @@
-package sopt.org.homepage.admin;
+package sopt.org.homepage.admin.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

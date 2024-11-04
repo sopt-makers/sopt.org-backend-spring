@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import sopt.org.homepage.admin.dto.request.*;
 import sopt.org.homepage.admin.dto.response.AddMainResponseDto;
 import sopt.org.homepage.admin.dto.response.GetMainNewsResponseDto;
+import sopt.org.homepage.admin.dto.response.GetMainResponseDto;
+import sopt.org.homepage.admin.service.AdminServiceImpl;
 import sopt.org.homepage.common.constants.SecurityConstants;
 
 @RestController
@@ -21,7 +23,7 @@ import sopt.org.homepage.common.constants.SecurityConstants;
 @Tag(name = "Admin")
 @SecurityRequirement(name = SecurityConstants.SCHEME_NAME)
 public class AdminController {
-    private final AdminService adminService;
+    private final AdminServiceImpl adminService;
 
     @Operation(summary = "어드민 메인 데이터 배포", description = "어드민 메인 데이터를 배포합니다")
     @PostMapping("")
@@ -38,15 +40,16 @@ public class AdminController {
             @RequestBody @Valid AddMainConfirmRequestDto addMainRequestDto
     ) {
         adminService.addMainDataConfirm(addMainRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body("Success");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Success");
     }
 
-    @Operation(summary = "어드민 메인 정보 조회", description = "어드민 메인 정보를 조회합니다")
+    @Operation(summary = "어드민 메인 데이터 조회", description = "어드민 메인 데이터를 조회합니다")
     @GetMapping("")
-    public ResponseEntity<String> getMain ( // TODO. GetMainResponseDto 생성
+    public ResponseEntity<GetMainResponseDto> getMain (
             @ParameterObject @ModelAttribute GetMainRequestDto getMainRequestDto
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body("success");
+        GetMainResponseDto result = adminService.getMain(getMainRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary = "최신소식 추가", description = "최신소식을 추가합니다")
@@ -75,9 +78,6 @@ public class AdminController {
         GetMainNewsResponseDto result = adminService.getMainNews(getMainNewsRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-
-    // TODO. 각 API 서비스 로직 + 이미지 업로드 확인 API + S3 이미지 업로드 + S3 PresignedUrl 생성
-
 
 
 }

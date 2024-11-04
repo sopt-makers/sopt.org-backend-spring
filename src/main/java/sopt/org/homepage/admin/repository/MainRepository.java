@@ -1,9 +1,8 @@
-package sopt.org.homepage.admin;
+package sopt.org.homepage.admin.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
+import sopt.org.homepage.admin.entity.MainEntity;
 
 public interface MainRepository extends JpaRepository<MainEntity, Integer> {
-
+    MainEntity findByGeneration(int generation);
 }
