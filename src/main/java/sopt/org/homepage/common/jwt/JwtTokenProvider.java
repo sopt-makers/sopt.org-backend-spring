@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import sopt.org.homepage.exception.TokenException;
 
+import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Base64;
@@ -54,13 +55,13 @@ public class JwtTokenProvider {
     private Claims getClaimsFromToken(String token) {
         String encodedKey = encodeKey(adminSecretKey);
         byte[] keyBytes = Decoders.BASE64.decode(encodedKey);
-        Key key = Keys.hmacShaKeyFor(keyBytes);
+        SecretKey key = Keys.hmacShaKeyFor(keyBytes);
 
-        return Jwts.parserBuilder()
-            .setSigningKey(key)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     public String resolveToken(HttpServletRequest request) {
