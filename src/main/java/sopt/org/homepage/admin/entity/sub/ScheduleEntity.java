@@ -1,4 +1,4 @@
-package sopt.org.homepage.admin.dao;
+package sopt.org.homepage.admin.entity.sub;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScheduleDao {
+public class ScheduleEntity {
     private String applicationStartTime;
     private String applicationEndTime;
     private String applicationResultTime;

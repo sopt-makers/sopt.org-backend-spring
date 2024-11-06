@@ -5,7 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.RecruitScheduleDao;
+import sopt.org.homepage.admin.entity.sub.RecruitScheduleEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,16 +22,16 @@ public class RecruitScheduleDto {
     @Valid
     private ScheduleDto schedule;
 
-    public RecruitScheduleDao toDao() {
-        return RecruitScheduleDao.builder()
+    public RecruitScheduleEntity toEntity() {
+        return RecruitScheduleEntity.builder()
                 .type(this.type)
-                .schedule(this.schedule.toDao())
+                .schedule(this.schedule.toEntity())
                 .build();
     }
 
-    public static List<RecruitScheduleDao> toDaoList(List<RecruitScheduleDto> dtos) {
+    public static List<RecruitScheduleEntity> toEntityList(List<RecruitScheduleDto> dtos) {
         return dtos.stream()
-                .map(RecruitScheduleDto::toDao)
+                .map(RecruitScheduleDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

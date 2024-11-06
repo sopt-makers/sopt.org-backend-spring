@@ -1,17 +1,16 @@
-package sopt.org.homepage.admin.dao;
+package sopt.org.homepage.admin.entity.sub;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecruitScheduleDao {
+public class RecruitScheduleEntity {
     private String type;           // "OB" or "YB"
-    private ScheduleDao schedule;
+    private ScheduleEntity schedule;
 }
 

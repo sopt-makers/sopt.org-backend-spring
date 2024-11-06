@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.RecruitPartCurriculumDao;
+import sopt.org.homepage.admin.entity.sub.RecruitPartCurriculumEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,16 +24,16 @@ public class RecruitPartCurriculumDto {
     @Valid
     private IntroductionDto introduction;
 
-    public RecruitPartCurriculumDao toDao() {
-        return RecruitPartCurriculumDao.builder()
+    public RecruitPartCurriculumEntity toEntity() {
+        return RecruitPartCurriculumEntity.builder()
                 .part(this.part)
-                .introduction(this.introduction.toDao())
+                .introduction(this.introduction.toEntity())
                 .build();
     }
 
-    public static List<RecruitPartCurriculumDao> toDaoList(List<RecruitPartCurriculumDto> dtos) {
+    public static List<RecruitPartCurriculumEntity> toEntityList(List<RecruitPartCurriculumDto> dtos) {
         return dtos.stream()
-                .map(RecruitPartCurriculumDto::toDao)
+                .map(RecruitPartCurriculumDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

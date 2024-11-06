@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.QuestionDao;
+import sopt.org.homepage.admin.entity.sub.QuestionEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,16 +21,16 @@ public class QuestionDto {
     @NotBlank(message = "답변을 입력해주세요")
     private String answer;
 
-    public QuestionDao toDao() {
-        return QuestionDao.builder()
+    public QuestionEntity toEntity() {
+        return QuestionEntity.builder()
                 .question(this.question)
                 .answer(this.answer)
                 .build();
     }
 
-    public static List<QuestionDao> toDaoList(List<QuestionDto> dtos) {
+    public static List<QuestionEntity> toEntityList(List<QuestionDto> dtos) {
         return dtos.stream()
-                .map(QuestionDto::toDao)
+                .map(QuestionDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

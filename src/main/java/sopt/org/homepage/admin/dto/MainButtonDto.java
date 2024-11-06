@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.MainButtonDao;
+import sopt.org.homepage.admin.entity.sub.MainButtonEntity;
 
 @Schema(description = "메인 버튼 스타일")
 @Getter
@@ -23,8 +23,8 @@ public class MainButtonDto {
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
     private String subColor;
 
-    public MainButtonDao toDao() {
-        return MainButtonDao.builder()
+    public MainButtonEntity toEntity() {
+        return MainButtonEntity.builder()
                 .text(this.text)
                 .keyColor(this.keyColor)
                 .subColor(this.subColor)

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.BrandingColorDao;
+import sopt.org.homepage.admin.entity.sub.BrandingColorEntity;
 
 @Schema(description = "브랜딩 컬러")
 @Getter
@@ -26,8 +26,8 @@ public class BrandingColorDto {
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
     private String point;
 
-    public BrandingColorDao toDao() {
-        return BrandingColorDao.builder()
+    public BrandingColorEntity toEntity() {
+        return BrandingColorEntity.builder()
                 .main(this.main)
                 .low(this.low)
                 .high(this.high)

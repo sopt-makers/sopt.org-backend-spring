@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.CurriculumWeekDao;
+import sopt.org.homepage.admin.entity.sub.CurriculumWeekEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,16 +24,16 @@ public class CurriculumWeekDto {
     @NotBlank(message = "커리큘럼 설명을 입력해주세요")
     private String description;
 
-    public CurriculumWeekDao toDao() {
-        return CurriculumWeekDao.builder()
+    public CurriculumWeekEntity toEntity() {
+        return CurriculumWeekEntity.builder()
                 .week(this.week)
                 .description(this.description)
                 .build();
     }
 
-    public static List<CurriculumWeekDao> toDaoList(List<CurriculumWeekDto> dtos) {
+    public static List<CurriculumWeekEntity> toEntityList(List<CurriculumWeekDto> dtos) {
         return dtos.stream()
-                .map(CurriculumWeekDto::toDao)
+                .map(CurriculumWeekDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

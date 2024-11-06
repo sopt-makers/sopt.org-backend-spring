@@ -19,7 +19,7 @@ public class SemestersQueryRepository {
         val semester = QSemesterEntity.semesterEntity;
 
         return queryFactory.select(new QSemesterDao(
-                    semester.id, semester.color, semester.logo, semester.background, semester.name, semester.year
+                        semester.id, semester.color, semester.logo, semester.background, semester.name, semester.year
                 )).from(semester)
                 .offset(skip)
                 .limit(limit)

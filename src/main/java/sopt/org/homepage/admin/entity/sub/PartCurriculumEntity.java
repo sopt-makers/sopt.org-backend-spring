@@ -1,4 +1,4 @@
-package sopt.org.homepage.admin.dao;
+package sopt.org.homepage.admin.entity.sub;
 
 import lombok.*;
 
@@ -8,9 +8,9 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartCurriculumDao {
+public class PartCurriculumEntity {
     private String part;
-    private List<CurriculumWeekDao> weeks;
+    private List<CurriculumWeekEntity> weeks;
 }
 
 

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.admin.dao.*;
 import sopt.org.homepage.admin.dto.*;
 import sopt.org.homepage.admin.dto.request.*;
 import sopt.org.homepage.admin.dto.response.AddMainResponseDto;
@@ -13,6 +12,7 @@ import sopt.org.homepage.admin.dto.response.GetMainResponseDto;
 import sopt.org.homepage.admin.dto.response.record.*;
 import sopt.org.homepage.admin.entity.MainEntity;
 import sopt.org.homepage.admin.entity.MainNewsEntity;
+import sopt.org.homepage.admin.entity.sub.*;
 import sopt.org.homepage.admin.repository.MainNewsRepository;
 import sopt.org.homepage.admin.repository.MainRepository;
 import sopt.org.homepage.aws.s3.S3ServiceImpl;
@@ -41,16 +41,16 @@ public class AdminServiceImpl implements AdminService{
         mainEntity.setGeneration(addMainRequestDto.getGeneration());
         mainEntity.setName(addMainRequestDto.getName());
 
-        List<RecruitScheduleDao> recruitSchedule = RecruitScheduleDto.toDaoList(addMainRequestDto.getRecruitSchedule());
+        List<RecruitScheduleEntity> recruitSchedule = RecruitScheduleDto.toEntityList(addMainRequestDto.getRecruitSchedule());
         mainEntity.setRecruitSchedule(recruitSchedule);
 
-        BrandingColorDao brandingColor = addMainRequestDto.getBrandingColor().toDao();
+        BrandingColorEntity brandingColor = addMainRequestDto.getBrandingColor().toEntity();
         mainEntity.setBrandingColor(brandingColor);
 
-        MainButtonDao mainButton = addMainRequestDto.getMainButton().toDao();
+        MainButtonEntity mainButton = addMainRequestDto.getMainButton().toEntity();
         mainEntity.setMainButton(mainButton);
 
-        List<PartIntroductionDao> partIntroduction = PartIntroductionDto.toDaoList(addMainRequestDto.getPartIntroduction());
+        List<PartIntroductionEntity> partIntroduction = PartIntroductionDto.toEntityList(addMainRequestDto.getPartIntroduction());
         mainEntity.setPartIntroduction(partIntroduction);
 
         mainEntity.setHeaderImage(s3Service.generatePresignedUrl(addMainRequestDto.getHeaderImageFileName(), baseDir));
@@ -61,10 +61,10 @@ public class AdminServiceImpl implements AdminService{
             String presignedUrl = s3Service.generatePresignedUrl(fileName, baseDir + "coreValue/");
             coreValueImages.add(presignedUrl);
         }
-        List<CoreValueDao> coreValue = CoreValueDto.toDaoList(addMainRequestDto.getCoreValue(), coreValueImages);
+        List<CoreValueEntity> coreValue = CoreValueDto.toEntityList(addMainRequestDto.getCoreValue(), coreValueImages);
         mainEntity.setCoreValue(coreValue);
 
-        List<PartCurriculumDao> partCurriculum = PartCurriculumDto.toDaoList(addMainRequestDto.getPartCurriculum());
+        List<PartCurriculumEntity> partCurriculum = PartCurriculumDto.toEntityList(addMainRequestDto.getPartCurriculum());
         mainEntity.setPartCurriculum(partCurriculum);
 
         List<String> memberProfileImages = new ArrayList<>();
@@ -73,15 +73,15 @@ public class AdminServiceImpl implements AdminService{
             String presignedUrl = s3Service.generatePresignedUrl(fileName, baseDir + "member/");
             memberProfileImages.add(presignedUrl);
         }
-        List<MemberDao> member = MemberDto.toDaoList(addMainRequestDto.getMember(), memberProfileImages);
+        List<MemberEntity> member = MemberDto.toEntityList(addMainRequestDto.getMember(), memberProfileImages);
         mainEntity.setMember(member);
 
         mainEntity.setRecruitHeaderImage(s3Service.generatePresignedUrl(addMainRequestDto.getRecruitHeaderImageFileName(), baseDir));
 
-        List<RecruitPartCurriculumDao> recruitPartCurriculum = RecruitPartCurriculumDto.toDaoList(addMainRequestDto.getRecruitPartCurriculum());
+        List<RecruitPartCurriculumEntity> recruitPartCurriculum = RecruitPartCurriculumDto.toEntityList(addMainRequestDto.getRecruitPartCurriculum());
         mainEntity.setRecruitPartCurriculum(recruitPartCurriculum);
 
-        List<RecruitQuestionDao> recruitQuestion = RecruitQuestionDto.toDaoList(addMainRequestDto.getRecruitQuestion());
+        List<RecruitQuestionEntity> recruitQuestion = RecruitQuestionDto.toEntityList(addMainRequestDto.getRecruitQuestion());
         mainEntity.setRecruitQuestion(recruitQuestion);
 
         cacheService.put(CacheType.MAIN_ENTITY, String.valueOf(mainEntity.getGeneration()), mainEntity);
@@ -89,17 +89,17 @@ public class AdminServiceImpl implements AdminService{
         return AddMainResponseDto.builder()
                 .generation(mainEntity.getGeneration())
                 .headerImage(mainEntity.getHeaderImage())
-                .coreValues(mainEntity.getCoreValue().stream().map(coreValueDao ->
+                .coreValues(mainEntity.getCoreValue().stream().map(coreValueEntity ->
                         AddMainCoreValueResponseRecordDto.builder()
-                                .value(coreValueDao.getValue())
-                                .image(coreValueDao.getImage())
+                                .value(coreValueEntity.getValue())
+                                .image(coreValueEntity.getImage())
                                 .build()
                 ).collect(Collectors.toList()))
-                .members(mainEntity.getMember().stream().map(memberDao ->
+                .members(mainEntity.getMember().stream().map(memberEntity ->
                         AddMainMemberResponseRecordDto.builder()
-                                .role(memberDao.getRole())
-                                .name(memberDao.getName())
-                                .profileImage(memberDao.getProfileImage())
+                                .role(memberEntity.getRole())
+                                .name(memberEntity.getName())
+                                .profileImage(memberEntity.getProfileImage())
                                 .build()
                 ).collect(Collectors.toList()))
                 .recruitHeaderImage(mainEntity.getRecruitHeaderImage())
@@ -114,14 +114,14 @@ public class AdminServiceImpl implements AdminService{
         // PresignedUrl to Original S3 URL
         mainEntityCache.setHeaderImage(s3Service.getOriginalUrl(mainEntityCache.getHeaderImage()));
         mainEntityCache.setCoreValue(mainEntityCache.getCoreValue().stream().map(coreValueEntity ->
-                        CoreValueDao.builder()
+                        CoreValueEntity.builder()
                                 .image(s3Service.getOriginalUrl(coreValueEntity.getImage()))
                                 .value(coreValueEntity.getValue())
                                 .description(coreValueEntity.getDescription())
                                 .build())
                 .collect(Collectors.toList()));
         mainEntityCache.setMember(mainEntityCache.getMember().stream().map(memberEntity ->
-                MemberDao.builder()
+                MemberEntity.builder()
                         .role(memberEntity.getRole())
                         .name(memberEntity.getName())
                         .affiliation(memberEntity.getAffiliation())
@@ -135,11 +135,14 @@ public class AdminServiceImpl implements AdminService{
         mainRepository.save(mainEntityCache);
 
         cacheService.evict(CacheType.MAIN_ENTITY, String.valueOf(addMainConfirmRequestDto.getGeneration()));
-
     }
+
     @Transactional
     public GetMainResponseDto getMain(GetMainRequestDto getMainRequestDto) {
         MainEntity mainEntity = mainRepository.findByGeneration(getMainRequestDto.getGeneration());
+        if (mainEntity == null) {
+            throw new ClientBadRequestException("MainEntity Cache not found with generation: " + getMainRequestDto.getGeneration());
+        }
         List<MainNewsEntity> mainNewsEntities = mainNewsRepository.findAll();
 
         return GetMainResponseDto.builder()

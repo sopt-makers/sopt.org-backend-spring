@@ -1,4 +1,4 @@
-package sopt.org.homepage.admin.dao;
+package sopt.org.homepage.admin.entity.sub;
 
 import lombok.*;
 
@@ -8,8 +8,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecruitQuestionDao {
+public class RecruitQuestionEntity {
     private String part;
-    private List<QuestionDao> questions;
+    private List<QuestionEntity> questions;
 }
 

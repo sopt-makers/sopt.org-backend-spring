@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.IntroductionDao;
+import sopt.org.homepage.admin.entity.sub.IntroductionEntity;
 
 @Schema(description = "소개글 정보")
 @Getter
@@ -18,8 +18,8 @@ class IntroductionDto {
     @NotBlank(message = "우대사항은 필수입니다")
     private String preference;
 
-    public IntroductionDao toDao() {
-        return IntroductionDao.builder()
+    public IntroductionEntity toEntity() {
+        return IntroductionEntity.builder()
                 .content(this.content)
                 .preference(this.preference)
                 .build();

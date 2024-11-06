@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.PartCurriculumDao;
+import sopt.org.homepage.admin.entity.sub.PartCurriculumEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,16 +22,16 @@ public class PartCurriculumDto {
     @NotEmpty(message = "커리큘럼을 입력해주세요")
     private List<CurriculumWeekDto> weeks;
 
-    public PartCurriculumDao toDao() {
-        return PartCurriculumDao.builder()
+    public PartCurriculumEntity toEntity() {
+        return PartCurriculumEntity.builder()
                 .part(this.part)
-                .weeks(CurriculumWeekDto.toDaoList(this.weeks))
+                .weeks(CurriculumWeekDto.toEntityList(this.weeks))
                 .build();
     }
 
-    public static List<PartCurriculumDao> toDaoList(List<PartCurriculumDto> dtos) {
+    public static List<PartCurriculumEntity> toEntityList(List<PartCurriculumDto> dtos) {
         return dtos.stream()
-                .map(PartCurriculumDto::toDao)
+                .map(PartCurriculumDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

@@ -1,4 +1,4 @@
-package sopt.org.homepage.admin.dao;
+package sopt.org.homepage.admin.entity.sub;
 
 import lombok.*;
 
@@ -6,12 +6,12 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberDao {
+public class MemberEntity {
     private String role;    // 역할
     private String name;        // 이름
     private String affiliation; // 소속
     private String introduction; // 한줄 소개
     private String profileImage; // 프로필 사진
-    private SnsLinksDao sns;
+    private SnsLinksEntity sns;
 }
 

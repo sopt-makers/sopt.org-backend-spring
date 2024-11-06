@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.SnsLinksDao;
+import sopt.org.homepage.admin.entity.sub.SnsLinksEntity;
 
 @Schema(description = "SNS 링크 정보")
 @Getter
@@ -27,8 +27,8 @@ class SnsLinksDto {
     @Pattern(regexp = "^https?://.*", message = "올바른 URL을 입력해주세요")
     private String behance;
 
-    public SnsLinksDao toDao() {
-        return SnsLinksDao.builder()
+    public SnsLinksEntity toEntity() {
+        return SnsLinksEntity.builder()
                 .email(this.email)
                 .linkedin(this.linkedin)
                 .github(this.github)

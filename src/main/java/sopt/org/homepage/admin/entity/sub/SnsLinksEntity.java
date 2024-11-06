@@ -1,4 +1,4 @@
-package sopt.org.homepage.admin.dao;
+package sopt.org.homepage.admin.entity.sub;
 
 import lombok.*;
 
@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SnsLinksDao {
+public class SnsLinksEntity {
     private String email;      // ex. 000@sopt.org
     private String linkedin;   // ex. https://www.linkedin.com/...
     private String github;     // ex. https://github.com/...

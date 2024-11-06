@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.CoreValueDao;
+import sopt.org.homepage.admin.entity.sub.CoreValueEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,21 +26,21 @@ public class CoreValueDto {
     @NotBlank(message = "핵심 가치 이미지 파일명을 입력해주세요")
     private String imageFileName;
 
-    public CoreValueDao toDao(String image) {
-        return CoreValueDao.builder()
+    public CoreValueEntity toEntity(String image) {
+        return CoreValueEntity.builder()
                 .value(this.value)
                 .description(this.description)
                 .image(image)
                 .build();
     }
 
-    public static List<CoreValueDao> toDaoList(List<CoreValueDto> dtos, List<String> images) {
+    public static List<CoreValueEntity> toEntityList(List<CoreValueDto> dtos, List<String> images) {
         if (dtos.size() != images.size()) {
             throw new IllegalArgumentException("DTOs and images lists must have the same size");
         }
 
         return IntStream.range(0, dtos.size())
-                .mapToObj(i -> dtos.get(i).toDao(images.get(i)))
+                .mapToObj(i -> dtos.get(i).toEntity(images.get(i)))
                 .collect(Collectors.toList());
     }
 }

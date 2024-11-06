@@ -3,7 +3,7 @@ package sopt.org.homepage.admin.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.ScheduleDao;
+import sopt.org.homepage.admin.entity.sub.ScheduleEntity;
 
 @Schema(description = "상세 일정")
 @Getter
@@ -27,8 +27,8 @@ public class ScheduleDto {
     @Schema(description = "최종 결과 발표 시간", example = "2024-02-10 12:00:00", requiredMode = Schema.RequiredMode.REQUIRED)
     private String finalResultTime;
 
-    public ScheduleDao toDao() {
-        return ScheduleDao.builder()
+    public ScheduleEntity toEntity() {
+        return ScheduleEntity.builder()
                 .applicationStartTime(this.applicationStartTime)
                 .applicationEndTime(this.applicationEndTime)
                 .applicationResultTime(this.applicationResultTime)

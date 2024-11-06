@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.PartIntroductionDao;
+import sopt.org.homepage.admin.entity.sub.PartIntroductionEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,16 +21,16 @@ public class PartIntroductionDto {
     @NotBlank(message = "파트 설명을 입력해주세요")
     private String description;
 
-    public PartIntroductionDao toDao() {
-        return PartIntroductionDao.builder()
+    public PartIntroductionEntity toEntity() {
+        return PartIntroductionEntity.builder()
                 .part(this.part)
                 .description(this.description)
                 .build();
     }
 
-    public static List<PartIntroductionDao> toDaoList(List<PartIntroductionDto> dtos) {
+    public static List<PartIntroductionEntity> toEntityList(List<PartIntroductionDto> dtos) {
         return dtos.stream()
-                .map(PartIntroductionDto::toDao)
+                .map(PartIntroductionDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

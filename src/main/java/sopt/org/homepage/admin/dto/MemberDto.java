@@ -5,8 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.admin.dao.CoreValueDao;
-import sopt.org.homepage.admin.dao.MemberDao;
+import sopt.org.homepage.admin.entity.sub.MemberEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,24 +39,24 @@ public class MemberDto {
     @NotBlank(message = "프로필 이미지 파일명을 입력해주세요")
     private String profileImageFileName;
 
-    public MemberDao toDao(String profileImage) {
-        return MemberDao.builder()
+    public MemberEntity toEntity(String profileImage) {
+        return MemberEntity.builder()
                 .role(this.role)
                 .name(this.name)
                 .affiliation(this.affiliation)
                 .introduction(this.introduction)
-                .sns(this.sns.toDao())
+                .sns(this.sns.toEntity())
                 .profileImage(profileImage)
                 .build();
     }
 
-    public static List<MemberDao> toDaoList(List<MemberDto> dtos, List<String> images) {
+    public static List<MemberEntity> toEntityList(List<MemberDto> dtos, List<String> images) {
         if (dtos.size() != images.size()) {
             throw new IllegalArgumentException("DTOs and images lists must have the same size");
         }
 
         return IntStream.range(0, dtos.size())
-                .mapToObj(i -> dtos.get(i).toDao(images.get(i)))
+                .mapToObj(i -> dtos.get(i).toEntity(images.get(i)))
                 .collect(Collectors.toList());
     }
 }
