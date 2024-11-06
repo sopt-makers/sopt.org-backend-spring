@@ -4,12 +4,39 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.admin.dto.*;
-import sopt.org.homepage.admin.dto.request.*;
-import sopt.org.homepage.admin.dto.response.AddMainResponseDto;
-import sopt.org.homepage.admin.dto.response.GetMainNewsResponseDto;
-import sopt.org.homepage.admin.dto.response.GetMainResponseDto;
-import sopt.org.homepage.admin.dto.response.record.*;
+import sopt.org.homepage.admin.dto.request.main.AddMainConfirmRequestDto;
+import sopt.org.homepage.admin.dto.request.main.AddMainRequestDto;
+import sopt.org.homepage.admin.dto.request.main.GetMainRequestDto;
+import sopt.org.homepage.admin.dto.request.main.core.AddMainCoreValueDto;
+import sopt.org.homepage.admin.dto.request.main.curriculum.AddMainPartCurriculumDto;
+import sopt.org.homepage.admin.dto.request.main.introduction.AddMainPartIntroductionDto;
+import sopt.org.homepage.admin.dto.request.main.member.AddMainMemberDto;
+import sopt.org.homepage.admin.dto.request.main.recruit.curriculum.AddMainRecruitPartCurriculumDto;
+import sopt.org.homepage.admin.dto.request.main.recruit.question.AddMainRecruitQuestionDto;
+import sopt.org.homepage.admin.dto.request.main.recruit.schedule.AddMainRecruitScheduleDto;
+import sopt.org.homepage.admin.dto.request.news.AddMainNewsRequestDto;
+import sopt.org.homepage.admin.dto.request.news.DeleteMainNewsRequestDto;
+import sopt.org.homepage.admin.dto.request.news.GetMainNewsRequestDto;
+import sopt.org.homepage.admin.dto.response.main.AddMainResponseDto;
+import sopt.org.homepage.admin.dto.response.main.GetMainResponseDto;
+import sopt.org.homepage.admin.dto.response.main.branding.GetMainBrandingColorResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.button.GetMainMainButtonResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.core.AddMainCoreValueResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.core.GetMainCoreValueResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.curriculum.GetMainCurriculumWeekResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.curriculum.GetMainPartCurriculumResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.introduction.GetMainPartIntroductionResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.member.AddMainMemberResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.member.GetMainMemberResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.member.GetMainSnsLinksResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.news.GetMainLatestNewsResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.curriculum.GetMainIntroductionResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.curriculum.GetMainRecruitPartCurriculumResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.question.GetMainQuestionResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.question.GetMainRecruitQuestionResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetMainRecruitScheduleResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetMainScheduleResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.news.GetMainNewsResponseDto;
 import sopt.org.homepage.admin.entity.MainEntity;
 import sopt.org.homepage.admin.entity.MainNewsEntity;
 import sopt.org.homepage.admin.entity.sub.*;
@@ -41,7 +68,7 @@ public class AdminServiceImpl implements AdminService{
         mainEntity.setGeneration(addMainRequestDto.getGeneration());
         mainEntity.setName(addMainRequestDto.getName());
 
-        List<RecruitScheduleEntity> recruitSchedule = RecruitScheduleDto.toEntityList(addMainRequestDto.getRecruitSchedule());
+        List<RecruitScheduleEntity> recruitSchedule = AddMainRecruitScheduleDto.toEntityList(addMainRequestDto.getRecruitSchedule());
         mainEntity.setRecruitSchedule(recruitSchedule);
 
         BrandingColorEntity brandingColor = addMainRequestDto.getBrandingColor().toEntity();
@@ -50,38 +77,38 @@ public class AdminServiceImpl implements AdminService{
         MainButtonEntity mainButton = addMainRequestDto.getMainButton().toEntity();
         mainEntity.setMainButton(mainButton);
 
-        List<PartIntroductionEntity> partIntroduction = PartIntroductionDto.toEntityList(addMainRequestDto.getPartIntroduction());
+        List<PartIntroductionEntity> partIntroduction = AddMainPartIntroductionDto.toEntityList(addMainRequestDto.getPartIntroduction());
         mainEntity.setPartIntroduction(partIntroduction);
 
         mainEntity.setHeaderImage(s3Service.generatePresignedUrl(addMainRequestDto.getHeaderImageFileName(), baseDir));
 
         List<String> coreValueImages = new ArrayList<>();
-        for (CoreValueDto coreValue: addMainRequestDto.getCoreValue()) {
+        for (AddMainCoreValueDto coreValue: addMainRequestDto.getCoreValue()) {
             String fileName = coreValue.getImageFileName();
             String presignedUrl = s3Service.generatePresignedUrl(fileName, baseDir + "coreValue/");
             coreValueImages.add(presignedUrl);
         }
-        List<CoreValueEntity> coreValue = CoreValueDto.toEntityList(addMainRequestDto.getCoreValue(), coreValueImages);
+        List<CoreValueEntity> coreValue = AddMainCoreValueDto.toEntityList(addMainRequestDto.getCoreValue(), coreValueImages);
         mainEntity.setCoreValue(coreValue);
 
-        List<PartCurriculumEntity> partCurriculum = PartCurriculumDto.toEntityList(addMainRequestDto.getPartCurriculum());
+        List<PartCurriculumEntity> partCurriculum = AddMainPartCurriculumDto.toEntityList(addMainRequestDto.getPartCurriculum());
         mainEntity.setPartCurriculum(partCurriculum);
 
         List<String> memberProfileImages = new ArrayList<>();
-        for (MemberDto member: addMainRequestDto.getMember()) {
+        for (AddMainMemberDto member: addMainRequestDto.getMember()) {
             String fileName = member.getProfileImageFileName();
             String presignedUrl = s3Service.generatePresignedUrl(fileName, baseDir + "member/");
             memberProfileImages.add(presignedUrl);
         }
-        List<MemberEntity> member = MemberDto.toEntityList(addMainRequestDto.getMember(), memberProfileImages);
+        List<MemberEntity> member = AddMainMemberDto.toEntityList(addMainRequestDto.getMember(), memberProfileImages);
         mainEntity.setMember(member);
 
         mainEntity.setRecruitHeaderImage(s3Service.generatePresignedUrl(addMainRequestDto.getRecruitHeaderImageFileName(), baseDir));
 
-        List<RecruitPartCurriculumEntity> recruitPartCurriculum = RecruitPartCurriculumDto.toEntityList(addMainRequestDto.getRecruitPartCurriculum());
+        List<RecruitPartCurriculumEntity> recruitPartCurriculum = AddMainRecruitPartCurriculumDto.toEntityList(addMainRequestDto.getRecruitPartCurriculum());
         mainEntity.setRecruitPartCurriculum(recruitPartCurriculum);
 
-        List<RecruitQuestionEntity> recruitQuestion = RecruitQuestionDto.toEntityList(addMainRequestDto.getRecruitQuestion());
+        List<RecruitQuestionEntity> recruitQuestion = AddMainRecruitQuestionDto.toEntityList(addMainRequestDto.getRecruitQuestion());
         mainEntity.setRecruitQuestion(recruitQuestion);
 
         cacheService.put(CacheType.MAIN_ENTITY, String.valueOf(mainEntity.getGeneration()), mainEntity);
