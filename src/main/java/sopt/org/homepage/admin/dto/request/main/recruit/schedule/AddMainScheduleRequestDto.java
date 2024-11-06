@@ -8,7 +8,7 @@ import sopt.org.homepage.admin.entity.sub.ScheduleEntity;
 @Schema(description = "상세 일정")
 @Getter
 @NoArgsConstructor
-public class AddMainScheduleDto {
+public class AddMainScheduleRequestDto {
     @Schema(description = "지원 시작 시간", example = "2024-01-01 09:00:00", requiredMode = Schema.RequiredMode.REQUIRED)
     private String applicationStartTime;
 

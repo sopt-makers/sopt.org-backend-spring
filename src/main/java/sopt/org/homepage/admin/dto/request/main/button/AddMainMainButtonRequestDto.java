@@ -10,7 +10,7 @@ import sopt.org.homepage.admin.entity.sub.MainButtonEntity;
 @Schema(description = "메인 버튼 스타일")
 @Getter
 @NoArgsConstructor
-public class AddMainMainButtonDto {
+public class AddMainMainButtonRequestDto {
     @Schema(description = "버튼 텍스트", example = "지원하기", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "버튼 텍스트를 입력해주세요")
     private String text;

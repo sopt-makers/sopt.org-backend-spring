@@ -14,7 +14,7 @@ import java.util.stream.IntStream;
 @Schema(description = "멤버 정보")
 @Getter
 @NoArgsConstructor
-public class AddMainMemberDto {
+public class AddMainMemberRequestDto {
     @Schema(description = "역할", example = "회장", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "역할을 입력해주세요")
     private String role;
@@ -33,7 +33,7 @@ public class AddMainMemberDto {
 
     @Schema(description = "SNS 링크", requiredMode = Schema.RequiredMode.REQUIRED)
     @Valid
-    private AddMainSnsLinksDto sns;
+    private AddMainSnsLinksRequestDto sns;
 
     @Schema(description = "프로필 이미지 파일명", example = "image.png", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "프로필 이미지 파일명을 입력해주세요")
@@ -50,7 +50,7 @@ public class AddMainMemberDto {
                 .build();
     }
 
-    public static List<MemberEntity> toEntityList(List<AddMainMemberDto> dtos, List<String> images) {
+    public static List<MemberEntity> toEntityList(List<AddMainMemberRequestDto> dtos, List<String> images) {
         if (dtos.size() != images.size()) {
             throw new IllegalArgumentException("DTOs and images lists must have the same size");
         }

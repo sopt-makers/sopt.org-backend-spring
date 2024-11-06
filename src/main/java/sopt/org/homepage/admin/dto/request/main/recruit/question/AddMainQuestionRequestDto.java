@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Schema(description = "질문과 답변")
 @Getter
 @NoArgsConstructor
-public class AddMainQuestionDto {
+public class AddMainQuestionRequestDto {
     @Schema(description = "질문", example = "몇명 뽑나요?", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "질문을 입력해주세요")
     private String question;
@@ -28,9 +28,9 @@ public class AddMainQuestionDto {
                 .build();
     }
 
-    public static List<QuestionEntity> toEntityList(List<AddMainQuestionDto> dtos) {
+    public static List<QuestionEntity> toEntityList(List<AddMainQuestionRequestDto> dtos) {
         return dtos.stream()
-                .map(AddMainQuestionDto::toEntity)
+                .map(AddMainQuestionRequestDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

@@ -7,15 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import sopt.org.homepage.admin.dto.request.main.branding.AddMainBrandingColorDto;
-import sopt.org.homepage.admin.dto.request.main.button.AddMainMainButtonDto;
-import sopt.org.homepage.admin.dto.request.main.core.AddMainCoreValueDto;
-import sopt.org.homepage.admin.dto.request.main.curriculum.AddMainPartCurriculumDto;
-import sopt.org.homepage.admin.dto.request.main.introduction.AddMainPartIntroductionDto;
-import sopt.org.homepage.admin.dto.request.main.member.AddMainMemberDto;
-import sopt.org.homepage.admin.dto.request.main.recruit.curriculum.AddMainRecruitPartCurriculumDto;
-import sopt.org.homepage.admin.dto.request.main.recruit.question.AddMainRecruitQuestionDto;
-import sopt.org.homepage.admin.dto.request.main.recruit.schedule.AddMainRecruitScheduleDto;
+import sopt.org.homepage.admin.dto.request.main.branding.AddMainBrandingColorRequestDto;
+import sopt.org.homepage.admin.dto.request.main.button.AddMainMainButtonRequestDto;
+import sopt.org.homepage.admin.dto.request.main.core.AddMainCoreValueRequestDto;
+import sopt.org.homepage.admin.dto.request.main.curriculum.AddMainPartCurriculumRequestDto;
+import sopt.org.homepage.admin.dto.request.main.introduction.AddMainPartIntroductionRequestDto;
+import sopt.org.homepage.admin.dto.request.main.member.AddMainMemberRequestDto;
+import sopt.org.homepage.admin.dto.request.main.recruit.curriculum.AddMainRecruitPartCurriculumRequestDto;
+import sopt.org.homepage.admin.dto.request.main.recruit.question.AddMainRecruitQuestionRequestDto;
+import sopt.org.homepage.admin.dto.request.main.recruit.schedule.AddMainRecruitScheduleRequestDto;
 
 import java.util.List;
 
@@ -35,25 +35,25 @@ public class AddMainRequestDto {
     @NotEmpty(message = "name must not be empty")
     private String name;
 
-    private List<AddMainRecruitScheduleDto> recruitSchedule;
-    private AddMainBrandingColorDto brandingColor;
-    private AddMainMainButtonDto mainButton;
-    private List<AddMainPartIntroductionDto> partIntroduction;
+    private List<AddMainRecruitScheduleRequestDto> recruitSchedule;
+    private AddMainBrandingColorRequestDto brandingColor;
+    private AddMainMainButtonRequestDto mainButton;
+    private List<AddMainPartIntroductionRequestDto> partIntroduction;
 
     @Schema(description = "헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "header.png")
     @NotEmpty(message = "headerImageFileName must not be empty")
     private String headerImageFileName;
 
-    private List<AddMainCoreValueDto> coreValue;
-    private List<AddMainPartCurriculumDto> partCurriculum;
-    private List<AddMainMemberDto> member;
+    private List<AddMainCoreValueRequestDto> coreValue;
+    private List<AddMainPartCurriculumRequestDto> partCurriculum;
+    private List<AddMainMemberRequestDto> member;
 
     @Schema(description = "지원하기 헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "recruit_header.png")
     @NotEmpty(message = "recruitHeaderImageFileName must not be empty")
     private String recruitHeaderImageFileName;
 
-    private List<AddMainRecruitPartCurriculumDto> recruitPartCurriculum;
-    private List<AddMainRecruitQuestionDto> recruitQuestion;
+    private List<AddMainRecruitPartCurriculumRequestDto> recruitPartCurriculum;
+    private List<AddMainRecruitQuestionRequestDto> recruitQuestion;
 }
 
 

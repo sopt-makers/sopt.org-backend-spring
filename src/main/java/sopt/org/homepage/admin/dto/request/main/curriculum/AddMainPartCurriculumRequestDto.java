@@ -13,25 +13,25 @@ import java.util.stream.Collectors;
 @Schema(description = "파트별 커리큘럼")
 @Getter
 @NoArgsConstructor
-public class AddMainPartCurriculumDto {
+public class AddMainPartCurriculumRequestDto {
     @Schema(description = "파트명", example = "안드로이드", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "파트명을 입력해주세요")
     private String part;
 
     @Schema(description = "주차별 커리큘럼", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "커리큘럼을 입력해주세요")
-    private List<AddMainCurriculumWeekDto> weeks;
+    private List<AddMainCurriculumWeekRequestDto> weeks;
 
     public PartCurriculumEntity toEntity() {
         return PartCurriculumEntity.builder()
                 .part(this.part)
-                .weeks(AddMainCurriculumWeekDto.toEntityList(this.weeks))
+                .weeks(AddMainCurriculumWeekRequestDto.toEntityList(this.weeks))
                 .build();
     }
 
-    public static List<PartCurriculumEntity> toEntityList(List<AddMainPartCurriculumDto> dtos) {
+    public static List<PartCurriculumEntity> toEntityList(List<AddMainPartCurriculumRequestDto> dtos) {
         return dtos.stream()
-                .map(AddMainPartCurriculumDto::toEntity)
+                .map(AddMainPartCurriculumRequestDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

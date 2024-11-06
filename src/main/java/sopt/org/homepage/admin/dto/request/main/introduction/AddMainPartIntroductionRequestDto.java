@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Schema(description = "파트 소개")
 @Getter
 @NoArgsConstructor
-public class AddMainPartIntroductionDto {
+public class AddMainPartIntroductionRequestDto {
     @Schema(description = "파트명", example = "안드로이드", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "파트명을 입력해주세요")
     private String part;
@@ -28,9 +28,9 @@ public class AddMainPartIntroductionDto {
                 .build();
     }
 
-    public static List<PartIntroductionEntity> toEntityList(List<AddMainPartIntroductionDto> dtos) {
+    public static List<PartIntroductionEntity> toEntityList(List<AddMainPartIntroductionRequestDto> dtos) {
         return dtos.stream()
-                .map(AddMainPartIntroductionDto::toEntity)
+                .map(AddMainPartIntroductionRequestDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

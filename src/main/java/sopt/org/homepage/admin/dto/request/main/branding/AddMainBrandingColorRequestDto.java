@@ -9,7 +9,7 @@ import sopt.org.homepage.admin.entity.sub.BrandingColorEntity;
 @Schema(description = "브랜딩 컬러")
 @Getter
 @NoArgsConstructor
-public class AddMainBrandingColorDto {
+public class AddMainBrandingColorRequestDto {
     @Schema(description = "메인 컬러", example = "#FF0000", requiredMode = Schema.RequiredMode.REQUIRED)
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
     private String main;

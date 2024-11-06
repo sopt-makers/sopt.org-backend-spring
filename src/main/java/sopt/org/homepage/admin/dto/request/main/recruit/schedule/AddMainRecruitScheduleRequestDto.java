@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 @Schema(description = "모집 일정")
 @Getter
 @NoArgsConstructor
-public class AddMainRecruitScheduleDto {
+public class AddMainRecruitScheduleRequestDto {
     @Schema(description = "타입", example = "OB", allowableValues = {"OB", "YB"}, requiredMode = Schema.RequiredMode.REQUIRED)
     @Pattern(regexp = "^(OB|YB)$", message = "타입은 OB 또는 YB만 가능합니다")
     private String type;
 
     @Schema(description = "일정", requiredMode = Schema.RequiredMode.REQUIRED)
     @Valid
-    private AddMainScheduleDto schedule;
+    private AddMainScheduleRequestDto schedule;
 
     public RecruitScheduleEntity toEntity() {
         return RecruitScheduleEntity.builder()
@@ -29,9 +29,9 @@ public class AddMainRecruitScheduleDto {
                 .build();
     }
 
-    public static List<RecruitScheduleEntity> toEntityList(List<AddMainRecruitScheduleDto> dtos) {
+    public static List<RecruitScheduleEntity> toEntityList(List<AddMainRecruitScheduleRequestDto> dtos) {
         return dtos.stream()
-                .map(AddMainRecruitScheduleDto::toEntity)
+                .map(AddMainRecruitScheduleRequestDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

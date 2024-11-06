@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Schema(description = "모집 질문")
 @Getter
 @NoArgsConstructor
-public class AddMainRecruitQuestionDto {
+public class AddMainRecruitQuestionRequestDto {
     @Schema(description = "파트명", example = "안드로이드", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "파트명은 필수입니다")
     private String part;
@@ -22,18 +22,18 @@ public class AddMainRecruitQuestionDto {
     @Schema(description = "질문 리스트", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "질문은 필수입니다")
     @Valid
-    private List<AddMainQuestionDto> questions;
+    private List<AddMainQuestionRequestDto> questions;
 
     public RecruitQuestionEntity toEntity() {
         return RecruitQuestionEntity.builder()
                 .part(this.part)
-                .questions(AddMainQuestionDto.toEntityList(this.questions))
+                .questions(AddMainQuestionRequestDto.toEntityList(this.questions))
                 .build();
     }
 
-    public static List<RecruitQuestionEntity> toEntityList(List<AddMainRecruitQuestionDto> dtos) {
+    public static List<RecruitQuestionEntity> toEntityList(List<AddMainRecruitQuestionRequestDto> dtos) {
         return dtos.stream()
-                .map(AddMainRecruitQuestionDto::toEntity)
+                .map(AddMainRecruitQuestionRequestDto::toEntity)
                 .collect(Collectors.toList());
     }
 }

@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 @Schema(description = "핵심 가치")
 @Getter
 @NoArgsConstructor
-public class AddMainCoreValueDto {
+public class AddMainCoreValueRequestDto {
     @Schema(description = "핵심 가치", example = "용기", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "핵심 가치를 입력해주세요")
     private String value;
@@ -34,7 +34,7 @@ public class AddMainCoreValueDto {
                 .build();
     }
 
-    public static List<CoreValueEntity> toEntityList(List<AddMainCoreValueDto> dtos, List<String> images) {
+    public static List<CoreValueEntity> toEntityList(List<AddMainCoreValueRequestDto> dtos, List<String> images) {
         if (dtos.size() != images.size()) {
             throw new IllegalArgumentException("DTOs and images lists must have the same size");
         }
