@@ -43,6 +43,7 @@ aws:
     secret-key: ${AWS_SECRET_ACCESS_KEY}
   bucket:
     image: ${BUCKET_NAME}
+    dir: develop/
 
 internal:
   playground:
@@ -54,6 +55,7 @@ internal:
 jwt:
   access: ${ACCESS_TOKEN_SECRET}
   refresh: ${REFRESH_TOKEN_SECRET}
+  admin: ${ADMIN_TOKEN_SECRET}
 
 official:
   apikey: ${OFFICIAL_API_KEY}
