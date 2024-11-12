@@ -47,7 +47,7 @@ public class NotificationService {
     public GetNotificationListResponseDto getNotificationEmailList(int generation) {
         List<String> emailList = notificationRepository.findByGeneration(generation).stream()
                 .map(NotificationEntity::getEmail)
-                .collect(Collectors.toList());
+                .toList();
 
         return new GetNotificationListResponseDto(generation, emailList);
     }

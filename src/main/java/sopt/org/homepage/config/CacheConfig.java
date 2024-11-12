@@ -27,7 +27,7 @@ public class CacheConfig {
                         cache.getMaxSize(),
                         cache.getExpireAfterMinutes()
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         cacheManager.setCaches(caches);
