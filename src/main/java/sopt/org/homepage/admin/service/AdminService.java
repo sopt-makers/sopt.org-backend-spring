@@ -6,15 +6,18 @@ import sopt.org.homepage.admin.dto.request.main.GetAdminRequestDto;
 import sopt.org.homepage.admin.dto.request.news.AddAdminNewsRequestDto;
 import sopt.org.homepage.admin.dto.request.news.DeleteAdminNewsRequestDto;
 import sopt.org.homepage.admin.dto.request.news.GetAdminNewsRequestDto;
+import sopt.org.homepage.admin.dto.response.main.AddAdminConfirmResponseDto;
 import sopt.org.homepage.admin.dto.response.main.AddAdminResponseDto;
-import sopt.org.homepage.admin.dto.response.news.GetAdminNewsResponseDto;
 import sopt.org.homepage.admin.dto.response.main.GetAdminResponseDto;
+import sopt.org.homepage.admin.dto.response.news.AddAdminNewsResponseDto;
+import sopt.org.homepage.admin.dto.response.news.DeleteAdminNewsResponseDto;
+import sopt.org.homepage.admin.dto.response.news.GetAdminNewsResponseDto;
 
 public interface AdminService {
     AddAdminResponseDto addMainData(AddAdminRequestDto addAdminRequestDto);
-    void addMainDataConfirm(AddAdminConfirmRequestDto addAdminConfirmRequestDto);
+    AddAdminConfirmResponseDto addMainDataConfirm(AddAdminConfirmRequestDto addAdminConfirmRequestDto);
     GetAdminResponseDto getMain(GetAdminRequestDto getAdminRequestDto);
-    void addMainNews(AddAdminNewsRequestDto addAdminNewsRequestDto);
-    void deleteMainNews(DeleteAdminNewsRequestDto deleteAdminNewsRequestDto);
+    AddAdminNewsResponseDto addMainNews(AddAdminNewsRequestDto addAdminNewsRequestDto);
+    DeleteAdminNewsResponseDto deleteMainNews(DeleteAdminNewsRequestDto deleteAdminNewsRequestDto);
     GetAdminNewsResponseDto getMainNews(GetAdminNewsRequestDto getAdminNewsRequestDto);
 }
