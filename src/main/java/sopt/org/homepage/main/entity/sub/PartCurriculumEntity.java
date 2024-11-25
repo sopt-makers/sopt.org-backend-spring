@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PartCurriculumEntity {
     private String part;
-    private List<CurriculumWeekEntity> weeks;
+    private List<String> curriculums;
 }
 
 

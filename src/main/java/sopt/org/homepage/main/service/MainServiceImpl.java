@@ -23,7 +23,6 @@ import sopt.org.homepage.admin.dto.response.main.branding.GetAdminBrandingColorR
 import sopt.org.homepage.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.core.GetAdminCoreValueResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.curriculum.GetAdminCurriculumWeekResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.curriculum.GetAdminPartCurriculumResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.introduction.GetAdminPartIntroductionResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.member.AddAdminMemberResponseRecordDto;
@@ -47,7 +46,6 @@ import sopt.org.homepage.main.dto.response.GetRecruitingPageResponseDto;
 import sopt.org.homepage.main.dto.response.main.branding.GetMainBrandingColorResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.button.GetMainMainButtonResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.core.GetMainCoreValueResponseRecordDto;
-import sopt.org.homepage.main.dto.response.main.curriculum.GetMainCurriculumWeekResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.curriculum.GetMainPartCurriculumResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.introduction.GetMainPartIntroductionResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.member.GetMainMemberResponseRecordDto;
@@ -239,12 +237,7 @@ public class MainServiceImpl implements MainService {
                 )
                 .partCurriculum(mainEntity.getPartCurriculum().stream().map(partCurriculum -> GetAdminPartCurriculumResponseRecordDto.builder()
                         .part(partCurriculum.getPart())
-                        .weeks(partCurriculum.getWeeks().stream().map(curriculumWeek -> GetAdminCurriculumWeekResponseRecordDto.builder()
-                                .week(curriculumWeek.getWeek())
-                                .description(curriculumWeek.getDescription())
-                                .build())
-                            .toList()
-                        )
+                        .curriculums(partCurriculum.getCurriculums())
                         .build())
                     .toList()
                 )
@@ -380,12 +373,7 @@ public class MainServiceImpl implements MainService {
                 )
                 .partCurriculum(mainEntity.getPartCurriculum().stream().map(partCurriculum -> GetMainPartCurriculumResponseRecordDto.builder()
                                 .part(partCurriculum.getPart())
-                                .weeks(partCurriculum.getWeeks().stream().map(curriculumWeek -> GetMainCurriculumWeekResponseRecordDto.builder()
-                                                .week(curriculumWeek.getWeek())
-                                                .description(curriculumWeek.getDescription())
-                                                .build())
-                                        .toList()
-                                )
+                                .curriculums(partCurriculum.getCurriculums())
                                 .build())
                         .toList()
                 )
