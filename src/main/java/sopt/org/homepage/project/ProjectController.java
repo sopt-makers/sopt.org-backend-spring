@@ -7,7 +7,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sopt.org.homepage.common.dto.PaginateResponse;
+import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.internal.playground.PlaygroundService;
 import sopt.org.homepage.common.mapper.ResponseMapper;
 import sopt.org.homepage.project.dto.GetProjectsRequestDto;
@@ -23,15 +23,22 @@ public class ProjectController {
     private final PlaygroundService playgroundService;
 
     @GetMapping("")
-    public ResponseEntity<PaginateResponse<ProjectsResponseDto>> getAllProject (
-            @ParameterObject @ModelAttribute GetProjectsRequestDto getAllProjectDto
+    public ResponseEntity<PaginateResponseDto<ProjectsResponseDto>> getProjects (
+            @ParameterObject @ModelAttribute GetProjectsRequestDto getProjectsRequestDto
     ) {
-        val testProject = playgroundService.getAllProjects(getAllProjectDto);
-        val testDetail = playgroundService.getProjectDetail(testProject.get(0).getId());
-        System.out.println(testDetail);
 
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+
+        val projects = projectService.paginateProjects(getProjectsRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(projects);
     }
+
+
+
+
+
+
+
+
 }
 
 

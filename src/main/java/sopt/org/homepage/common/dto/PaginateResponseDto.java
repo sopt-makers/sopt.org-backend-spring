@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.List;
 
 @Getter
-public class PaginateResponse<T> {
+public class PaginateResponseDto<T> {
 
     private final List<T> data;
 
@@ -28,7 +28,7 @@ public class PaginateResponse<T> {
     @Schema(description = "item을 몇개까지 가져올지에 대한 카운트", requiredMode = Schema.RequiredMode.REQUIRED)
     private final Integer limit;
 
-    public PaginateResponse(List<T> data, Integer totalCount, Integer limit, int currentPage) {
+    public PaginateResponseDto(List<T> data, Integer totalCount, Integer limit, int currentPage) {
         this.limit = limit;
         this.totalCount = totalCount;
         this.totalPage = (int) Math.ceil((double) totalCount / limit);
