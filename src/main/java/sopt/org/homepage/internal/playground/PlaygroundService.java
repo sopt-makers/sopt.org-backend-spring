@@ -11,7 +11,7 @@ import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundUserResponse;
 import sopt.org.homepage.project.dto.GetProjectsRequestDto;
 import sopt.org.homepage.project.dto.ProjectDetailResponse;
-import sopt.org.homepage.project.dto.ProjectResponse;
+import sopt.org.homepage.project.dto.ProjectsResponseDto;
 import sopt.org.homepage.common.mapper.ResponseMapper;
 
 import java.util.Collections;
@@ -32,7 +32,7 @@ public class PlaygroundService {
         return playgroundClient.getPlaygroundUser(authToken);
     }
 
-    public List<ProjectResponse> getAllProjects(GetProjectsRequestDto projectRequest) {
+    public List<ProjectsResponseDto> getAllProjects(GetProjectsRequestDto projectRequest) {
         val projectListResponse = playgroundClient.getAllProjects(authConfig.getPlaygroundToken());
         val uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponse::name);
         val filter = projectRequest.getFilter();
@@ -45,7 +45,7 @@ public class PlaygroundService {
                 arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponse.ProjectLinkResponse::linkId))
         ).toList();
 
-        List<ProjectResponse> result = uniqueLinkResponse.stream().map(responseMapper::toProjectResponse).toList();
+        List<ProjectsResponseDto> result = uniqueLinkResponse.stream().map(responseMapper::toProjectResponse).toList();
 
         if (filter != null) {
             result = result.stream()

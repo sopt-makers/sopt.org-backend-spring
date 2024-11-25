@@ -11,7 +11,7 @@ import sopt.org.homepage.common.dto.PaginateResponse;
 import sopt.org.homepage.internal.playground.PlaygroundService;
 import sopt.org.homepage.common.mapper.ResponseMapper;
 import sopt.org.homepage.project.dto.GetProjectsRequestDto;
-import sopt.org.homepage.project.dto.ProjectResponse;
+import sopt.org.homepage.project.dto.ProjectsResponseDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +23,7 @@ public class ProjectController {
     private final PlaygroundService playgroundService;
 
     @GetMapping("")
-    public ResponseEntity<PaginateResponse<ProjectResponse>> getAllProject (
+    public ResponseEntity<PaginateResponse<ProjectsResponseDto>> getAllProject (
             @ParameterObject @ModelAttribute GetProjectsRequestDto getAllProjectDto
     ) {
         val testProject = playgroundService.getAllProjects(getAllProjectDto);

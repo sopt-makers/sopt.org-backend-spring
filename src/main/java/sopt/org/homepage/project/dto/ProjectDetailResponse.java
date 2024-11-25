@@ -11,7 +11,7 @@ import sopt.org.homepage.project.dto.type.ServiceType;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Getter
-public class ProjectDetailResponse extends ProjectResponse {
+public class ProjectDetailResponse extends ProjectsResponseDto {
 
 
         @Schema(description = "프로젝트 시작 날짜", requiredMode = Schema.RequiredMode.REQUIRED)

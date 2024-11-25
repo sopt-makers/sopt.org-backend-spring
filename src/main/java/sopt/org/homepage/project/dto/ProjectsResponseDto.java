@@ -7,7 +7,7 @@ import java.util.List;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
 @Getter
-public class ProjectResponse {
+public class ProjectsResponseDto {
 
         @Schema(description = "프로젝트의 Id", requiredMode = Schema.RequiredMode.REQUIRED)
         private final Long id;
@@ -45,9 +45,9 @@ public class ProjectResponse {
         @Schema(description = "프로젝트 링크", requiredMode = Schema.RequiredMode.REQUIRED)
         private final List<Link> links;
 
-        public ProjectResponse(Long id, String name, Integer generation, Category category, List<ServiceType> serviceType,
-                               String summary, String detail, String logoImage, String thumbnailImage, Boolean isAvailable,
-                               Boolean isFounding, List<Link> links) {
+        public ProjectsResponseDto(Long id, String name, Integer generation, Category category, List<ServiceType> serviceType,
+                                   String summary, String detail, String logoImage, String thumbnailImage, Boolean isAvailable,
+                                   Boolean isFounding, List<Link> links) {
                 this.id = id;
                 this.name = name;
                 this.generation = generation;

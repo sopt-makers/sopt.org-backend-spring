@@ -35,11 +35,11 @@ public class ResponseMapper {
         );
     }
 
-    public ProjectResponse toProjectResponse(PlaygroundProjectResponse project) {
+    public ProjectsResponseDto toProjectResponse(PlaygroundProjectResponse project) {
         List<Link> links = project.links().stream().map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl())).toList();
         Category category = new Category(project.category());
 
-        return new ProjectResponse(
+        return new ProjectsResponseDto(
                 project.id(),
                 project.name(),
                 project.generation(),
