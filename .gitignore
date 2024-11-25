@@ -65,3 +65,8 @@ bin/
 
 ### Some additional ignores
 *.DS_Store
+
+
+### Application Properties ###
+src/main/resources/application.yml
+
