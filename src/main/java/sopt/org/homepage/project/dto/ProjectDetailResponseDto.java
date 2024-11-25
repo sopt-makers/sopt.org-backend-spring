@@ -11,7 +11,7 @@ import sopt.org.homepage.project.dto.type.ServiceType;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Getter
-public class ProjectDetailResponse extends ProjectsResponseDto {
+public class ProjectDetailResponseDto extends ProjectsResponseDto {
 
 
         @Schema(description = "프로젝트 시작 날짜", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -32,11 +32,11 @@ public class ProjectDetailResponse extends ProjectsResponseDto {
         @Schema(description = "프로젝트 팀원", requiredMode = Schema.RequiredMode.REQUIRED)
         private final List<Member> members;
 
-        public ProjectDetailResponse(Long id, String name, Integer generation, Category category, String projectImage,
-                                     List<ServiceType> serviceType, String summary, String detail, String logoImage,
-                                     String thumbnailImage, Boolean isAvailable, Boolean isFounding, List<Link> links,
-                                     LocalDate startAt, LocalDate endAt, LocalDateTime uploadedAt,
-                                     LocalDateTime updatedAt, List<Member> members) {
+        public ProjectDetailResponseDto(Long id, String name, Integer generation, Category category, String projectImage,
+                                        List<ServiceType> serviceType, String summary, String detail, String logoImage,
+                                        String thumbnailImage, Boolean isAvailable, Boolean isFounding, List<Link> links,
+                                        LocalDate startAt, LocalDate endAt, LocalDateTime uploadedAt,
+                                        LocalDateTime updatedAt, List<Member> members) {
 
                 super(id, name, generation, category, serviceType, summary, detail, logoImage,
                         thumbnailImage, isAvailable, isFounding, links);

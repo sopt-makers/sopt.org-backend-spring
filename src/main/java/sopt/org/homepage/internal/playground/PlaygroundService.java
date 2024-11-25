@@ -10,7 +10,7 @@ import sopt.org.homepage.internal.playground.dto.PlaygroundMemberListResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundUserResponse;
 import sopt.org.homepage.project.dto.GetProjectsRequestDto;
-import sopt.org.homepage.project.dto.ProjectDetailResponse;
+import sopt.org.homepage.project.dto.ProjectDetailResponseDto;
 import sopt.org.homepage.project.dto.ProjectsResponseDto;
 import sopt.org.homepage.common.mapper.ResponseMapper;
 
@@ -61,7 +61,7 @@ public class PlaygroundService {
         return result;
     }
 
-    public ProjectDetailResponse getProjectDetail(Long projectId){
+    public ProjectDetailResponseDto getProjectDetail(Long projectId){
         val projectResponse = playgroundClient.getProjectDetail(authConfig.getPlaygroundToken(), projectId);
         if (projectResponse == null) {
             throw new RuntimeException("프로젝트 데이터를 가져오지 못했습니다.");

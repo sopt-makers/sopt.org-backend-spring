@@ -55,14 +55,14 @@ public class ResponseMapper {
         );
     }
 
-    public ProjectDetailResponse toProjectDetailResponse(PlaygroundProjectDetailResponse project) {
+    public ProjectDetailResponseDto toProjectDetailResponse(PlaygroundProjectDetailResponse project) {
         List<Link> links = project.links().stream().map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl())).toList();
         Category category = new Category(project.category());
         List<Member> members = project.members().stream().map(member -> new Member(
                 member.memberName(), Role.fromValue(member.memberRole()), member.memberDescription()
         )).toList();
 
-        return new ProjectDetailResponse(
+        return new ProjectDetailResponseDto(
                 project.id(),
                 project.name(),
                 project.generation(),
