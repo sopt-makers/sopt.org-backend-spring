@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 import java.util.List;
+import sopt.org.homepage.project.dto.type.ServiceType;
 
 @Getter
 public class ProjectResponse {

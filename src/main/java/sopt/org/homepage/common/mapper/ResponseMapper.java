@@ -1,6 +1,5 @@
 package sopt.org.homepage.common.mapper;
 
-import lombok.val;
 import org.springframework.stereotype.Component;
 import sopt.org.homepage.internal.crew.dto.CrewMeetingVo;
 import sopt.org.homepage.internal.crew.dto.StudyResponse;
@@ -8,6 +7,7 @@ import sopt.org.homepage.internal.playground.dto.PlaygroundProjectDetailResponse
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponse;
 import sopt.org.homepage.internal.playground.dto.Role;
 import sopt.org.homepage.project.dto.*;
+import sopt.org.homepage.project.dto.type.LinkType;
 import sopt.org.homepage.semester.dto.SemesterDao;
 import sopt.org.homepage.semester.dto.SemestersListResponse;
 

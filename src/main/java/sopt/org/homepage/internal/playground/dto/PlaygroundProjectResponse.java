@@ -1,9 +1,10 @@
 package sopt.org.homepage.internal.playground.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.project.dto.*;
 
 import java.util.List;
+import sopt.org.homepage.project.dto.type.ProjectType;
+import sopt.org.homepage.project.dto.type.ServiceType;
 
 public record PlaygroundProjectResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
