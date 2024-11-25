@@ -19,8 +19,8 @@ public abstract class PaginateRequest {
 
     public PaginateRequest(@RequestParam(defaultValue = "1") Integer pageNo,
                        @RequestParam(defaultValue = "10") Integer limit) {
-        this.pageNo = pageNo;
-        this.limit = limit;
+        this.pageNo = (pageNo != null) ? pageNo : 1;
+        this.limit = (limit != null) ? limit : 10;
     }
 
     public void setPageNo(Integer pageNo) {
