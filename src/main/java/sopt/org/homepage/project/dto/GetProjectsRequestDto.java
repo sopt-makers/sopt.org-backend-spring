@@ -7,7 +7,7 @@ import sopt.org.homepage.common.dto.PaginateRequest;
 
 @Validated
 @Getter
-public class GetAllProjectRequest extends PaginateRequest {
+public class GetProjectsRequestDto extends PaginateRequest {
 
     @Parameter(description = "프로젝트 타입")
     private final ProjectType filter;
@@ -16,7 +16,7 @@ public class GetAllProjectRequest extends PaginateRequest {
     private final ServiceType platform;
 
 
-    public GetAllProjectRequest(Integer pageNo, Integer limit, ProjectType filter, ServiceType platform) {
+    public GetProjectsRequestDto(Integer pageNo, Integer limit, ProjectType filter, ServiceType platform) {
         super(pageNo, limit);
         this.filter = filter;
         this.platform = platform;

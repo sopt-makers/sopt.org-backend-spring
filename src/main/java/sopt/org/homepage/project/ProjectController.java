@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import sopt.org.homepage.common.dto.PaginateResponse;
 import sopt.org.homepage.internal.playground.PlaygroundService;
 import sopt.org.homepage.common.mapper.ResponseMapper;
-import sopt.org.homepage.project.dto.GetAllProjectRequest;
+import sopt.org.homepage.project.dto.GetProjectsRequestDto;
 import sopt.org.homepage.project.dto.ProjectResponse;
 
 @RestController
@@ -24,7 +24,7 @@ public class ProjectController {
 
     @GetMapping("")
     public ResponseEntity<PaginateResponse<ProjectResponse>> getAllProject (
-            @ParameterObject @ModelAttribute GetAllProjectRequest getAllProjectDto
+            @ParameterObject @ModelAttribute GetProjectsRequestDto getAllProjectDto
     ) {
         val testProject = playgroundService.getAllProjects(getAllProjectDto);
         val testDetail = playgroundService.getProjectDetail(testProject.get(0).getId());

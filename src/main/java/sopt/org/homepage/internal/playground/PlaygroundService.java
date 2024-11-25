@@ -9,7 +9,7 @@ import sopt.org.homepage.config.AuthConfig;
 import sopt.org.homepage.internal.playground.dto.PlaygroundMemberListResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundUserResponse;
-import sopt.org.homepage.project.dto.GetAllProjectRequest;
+import sopt.org.homepage.project.dto.GetProjectsRequestDto;
 import sopt.org.homepage.project.dto.ProjectDetailResponse;
 import sopt.org.homepage.project.dto.ProjectResponse;
 import sopt.org.homepage.common.mapper.ResponseMapper;
@@ -32,7 +32,7 @@ public class PlaygroundService {
         return playgroundClient.getPlaygroundUser(authToken);
     }
 
-    public List<ProjectResponse> getAllProjects(GetAllProjectRequest projectRequest) {
+    public List<ProjectResponse> getAllProjects(GetProjectsRequestDto projectRequest) {
         val projectListResponse = playgroundClient.getAllProjects(authConfig.getPlaygroundToken());
         val uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponse::name);
         val filter = projectRequest.getFilter();
