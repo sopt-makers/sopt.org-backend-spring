@@ -16,8 +16,11 @@ import sopt.org.homepage.admin.dto.request.main.GetAdminRequestDto;
 import sopt.org.homepage.admin.dto.request.news.AddAdminNewsRequestDto;
 import sopt.org.homepage.admin.dto.request.news.DeleteAdminNewsRequestDto;
 import sopt.org.homepage.admin.dto.request.news.GetAdminNewsRequestDto;
+import sopt.org.homepage.admin.dto.response.main.AddAdminConfirmResponseDto;
 import sopt.org.homepage.admin.dto.response.main.AddAdminResponseDto;
 import sopt.org.homepage.admin.dto.response.main.GetAdminResponseDto;
+import sopt.org.homepage.admin.dto.response.news.AddAdminNewsResponseDto;
+import sopt.org.homepage.admin.dto.response.news.DeleteAdminNewsResponseDto;
 import sopt.org.homepage.admin.dto.response.news.GetAdminNewsResponseDto;
 import sopt.org.homepage.admin.service.AdminService;
 import sopt.org.homepage.common.constants.SecurityConstants;
@@ -41,11 +44,11 @@ public class AdminController {
 
     @Operation(summary = "어드민 메인 데이터 배포 확인", description = "어드민 메인 데이터 배포를 확인합니다")
     @PostMapping("confirm")
-    public ResponseEntity<String> addMainConfirm (
+    public ResponseEntity<AddAdminConfirmResponseDto> addMainConfirm (
             @RequestBody @Valid AddAdminConfirmRequestDto addMainRequestDto
     ) {
-        adminService.addMainDataConfirm(addMainRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Success");
+        AddAdminConfirmResponseDto result = adminService.addMainDataConfirm(addMainRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @Operation(summary = "어드민 메인 데이터 조회", description = "어드민 메인 데이터를 조회합니다")
@@ -59,20 +62,20 @@ public class AdminController {
 
     @Operation(summary = "최신소식 추가", description = "최신소식을 추가합니다")
     @PostMapping(value = "/news", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> addMainNews(
+    public ResponseEntity<AddAdminNewsResponseDto> addMainNews(
             @ModelAttribute @Valid AddAdminNewsRequestDto addAdminNewsRequestDto
     ) {
-        adminService.addMainNews(addAdminNewsRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("최신소식을 추가 성공");
+        AddAdminNewsResponseDto result = adminService.addMainNews(addAdminNewsRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
     @Operation(summary = "최신소식 삭제", description = "최신소식을 삭제합니다")
-    @DeleteMapping(value = "/news")
-    public ResponseEntity<String> deleteMainNews(
+    @PostMapping(value = "/news/delete")
+    public ResponseEntity<DeleteAdminNewsResponseDto> deleteMainNews(
             @RequestBody @Valid DeleteAdminNewsRequestDto deleteAdminNewsRequestDto
     ) {
-        adminService.deleteMainNews(deleteAdminNewsRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body("success");
+        DeleteAdminNewsResponseDto result = adminService.deleteMainNews(deleteAdminNewsRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary = "최신소식 조회", description = "최신소식을 조회합니다")

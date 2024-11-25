@@ -17,14 +17,14 @@ public class AddAdminPartCurriculumRequestDto {
     @NotBlank(message = "파트명을 입력해주세요")
     private String part;
 
-    @Schema(description = "주차별 커리큘럼", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "주차별 커리큘럼 (배열 순서 = 주차 순서)", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotEmpty(message = "커리큘럼을 입력해주세요")
-    private List<AddAdminCurriculumWeekRequestDto> weeks;
+    private List<String> curriculums;
 
     public PartCurriculumEntity toEntity() {
         return PartCurriculumEntity.builder()
                 .part(this.part)
-                .weeks(AddAdminCurriculumWeekRequestDto.toEntityList(this.weeks))
+                .curriculums(this.curriculums)
                 .build();
     }
 
