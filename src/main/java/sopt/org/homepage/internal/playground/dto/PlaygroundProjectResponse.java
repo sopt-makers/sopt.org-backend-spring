@@ -6,6 +6,7 @@ import java.util.List;
 import sopt.org.homepage.project.dto.type.ProjectType;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
+
 public record PlaygroundProjectResponse(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         Long id,
@@ -34,6 +35,8 @@ public record PlaygroundProjectResponse(
 
         List<ProjectLinkResponse> links
 ) {
+
+
         public record ProjectLinkResponse(
             Long linkId,
             String linkTitle,
@@ -41,18 +44,9 @@ public record PlaygroundProjectResponse(
         ){}
         public PlaygroundProjectResponse ProjectWithLink(List<ProjectLinkResponse> links) {
                 return new PlaygroundProjectResponse(
-                        id(),
-                        name(),
-                        generation(),
-                        category(),
-                        serviceType(),
-                        summary(),
-                        detail(),
-                        logoImage(),
-                        thumbnailImage(),
-                        isAvailable(),
-                        isFounding(),
-                        links
+                        id, name, generation, category, serviceType,
+                        summary, detail, logoImage, thumbnailImage,
+                        isAvailable, isFounding, links
                 );
         }
 }

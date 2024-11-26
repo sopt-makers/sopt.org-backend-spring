@@ -1,5 +1,6 @@
 package sopt.org.homepage.internal.playground;
 
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import sopt.org.homepage.common.util.ArrayUtil;
 import sopt.org.homepage.config.AuthConfig;
 import sopt.org.homepage.internal.playground.dto.PlaygroundMemberListResponse;
+import sopt.org.homepage.internal.playground.dto.PlaygroundProjectAxiosResponseDto;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundUserResponse;
 import sopt.org.homepage.project.dto.GetProjectsRequestDto;
@@ -33,20 +35,31 @@ public class PlaygroundService {
     }
 
     public List<ProjectsResponseDto> getAllProjects(GetProjectsRequestDto projectRequest) {
-        val projectListResponse = playgroundClient.getAllProjects(authConfig.getPlaygroundToken());
-        val uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponse::name);
+
+        List<ProjectsResponseDto> result = new ArrayList<>();
         val filter = projectRequest.getFilter();
         val platform = projectRequest.getPlatform();
+        List<PlaygroundProjectResponse> projectListResponse = getProjectsWithPagination();
 
-        if (uniqueResponse == null) {
+
+        val uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponse::name);
+
+        val uniqueLinkResponse = uniqueResponse.stream()
+                .map(response -> response.ProjectWithLink(
+                        arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponse.ProjectLinkResponse::linkId)
+                ))
+                .toList();
+
+
+        if (uniqueLinkResponse == null) {
             return Collections.emptyList();
         }
 
-        val uniqueLinkResponse = uniqueResponse.stream().map(response -> response.ProjectWithLink(
-                arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponse.ProjectLinkResponse::linkId))
-        ).toList();
+        for (val data : projectListResponse) {
+            result.add(responseMapper.toProjectResponse(data));
+        }
 
-        List<ProjectsResponseDto> result = uniqueLinkResponse.stream().map(responseMapper::toProjectResponse).toList();
+
 
         if (filter != null) {
             result = result.stream()
@@ -61,6 +74,41 @@ public class PlaygroundService {
 
         return result;
     }
+
+
+
+
+    public List<PlaygroundProjectResponse> getProjectsWithPagination() {
+        final int limit = 20;
+        int cursor = 0;
+        int totalCount = 10;
+        List<PlaygroundProjectResponse> response = new ArrayList<>();
+
+        for (int i = 0; i < totalCount + 1; i = i + limit) {
+            PlaygroundProjectAxiosResponseDto projectData = playgroundClient.getAllProjects(
+                    authConfig.getPlaygroundToken(),
+                    limit,
+                    cursor
+            );
+
+            if (projectData.projectList().isEmpty()) {
+                break;
+            }
+
+            totalCount = projectData.totalCount();
+            response.addAll(projectData.projectList());
+
+            int lastDataIdx = projectData.projectList().size() - 1;
+            cursor = projectData.projectList().get(lastDataIdx).id().intValue();
+
+            if (!projectData.hasNext()) {
+                break;
+            }
+        }
+
+        return response;
+    }
+
 
     public ProjectDetailResponseDto getProjectDetail(Long projectId){
         val projectResponse = playgroundClient.getProjectDetail(authConfig.getPlaygroundToken(), projectId);
