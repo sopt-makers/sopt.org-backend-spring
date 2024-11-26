@@ -61,13 +61,14 @@ public class ResponseMapper {
         List<Member> members = project.members().stream().map(member -> new Member(
                 member.memberName(), Role.fromValue(member.memberRole()), member.memberDescription()
         )).toList();
+        String projectImage = project.images().isEmpty() ? null : project.images().get(0);
 
         return new ProjectDetailResponseDto(
                 project.id(),
                 project.name(),
                 project.generation(),
                 category,
-                project.images().isEmpty() ? "" : project.images().get(0),
+                projectImage,
                 project.serviceType(),
                 project.summary(),
                 project.detail(),

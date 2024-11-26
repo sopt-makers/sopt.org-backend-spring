@@ -1,6 +1,7 @@
 package sopt.org.homepage.project.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -21,9 +22,10 @@ public class ProjectDetailResponseDto extends ProjectsResponseDto {
         @Schema(description = "프로젝트 종료 날짜. 프로젝트가 진행중 일 경우 값 없음", nullable = true)
         private final LocalDate endAt;
 
-        @Schema(description = "프로젝트 이미지 URL", nullable = true)
-        private final String projectImage;
 
+        @Schema(description = "프로젝트 이미지 URL", nullable = true)
+        @JsonInclude(JsonInclude.Include.NON_EMPTY)  // 빈 문자열이나 null일 경우 JSON에서 제외
+        private final String projectImage;
 
         @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         @Schema(description = "프로젝트를 등록한 시간", requiredMode = Schema.RequiredMode.REQUIRED)
