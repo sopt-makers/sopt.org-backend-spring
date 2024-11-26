@@ -1,5 +1,7 @@
 package sopt.org.homepage.internal.playground.dto;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public enum Role {
         TEAMLEADER("Team Leader"),
         MAINPM("Main PM"),
@@ -16,17 +18,28 @@ public enum Role {
         Role(String description) {
                 this.description = description;
         }
-
+        @JsonValue // Jackson이 JSON 직렬화 시 이 메서드를 사용하도록 지정
         public String getDescription() {
                 return description;
         }
 
+
         public static Role fromValue(String value) {
+                // enum 이름으로 먼저 찾기
                 for (Role role : values()) {
-                        if (role.toString().equalsIgnoreCase(value)) {
+                        if (role.name().equalsIgnoreCase(value)) {
                                 return role;
                         }
                 }
+
+                // description으로 찾기
+                for (Role role : values()) {
+                        if (role.getDescription().equalsIgnoreCase(value)) {
+                                return role;
+                        }
+                }
+
                 throw new IllegalArgumentException("No constant with text " + value + " found");
         }
+
 }
