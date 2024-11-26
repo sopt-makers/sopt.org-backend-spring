@@ -1,5 +1,6 @@
 package sopt.org.homepage.project.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -23,11 +24,17 @@ public class ProjectDetailResponseDto extends ProjectsResponseDto {
         @Schema(description = "프로젝트 이미지 URL", nullable = true)
         private final String projectImage;
 
+
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         @Schema(description = "프로젝트를 등록한 시간", requiredMode = Schema.RequiredMode.REQUIRED)
         private final LocalDateTime uploadedAt;
 
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
         @Schema(description = "프로젝트를 수정한 시간", requiredMode = Schema.RequiredMode.REQUIRED)
         private final LocalDateTime updatedAt;
+
+
+
 
         @Schema(description = "프로젝트 팀원", requiredMode = Schema.RequiredMode.REQUIRED)
         private final List<Member> members;
