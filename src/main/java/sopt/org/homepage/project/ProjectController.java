@@ -19,9 +19,7 @@ import sopt.org.homepage.project.dto.ProjectsResponseDto;
 @RequestMapping("projects")
 @Tag(name = "Project")
 public class ProjectController {
-    private final ResponseMapper responseMapper;
     private final ProjectService projectService;
-    private final PlaygroundService playgroundService;
 
     @GetMapping("")
     public ResponseEntity<PaginateResponseDto<ProjectsResponseDto>> getProjects (

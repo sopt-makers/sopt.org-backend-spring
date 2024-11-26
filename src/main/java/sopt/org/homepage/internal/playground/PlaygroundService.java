@@ -41,6 +41,7 @@ public class PlaygroundService {
         if (uniqueResponse == null) {
             return Collections.emptyList();
         }
+
         val uniqueLinkResponse = uniqueResponse.stream().map(response -> response.ProjectWithLink(
                 arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponse.ProjectLinkResponse::linkId))
         ).toList();
