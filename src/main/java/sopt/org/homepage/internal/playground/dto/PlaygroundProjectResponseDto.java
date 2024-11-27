@@ -7,7 +7,7 @@ import sopt.org.homepage.project.dto.type.ProjectType;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
 
-public record PlaygroundProjectResponse(
+public record PlaygroundProjectResponseDto(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         Long id,
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
@@ -42,8 +42,8 @@ public record PlaygroundProjectResponse(
             String linkTitle,
             String linkUrl
         ){}
-        public PlaygroundProjectResponse ProjectWithLink(List<ProjectLinkResponse> links) {
-                return new PlaygroundProjectResponse(
+        public PlaygroundProjectResponseDto ProjectWithLink(List<ProjectLinkResponse> links) {
+                return new PlaygroundProjectResponseDto(
                         id, name, generation, category, serviceType,
                         summary, detail, logoImage, thumbnailImage,
                         isAvailable, isFounding, links

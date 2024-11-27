@@ -46,7 +46,6 @@ public class CacheServiceImpl implements CacheService {
                 log.info("Cache HIT: {}", key);
                 Object value = wrapper.get();
                 try {
-                    // ObjectMapper를 사용해 JSON 역직렬화
                     return objectMapper.convertValue(value, type);
                 } catch (IllegalArgumentException e) {
                     throw new RuntimeException("Failed to convert cache value", e);

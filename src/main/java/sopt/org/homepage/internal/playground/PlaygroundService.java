@@ -12,7 +12,7 @@ import sopt.org.homepage.common.util.ArrayUtil;
 import sopt.org.homepage.config.AuthConfig;
 import sopt.org.homepage.internal.playground.dto.PlaygroundMemberListResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectAxiosResponseDto;
-import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponse;
+import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponseDto;
 import sopt.org.homepage.internal.playground.dto.PlaygroundUserResponse;
 import sopt.org.homepage.project.dto.GetProjectsRequestDto;
 import sopt.org.homepage.project.dto.ProjectDetailResponseDto;
@@ -34,7 +34,6 @@ public class PlaygroundService {
     private final ArrayUtil arrayUtil;
 
     private final CacheService cacheService;
-
     private static final String PROJECT_CACHE_KEY = "all_projects";
 
 
@@ -44,43 +43,36 @@ public class PlaygroundService {
     }
 
     public List<ProjectsResponseDto> getAllProjects(GetProjectsRequestDto projectRequest) {
-
         // 캐시에서 데이터 조회 시도
-        List<PlaygroundProjectResponse> projectListResponse = cacheService.get(
-                CacheType.PROJECT_LIST,
-                PROJECT_CACHE_KEY,
-                new TypeReference<List<PlaygroundProjectResponse>>() {}
-
+        List<PlaygroundProjectResponseDto> projectListResponse = cacheService.get(
+                CacheType.PROJECT_LIST, PROJECT_CACHE_KEY, new TypeReference<>() {
+                }
         );
 
-        // 캐시 미스인 경우 API 호출
-        if (projectListResponse == null) {
+        if (projectListResponse == null) { // 캐시 미스인 경우 API 호출
             try {
                 projectListResponse = getProjectsWithPagination();
-                // 캐시에 저장
                 cacheService.put(CacheType.PROJECT_LIST, PROJECT_CACHE_KEY, projectListResponse);
             } catch (Exception e) {
-                log.error("Failed to fetch projects", e);
+                log.error("Projcet API Failed to fetch projects", e);
                 return Collections.emptyList();
             }
         }
-
-
 
         List<ProjectsResponseDto> result = new ArrayList<>();
         val filter = projectRequest.getFilter();
         val platform = projectRequest.getPlatform();
 
-        val uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponse::name);
+        val uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponseDto::name);
 
         val uniqueLinkResponse = uniqueResponse.stream()
                 .map(response -> response.ProjectWithLink(
-                        arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponse.ProjectLinkResponse::linkId)
+                        arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponseDto.ProjectLinkResponse::linkId)
                 ))
                 .toList();
 
 
-        if (uniqueLinkResponse == null) {
+        if (uniqueLinkResponse.isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -103,11 +95,11 @@ public class PlaygroundService {
     }
 
 
-    public List<PlaygroundProjectResponse> getProjectsWithPagination() {
+    public List<PlaygroundProjectResponseDto> getProjectsWithPagination() {
         final int limit = 20;
         int cursor = 0;
         int totalCount = 10;
-        List<PlaygroundProjectResponse> response = new ArrayList<>();
+        List<PlaygroundProjectResponseDto> response = new ArrayList<>();
 
         for (int i = 0; i < totalCount + 1; i = i + limit) {
             PlaygroundProjectAxiosResponseDto projectData = playgroundClient.getAllProjects(

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import sopt.org.homepage.internal.crew.dto.CrewMeetingVo;
 import sopt.org.homepage.internal.crew.dto.StudyResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectDetailResponse;
-import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponse;
+import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponseDto;
 import sopt.org.homepage.internal.playground.dto.Role;
 import sopt.org.homepage.project.dto.*;
 import sopt.org.homepage.project.dto.type.LinkType;
@@ -35,7 +35,7 @@ public class ResponseMapper {
         );
     }
 
-    public ProjectsResponseDto toProjectResponse(PlaygroundProjectResponse project) {
+    public ProjectsResponseDto toProjectResponse(PlaygroundProjectResponseDto project) {
         List<Link> links = project.links().stream().map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl())).toList();
         Category category = new Category(project.category());
 

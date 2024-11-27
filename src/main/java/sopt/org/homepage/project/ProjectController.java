@@ -27,11 +27,9 @@ public class ProjectController {
     ) {
         PaginateResponseDto<ProjectsResponseDto> projects = projectService.paginateProjects(getProjectsRequestDto);
 
-        // 정렬된 새로운 리스트 생성
         val sortedData = new ArrayList<>(projects.getData());
         sortedData.sort(ProjectComparator::compare);
 
-        // 정렬된 데이터로 새로운 PaginateResponseDto 생성
         val sortedProjects = new PaginateResponseDto<>(
                 sortedData,
                 projects.getTotalCount(),

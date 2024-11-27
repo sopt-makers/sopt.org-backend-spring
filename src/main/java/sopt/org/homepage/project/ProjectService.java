@@ -30,7 +30,6 @@ public class ProjectService {
         );
     }
 
-
     public List<ProjectsResponseDto> findAll(GetProjectsRequestDto dto) {
         return playgroundService.getAllProjects(dto);
     }
