@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.core.type.TypeReference;
+import sopt.org.homepage.cache.CacheService;
+import sopt.org.homepage.common.constants.CacheType;
 import sopt.org.homepage.common.util.ArrayUtil;
 import sopt.org.homepage.config.AuthConfig;
 import sopt.org.homepage.internal.playground.dto.PlaygroundMemberListResponse;
@@ -30,17 +33,43 @@ public class PlaygroundService {
     private final AuthConfig authConfig;
     private final ArrayUtil arrayUtil;
 
+    private final CacheService cacheService;
+
+    private static final String PROJECT_CACHE_KEY = "all_projects";
+
+
+
     public PlaygroundUserResponse getPlaygroundUserInfo(String authToken) {
         return playgroundClient.getPlaygroundUser(authToken);
     }
 
     public List<ProjectsResponseDto> getAllProjects(GetProjectsRequestDto projectRequest) {
 
+        // 캐시에서 데이터 조회 시도
+        List<PlaygroundProjectResponse> projectListResponse = cacheService.get(
+                CacheType.PROJECT_LIST,
+                PROJECT_CACHE_KEY,
+                new TypeReference<List<PlaygroundProjectResponse>>() {}
+
+        );
+
+        // 캐시 미스인 경우 API 호출
+        if (projectListResponse == null) {
+            try {
+                projectListResponse = getProjectsWithPagination();
+                // 캐시에 저장
+                cacheService.put(CacheType.PROJECT_LIST, PROJECT_CACHE_KEY, projectListResponse);
+            } catch (Exception e) {
+                log.error("Failed to fetch projects", e);
+                return Collections.emptyList();
+            }
+        }
+
+
+
         List<ProjectsResponseDto> result = new ArrayList<>();
         val filter = projectRequest.getFilter();
         val platform = projectRequest.getPlatform();
-        List<PlaygroundProjectResponse> projectListResponse = getProjectsWithPagination();
-
 
         val uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponse::name);
 
@@ -59,8 +88,6 @@ public class PlaygroundService {
             result.add(responseMapper.toProjectResponse(data));
         }
 
-
-
         if (filter != null) {
             result = result.stream()
                     .filter(element -> element.getCategory().project().equals(filter))
@@ -74,8 +101,6 @@ public class PlaygroundService {
 
         return result;
     }
-
-
 
 
     public List<PlaygroundProjectResponse> getProjectsWithPagination() {

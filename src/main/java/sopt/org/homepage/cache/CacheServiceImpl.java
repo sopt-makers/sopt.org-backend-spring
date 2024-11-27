@@ -1,5 +1,7 @@
 package sopt.org.homepage.cache;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -12,6 +14,7 @@ import sopt.org.homepage.common.constants.CacheType;
 @Slf4j
 public class CacheServiceImpl implements CacheService {
     private final CacheManager cacheManager;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void put(CacheType cacheType, String key, Object value) {
@@ -33,6 +36,27 @@ public class CacheServiceImpl implements CacheService {
         }
         return null;
     }
+
+    @Override
+    public <T> T get(CacheType cacheType, String key, TypeReference<T> type) {
+        Cache cache = cacheManager.getCache(cacheType.getCacheName());
+        if (cache != null) {
+            Cache.ValueWrapper wrapper = cache.get(key);
+            if (wrapper != null) {
+                log.info("Cache HIT: {}", key);
+                Object value = wrapper.get();
+                try {
+                    // ObjectMapper를 사용해 JSON 역직렬화
+                    return objectMapper.convertValue(value, type);
+                } catch (IllegalArgumentException e) {
+                    throw new RuntimeException("Failed to convert cache value", e);
+                }
+            }
+        }
+        log.info("Cache MISS: {}", key);
+        return null;
+    }
+
 
     @Override
     public void evict(CacheType cacheType, String key) {
