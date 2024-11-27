@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.util.List;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
+
 @Getter
 public class ProjectsResponseDto {
 

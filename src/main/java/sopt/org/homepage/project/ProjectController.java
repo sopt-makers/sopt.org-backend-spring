@@ -1,5 +1,6 @@
 package sopt.org.homepage.project;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class ProjectController {
     private final ProjectService projectService;
 
     @GetMapping("")
+    @Operation(summary = "프로젝트 정보 전부 가져오기")
     public ResponseEntity<PaginateResponseDto<ProjectsResponseDto>> getProjects (
             @ParameterObject @ModelAttribute GetProjectsRequestDto getProjectsRequestDto
     ) {
@@ -39,6 +41,7 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.OK).body(sortedProjects);
     }
     @GetMapping("/{projectId}")
+    @Operation(summary = "특정 프로젝트 정보 가져오기")
     public ResponseEntity<ProjectDetailResponseDto> getProject(
             @PathVariable("projectId") Long projectId
     ) {

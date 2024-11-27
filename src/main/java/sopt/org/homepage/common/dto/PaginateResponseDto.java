@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.List;
 
+@Schema(name = "PaginateResponseDto", description = "페이지네이션 응답")
 @Getter
 public class PaginateResponseDto<T> {
     @Schema(description = "item을 몇개까지 가져올지에 대한 카운트", requiredMode = Schema.RequiredMode.REQUIRED)

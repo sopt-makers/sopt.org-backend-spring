@@ -7,14 +7,15 @@ import sopt.org.homepage.common.dto.PaginateRequest;
 import sopt.org.homepage.project.dto.type.ProjectType;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
+
 @Validated
 @Getter
 public class GetProjectsRequestDto extends PaginateRequest {
 
-    @Parameter(description = "프로젝트 타입")
+    @Parameter(description = "필터링 키워드")
     private final ProjectType filter;
 
-    @Parameter(description = "서비스 플랫폼")
+    @Parameter(description = "웹/앱 필터링")
     private final ServiceType platform;
 
 
