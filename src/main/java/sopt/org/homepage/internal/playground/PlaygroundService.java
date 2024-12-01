@@ -13,9 +13,9 @@ import sopt.org.homepage.internal.playground.dto.PlaygroundMemberListResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectAxiosResponseDto;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponseDto;
 import sopt.org.homepage.internal.playground.dto.PlaygroundUserResponse;
-import sopt.org.homepage.project.dto.GetProjectsRequestDto;
-import sopt.org.homepage.project.dto.ProjectDetailResponseDto;
-import sopt.org.homepage.project.dto.ProjectsResponseDto;
+import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
+import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
+import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 import sopt.org.homepage.common.mapper.ResponseMapper;
 
 import java.util.Collections;

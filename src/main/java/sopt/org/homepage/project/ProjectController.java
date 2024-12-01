@@ -10,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.project.util.ProjectComparator;
-import sopt.org.homepage.project.dto.GetProjectsRequestDto;
-import sopt.org.homepage.project.dto.ProjectDetailResponseDto;
-import sopt.org.homepage.project.dto.ProjectsResponseDto;
+import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
+import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
+import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 
 @RestController
 @RequiredArgsConstructor

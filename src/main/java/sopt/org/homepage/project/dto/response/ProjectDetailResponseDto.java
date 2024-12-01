@@ -1,4 +1,4 @@
-package sopt.org.homepage.project.dto;
+package sopt.org.homepage.project.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -9,6 +9,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.experimental.SuperBuilder;
+import sopt.org.homepage.project.dto.record.Category;
+import sopt.org.homepage.project.dto.record.Link;
+import sopt.org.homepage.project.dto.record.Member;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
 @ToString(callSuper = true)

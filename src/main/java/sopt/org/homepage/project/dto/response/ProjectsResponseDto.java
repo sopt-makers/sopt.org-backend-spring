@@ -1,11 +1,12 @@
-package sopt.org.homepage.project.dto;
+package sopt.org.homepage.project.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
 import lombok.experimental.SuperBuilder;
+import sopt.org.homepage.project.dto.record.Category;
+import sopt.org.homepage.project.dto.record.Link;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
 

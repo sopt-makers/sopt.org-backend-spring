@@ -1,13 +1,16 @@
 package sopt.org.homepage.common.mapper;
 
-import lombok.Builder;
 import org.springframework.stereotype.Component;
 import sopt.org.homepage.internal.crew.dto.CrewMeetingVo;
 import sopt.org.homepage.internal.crew.dto.StudyResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectDetailResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponseDto;
 import sopt.org.homepage.internal.playground.dto.Role;
-import sopt.org.homepage.project.dto.*;
+import sopt.org.homepage.project.dto.record.Category;
+import sopt.org.homepage.project.dto.record.Link;
+import sopt.org.homepage.project.dto.record.Member;
+import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
+import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 import sopt.org.homepage.project.dto.type.LinkType;
 import sopt.org.homepage.semester.dto.SemesterDao;
 import sopt.org.homepage.semester.dto.SemestersListResponse;

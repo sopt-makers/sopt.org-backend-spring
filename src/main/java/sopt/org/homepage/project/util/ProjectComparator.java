@@ -1,6 +1,6 @@
 package sopt.org.homepage.project.util;
 
-import sopt.org.homepage.project.dto.ProjectsResponseDto;
+import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 
 public class ProjectComparator {
     public static int compare(ProjectsResponseDto a, ProjectsResponseDto b) {
