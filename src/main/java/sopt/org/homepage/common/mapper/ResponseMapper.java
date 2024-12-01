@@ -1,13 +1,17 @@
 package sopt.org.homepage.common.mapper;
 
-import lombok.val;
 import org.springframework.stereotype.Component;
 import sopt.org.homepage.internal.crew.dto.CrewMeetingVo;
 import sopt.org.homepage.internal.crew.dto.StudyResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectDetailResponse;
-import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponse;
+import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponseDto;
 import sopt.org.homepage.internal.playground.dto.Role;
-import sopt.org.homepage.project.dto.*;
+import sopt.org.homepage.project.dto.record.Category;
+import sopt.org.homepage.project.dto.record.Link;
+import sopt.org.homepage.project.dto.record.Member;
+import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
+import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
+import sopt.org.homepage.project.dto.type.LinkType;
 import sopt.org.homepage.semester.dto.SemesterDao;
 import sopt.org.homepage.semester.dto.SemestersListResponse;
 
@@ -35,52 +39,63 @@ public class ResponseMapper {
         );
     }
 
-    public ProjectResponse toProjectResponse(PlaygroundProjectResponse project) {
-        List<Link> links = project.links().stream().map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl())).toList();
+
+    public ProjectsResponseDto toProjectResponse(PlaygroundProjectResponseDto project) {
+        List<Link> links = project.links().stream()
+                .map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl()))
+                .toList();
         Category category = new Category(project.category());
 
-        return new ProjectResponse(
-                project.id(),
-                project.name(),
-                project.generation(),
-                category,
-                project.serviceType(),
-                project.summary(),
-                project.detail(),
-                project.logoImage(),
-                project.thumbnailImage(),
-                project.isAvailable(),
-                project.isFounding(),
-                links
-        );
+        return ProjectsResponseDto.builder()
+                .id(project.id())
+                .name(project.name())
+                .generation(project.generation())
+                .category(category)
+                .serviceType(project.serviceType())
+                .summary(project.summary())
+                .detail(project.detail())
+                .logoImage(project.logoImage())
+                .thumbnailImage(project.thumbnailImage())
+                .isAvailable(project.isAvailable())
+                .isFounding(project.isFounding())
+                .links(links)
+                .build();
     }
 
-    public ProjectDetailResponse toProjectDetailResponse(PlaygroundProjectDetailResponse project) {
-        List<Link> links = project.links().stream().map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl())).toList();
-        Category category = new Category(project.category());
-        List<Member> members = project.members().stream().map(member -> new Member(
-                member.memberName(), Role.fromValue(member.memberRole()), member.memberDescription()
-        )).toList();
 
-        return new ProjectDetailResponse(
-                project.id(),
-                project.name(),
-                project.generation(),
-                category,
-                project.images().isEmpty() ? "" : project.images().get(0),
-                project.serviceType(),
-                project.summary(),
-                project.detail(),
-                project.logoImage(),
-                project.thumbnailImage(),
-                project.isAvailable(),
-                project.isFounding(),
-                links,
-                project.startAt(),
-                project.endAt(),
-                project.createdAt(),
-                project.updatedAt(),
-                members
-        );
+    public ProjectDetailResponseDto toProjectDetailResponse(PlaygroundProjectDetailResponse project) {
+        List<Link> links = project.links().stream()
+                .map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl()))
+                .toList();
+        Category category = new Category(project.category());
+        List<Member> members = project.members().stream()
+                .map(member -> new Member(
+                        member.memberName(),
+                        Role.fromValue(member.memberRole()),
+                        member.memberDescription()
+                ))
+                .toList();
+        String projectImage = project.images().isEmpty() ? null : project.images().get(0);
+
+        return ProjectDetailResponseDto.builder()
+                .id(project.id())
+                .name(project.name())
+                .generation(project.generation())
+                .category(category)
+                .projectImage(projectImage)
+                .serviceType(project.serviceType())
+                .summary(project.summary())
+                .detail(project.detail())
+                .logoImage(project.logoImage())
+                .thumbnailImage(project.thumbnailImage())
+                .isAvailable(project.isAvailable())
+                .isFounding(project.isFounding())
+                .links(links)
+                .startAt(project.startAt())
+                .endAt(project.endAt())
+                .uploadedAt(project.createdAt())
+                .updatedAt(project.updatedAt())
+                .members(members)
+                .build();
     }
 }

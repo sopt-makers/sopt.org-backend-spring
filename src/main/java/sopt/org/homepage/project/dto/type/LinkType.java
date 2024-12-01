@@ -1,4 +1,5 @@
-package sopt.org.homepage.project.dto;
+package sopt.org.homepage.project.dto.type;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
@@ -16,9 +17,14 @@ public enum LinkType {
         this.value = value;
     }
 
+    @JsonValue // Jackson이 JSON 직렬화 시 이 메서드를 사용하도록 지정
+    public String getValue() {
+        return value;
+    }
+
     public static LinkType fromValue(String value) {
         for (LinkType type : values()) {
-            if (type.toString().equalsIgnoreCase(value)) {
+            if (type.getValue().equalsIgnoreCase(value)) {
                 return type;
             }
         }

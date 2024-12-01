@@ -1,11 +1,13 @@
 package sopt.org.homepage.internal.playground.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.project.dto.*;
 
 import java.util.List;
+import sopt.org.homepage.project.dto.type.ProjectType;
+import sopt.org.homepage.project.dto.type.ServiceType;
 
-public record PlaygroundProjectResponse(
+
+public record PlaygroundProjectResponseDto(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         Long id,
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
@@ -33,25 +35,18 @@ public record PlaygroundProjectResponse(
 
         List<ProjectLinkResponse> links
 ) {
+
+
         public record ProjectLinkResponse(
             Long linkId,
             String linkTitle,
             String linkUrl
         ){}
-        public PlaygroundProjectResponse ProjectWithLink(List<ProjectLinkResponse> links) {
-                return new PlaygroundProjectResponse(
-                        id(),
-                        name(),
-                        generation(),
-                        category(),
-                        serviceType(),
-                        summary(),
-                        detail(),
-                        logoImage(),
-                        thumbnailImage(),
-                        isAvailable(),
-                        isFounding(),
-                        links
+        public PlaygroundProjectResponseDto ProjectWithLink(List<ProjectLinkResponse> links) {
+                return new PlaygroundProjectResponseDto(
+                        id, name, generation, category, serviceType,
+                        summary, detail, logoImage, thumbnailImage,
+                        isAvailable, isFounding, links
                 );
         }
 }

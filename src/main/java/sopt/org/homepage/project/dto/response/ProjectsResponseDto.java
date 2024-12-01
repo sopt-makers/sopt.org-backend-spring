@@ -1,12 +1,18 @@
-package sopt.org.homepage.project.dto;
+package sopt.org.homepage.project.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
 import java.util.List;
+import lombok.experimental.SuperBuilder;
+import sopt.org.homepage.project.dto.record.Category;
+import sopt.org.homepage.project.dto.record.Link;
+import sopt.org.homepage.project.dto.type.ServiceType;
 
+
+@SuperBuilder
 @Getter
-public class ProjectResponse {
+public class ProjectsResponseDto {
 
         @Schema(description = "프로젝트의 Id", requiredMode = Schema.RequiredMode.REQUIRED)
         private final Long id;
@@ -44,9 +50,9 @@ public class ProjectResponse {
         @Schema(description = "프로젝트 링크", requiredMode = Schema.RequiredMode.REQUIRED)
         private final List<Link> links;
 
-        public ProjectResponse(Long id, String name, Integer generation, Category category, List<ServiceType> serviceType,
-                               String summary, String detail, String logoImage, String thumbnailImage, Boolean isAvailable,
-                               Boolean isFounding, List<Link> links) {
+        public ProjectsResponseDto(Long id, String name, Integer generation, Category category, List<ServiceType> serviceType,
+                                   String summary, String detail, String logoImage, String thumbnailImage, Boolean isAvailable,
+                                   Boolean isFounding, List<Link> links) {
                 this.id = id;
                 this.name = name;
                 this.generation = generation;

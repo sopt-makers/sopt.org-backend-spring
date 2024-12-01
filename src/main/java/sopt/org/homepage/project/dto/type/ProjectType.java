@@ -1,4 +1,4 @@
-package sopt.org.homepage.project.dto;
+package sopt.org.homepage.project.dto.type;
 
 
 import lombok.Getter;

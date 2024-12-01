@@ -1,8 +1,8 @@
 package sopt.org.homepage.internal.playground.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.project.dto.ProjectType;
-import sopt.org.homepage.project.dto.ServiceType;
+import sopt.org.homepage.project.dto.type.ProjectType;
+import sopt.org.homepage.project.dto.type.ServiceType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

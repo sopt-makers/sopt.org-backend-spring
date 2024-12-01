@@ -16,9 +16,11 @@ public interface PlaygroundClient {
             @RequestHeader("Authorization") String authToken
     );
 
-    @GetMapping("/internal/api/v1/projects")
-    List<PlaygroundProjectResponse> getAllProjects(
-            @RequestHeader("Authorization") String playgroundToken
+    @GetMapping("/api/v1/projects")
+    PlaygroundProjectAxiosResponseDto getAllProjects(
+            @RequestHeader("Authorization") String playgroundToken,
+            @RequestParam("limit") Integer limit,
+            @RequestParam("cursor") Integer cursor
     );
 
     @GetMapping("/internal/api/v1/projects/{projectId}")
@@ -33,6 +35,10 @@ public interface PlaygroundClient {
             @RequestParam("filter") String part,
             @RequestParam("generation") Integer generation
     );
+
+
+
+
 
 
 }
