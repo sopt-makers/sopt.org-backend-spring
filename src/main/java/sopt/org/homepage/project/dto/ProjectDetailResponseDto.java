@@ -8,10 +8,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.experimental.SuperBuilder;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @Getter
 public class ProjectDetailResponseDto extends ProjectsResponseDto {
 

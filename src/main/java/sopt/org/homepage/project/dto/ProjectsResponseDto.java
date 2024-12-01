@@ -1,12 +1,15 @@
 package sopt.org.homepage.project.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import lombok.experimental.SuperBuilder;
 import sopt.org.homepage.project.dto.type.ServiceType;
 
 
+@SuperBuilder
 @Getter
 public class ProjectsResponseDto {
 
@@ -44,7 +47,7 @@ public class ProjectsResponseDto {
         private final Boolean isFounding;
 
         @Schema(description = "프로젝트 링크", requiredMode = Schema.RequiredMode.REQUIRED)
-        private final List<Link> link;
+        private final List<Link> links;
 
         public ProjectsResponseDto(Long id, String name, Integer generation, Category category, List<ServiceType> serviceType,
                                    String summary, String detail, String logoImage, String thumbnailImage, Boolean isAvailable,
@@ -60,7 +63,7 @@ public class ProjectsResponseDto {
                 this.thumbnailImage = thumbnailImage;
                 this.isAvailable = isAvailable;
                 this.isFounding = isFounding;
-                this.link = links;
+                this.links = links;
 
 
         }
