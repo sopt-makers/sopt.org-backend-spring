@@ -2,7 +2,7 @@ package sopt.org.homepage.project;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
+
 import org.springframework.stereotype.Service;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.common.util.ArrayUtil;
@@ -19,8 +19,8 @@ public class ProjectService {
 
 
     public PaginateResponseDto<ProjectsResponseDto> paginateProjects(GetProjectsRequestDto dto) {
-        val allProjects = findAll(dto);
-        val paginatedProject = arrayUtil.paginateArray(allProjects, dto.getPageNo(), dto.getLimit());
+        var allProjects = findAll(dto);
+        var paginatedProject = arrayUtil.paginateArray(allProjects, dto.getPageNo(), dto.getLimit());
 
         return new PaginateResponseDto<>(
                 paginatedProject,

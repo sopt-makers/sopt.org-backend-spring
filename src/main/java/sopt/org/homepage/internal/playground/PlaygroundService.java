@@ -2,7 +2,6 @@ package sopt.org.homepage.internal.playground;
 
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -60,12 +59,12 @@ public class PlaygroundService {
         }
 
         List<ProjectsResponseDto> result = new ArrayList<>();
-        val filter = projectRequest.getFilter();
-        val platform = projectRequest.getPlatform();
+        var filter = projectRequest.getFilter();
+        var platform = projectRequest.getPlatform();
 
-        val uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponseDto::name);
+        var uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponseDto::name);
 
-        val uniqueLinkResponse = uniqueResponse.stream()
+        var uniqueLinkResponse = uniqueResponse.stream()
                 .map(response -> response.ProjectWithLink(
                         arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponseDto.ProjectLinkResponse::linkId)
                 ))
@@ -76,7 +75,7 @@ public class PlaygroundService {
             return Collections.emptyList();
         }
 
-        for (val data : projectListResponse) {
+        for (var data : projectListResponse) {
             result.add(responseMapper.toProjectResponse(data));
         }
 
@@ -128,7 +127,7 @@ public class PlaygroundService {
 
 
     public ProjectDetailResponseDto getProjectDetail(Long projectId){
-        val projectResponse = playgroundClient.getProjectDetail(authConfig.getPlaygroundToken(), projectId);
+        var projectResponse = playgroundClient.getProjectDetail(authConfig.getPlaygroundToken(), projectId);
         if (projectResponse == null) {
             throw new RuntimeException("프로젝트 데이터를 가져오지 못했습니다.");
         }
