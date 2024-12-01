@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
-import sopt.org.homepage.common.util.ProjectComparator;
+import sopt.org.homepage.project.util.ProjectComparator;
 import sopt.org.homepage.project.dto.GetProjectsRequestDto;
 import sopt.org.homepage.project.dto.ProjectDetailResponseDto;
 import sopt.org.homepage.project.dto.ProjectsResponseDto;

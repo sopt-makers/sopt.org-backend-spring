@@ -1,4 +1,4 @@
-package sopt.org.homepage.common.util;
+package sopt.org.homepage.project.util;
 
 import sopt.org.homepage.project.dto.ProjectsResponseDto;
 
