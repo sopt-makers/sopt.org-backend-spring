@@ -7,8 +7,8 @@ import sopt.org.homepage.common.type.Part;
 
 @Schema(description = "리뷰 응답")
 @Getter
-@Builder
 public class ReviewsResponseDto {
+
     @Schema(description = "리뷰 ID(item의 기본 키)")
     private final Long id;
 
@@ -27,13 +27,13 @@ public class ReviewsResponseDto {
     @Schema(description = "활동후기 설명")
     private final String description;
 
-    @Schema(description = "파트(활동 기수)") //
+    @Schema(description = "파트(활동 기수)")
     private final Part part;
 
     @Schema(description = "주제")
     private final String subject;
 
-    @Schema(description = "썸네일 URL(활동후기 타이틀)")//
+    @Schema(description = "썸네일 URL(활동후기 타이틀)")
     private final String thumbnailUrl;
 
     @Schema(description = "후기 작성 플랫폼")
@@ -41,4 +41,21 @@ public class ReviewsResponseDto {
 
     @Schema(description = "Redirect Link")
     private final String url;
+
+    @Builder
+    private ReviewsResponseDto(Long id, String title, String author, String authorProfileImageUrl,
+                               Integer generation, String description, Part part, String subject,
+                               String thumbnailUrl, String platform, String url) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.authorProfileImageUrl = authorProfileImageUrl;
+        this.generation = generation;
+        this.description = description;
+        this.part = part;
+        this.subject = subject;
+        this.thumbnailUrl = thumbnailUrl;
+        this.platform = platform;
+        this.url = url;
+    }
 }
