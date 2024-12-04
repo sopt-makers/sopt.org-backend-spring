@@ -30,14 +30,10 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getReviews(reviewsRequestDto));
     }
 
-
     @GetMapping("/random")
     @Operation(summary = "랜덤 활동 후기 파트별로 하나씩 가져오기",
             description = "만약 특정 파트에 리뷰가 없다면 그 파트의 데이터는 나오지 않습니다.")
     public ResponseEntity<List<ReviewsResponseDto>> getRandomReviewByPart() {
         return ResponseEntity.ok(reviewService.getRandomReviewByPart());
     }
-
-
-
 }

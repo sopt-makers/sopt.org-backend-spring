@@ -18,12 +18,10 @@ public enum Part {
         this.value = value;
     }
 
-    @JsonValue // JSON 직렬화 시 이 메서드 사용
+    @JsonValue
     public String getValue() {
         return value;
     }
-
-    // String 값으로부터 enum 찾기 (대소문자 구분 없이)
     public static Part fromValue(String value) {
         for (Part part : values()) {
             if (part.getValue().equalsIgnoreCase(value)) {

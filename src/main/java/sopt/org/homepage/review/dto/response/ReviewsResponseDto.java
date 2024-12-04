@@ -9,7 +9,6 @@ import sopt.org.homepage.common.type.Part;
 @Getter
 @Builder
 public class ReviewsResponseDto {
-
     @Schema(description = "리뷰 ID(item의 기본 키)")
     private final Long id;
 

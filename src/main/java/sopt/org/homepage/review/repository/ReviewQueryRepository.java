@@ -65,7 +65,4 @@ public class ReviewQueryRepository {
                 .limit(1)
                 .fetchFirst();
     }
-
-
-
 }

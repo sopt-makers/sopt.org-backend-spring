@@ -1,6 +1,5 @@
 package sopt.org.homepage.review.dto.request;
 
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -12,7 +11,6 @@ import sopt.org.homepage.common.type.Part;
 @Getter
 @Schema(description = "리뷰 조회 요청")
 public class ReviewsRequestDto extends PaginateRequest {
-
     @Parameter(description = "Part, 전체를 불러올땐 아무값도 안넣으면 됩니다.")
     private final Part part;
 

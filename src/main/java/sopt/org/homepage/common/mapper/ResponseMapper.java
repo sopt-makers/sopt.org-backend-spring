@@ -101,9 +101,6 @@ public class ResponseMapper {
                 .build();
     }
 
-
-
-
     public ReviewsResponseDto toReviewResponseDto(ReviewEntity entity) {
         return ReviewsResponseDto.builder()
                 .id(entity.getId())
@@ -119,10 +116,4 @@ public class ResponseMapper {
                 .url(entity.getUrl())
                 .build();
     }
-
-
-
-
-
-
 }

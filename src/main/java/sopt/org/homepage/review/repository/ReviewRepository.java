@@ -1,6 +1,4 @@
 package sopt.org.homepage.review.repository;
-
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import sopt.org.homepage.review.entity.ReviewEntity;
 
