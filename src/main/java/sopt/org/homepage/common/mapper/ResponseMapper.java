@@ -1,6 +1,7 @@
 package sopt.org.homepage.common.mapper;
 
 import org.springframework.stereotype.Component;
+import sopt.org.homepage.review.entity.ReviewEntity;
 import sopt.org.homepage.internal.crew.dto.CrewMeetingVo;
 import sopt.org.homepage.internal.crew.dto.StudyResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectDetailResponse;
@@ -12,6 +13,7 @@ import sopt.org.homepage.project.dto.record.Member;
 import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
 import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 import sopt.org.homepage.project.dto.type.LinkType;
+import sopt.org.homepage.review.dto.response.ReviewsResponseDto;
 import sopt.org.homepage.semester.dto.SemesterDao;
 import sopt.org.homepage.semester.dto.SemestersListResponse;
 
@@ -96,6 +98,22 @@ public class ResponseMapper {
                 .uploadedAt(project.createdAt())
                 .updatedAt(project.updatedAt())
                 .members(members)
+                .build();
+    }
+
+    public ReviewsResponseDto toReviewResponseDto(ReviewEntity entity) {
+        return ReviewsResponseDto.builder()
+                .id(entity.getId())
+                .title(entity.getTitle())
+                .author(entity.getAuthor())
+                .authorProfileImageUrl(entity.getAuthorProfileImageUrl())
+                .generation(entity.getGeneration())
+                .description(entity.getDescription())
+                .part(entity.getPart())
+                .subject(entity.getSubject())
+                .thumbnailUrl(entity.getThumbnailUrl())
+                .platform(entity.getPlatform())
+                .url(entity.getUrl())
                 .build();
     }
 }
