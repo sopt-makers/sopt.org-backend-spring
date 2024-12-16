@@ -19,8 +19,8 @@ public class AboutSoptController {
     private final AboutSoptService aboutSoptService;
 
     @GetMapping("")
-    @Operation(summary = "사용자용 AboutSopt 조회",
-            description = "Query값이 null이면 최근 기수를 불러옵니다. 해당 기수의 AboutSOPT가 없으면 not found error")
+    @Operation(summary = "사용자용 AboutSopt 조회를 조회합니다, Query값이 null이면 최근 기수를 불러옵니다. 해당 기수의 AboutSOPT가  없으면 not found error"
+           )
     public ResponseEntity<GetAboutSoptResponseDto> getAboutSopt(
             @Parameter(description = "기수")
             @RequestParam(required = false) Integer generation

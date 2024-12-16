@@ -17,6 +17,9 @@ public record CoreValueResponseDto(
 
         @Schema(description = "핵심가치 이미지 주소", nullable = false)
         String imageUrl
+
+
+
 ) {
     @Builder
     public CoreValueResponseDto {}
