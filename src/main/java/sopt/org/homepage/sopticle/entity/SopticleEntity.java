@@ -1,20 +1,28 @@
-package sopt.org.homepage.entity;
+package sopt.org.homepage.sopticle.entity;
 
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
-import java.util.Objects;
+import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import sopt.org.homepage.common.type.Part;
 
 @Entity
+@Getter
 @Table(name = "\"Sopticle\"")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SopticleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "\"id\"", nullable = false)
-    private int id;
-    @Basic
-    @Column(name = "\"part\"", nullable = false, length = 20)
-    private String part;
+    private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "\"part\"")
+    private Part part;
+
     @Basic
     @Column(name = "\"generation\"", nullable = false)
     private int generation;
@@ -48,5 +56,12 @@ public class SopticleEntity {
     @Basic
     @Column(name = "\"pgSopticleId\"", nullable = false)
     private int pgSopticleId;
+
+    @OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL)
+    private List<SopticleLikeEntity> sopticleLikes;
+
+    public Part getPart() {
+        return this.part;
+    }
 
 }
