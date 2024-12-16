@@ -24,7 +24,6 @@ public class AboutSoptService {
     private final PlaygroundService playgroundService;
     private final ProjectService projectService;
 
-
     public GetAboutSoptResponseDto getAboutSopt(Integer generation) {
         AboutSoptEntity aboutSopt = generation != null ?
                 aboutSoptRepository.findByIdAndIsPublishedTrue(Long.valueOf(generation))

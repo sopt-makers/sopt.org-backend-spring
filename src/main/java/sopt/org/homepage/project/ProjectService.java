@@ -39,17 +39,10 @@ public class ProjectService {
         return playgroundService.getProjectDetail(projectId);
     }
 
-
     public List<ProjectsResponseDto> findByGeneration(Integer generation) {
         var allProjects = findAll(new GetProjectsRequestDto(1, Integer.MAX_VALUE, null, null));
-
-
         return allProjects.stream()
                 .filter(project -> project.getGeneration() != null && project.getGeneration().equals(generation))
                 .collect(Collectors.toList());
     }
-
-
-
-
 }
