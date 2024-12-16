@@ -1,12 +1,17 @@
-package sopt.org.homepage.entity;
+package sopt.org.homepage.aboutsopt.entity;
 
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "\"CoreValue\"")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CoreValueEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -30,5 +35,9 @@ public class CoreValueEntity {
     @Basic
     @Column(name = "\"aboutSoptId\"", nullable = true)
     private Integer aboutSoptId;
+
+    @ManyToOne
+    @JoinColumn(name = "\"aboutSoptId\"", insertable = false, updatable = false)
+    private AboutSoptEntity aboutSopt;
 
 }
