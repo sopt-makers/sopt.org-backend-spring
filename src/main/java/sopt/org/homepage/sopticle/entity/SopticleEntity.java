@@ -3,10 +3,12 @@ package sopt.org.homepage.sopticle.entity;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 import sopt.org.homepage.common.type.Part;
 
 @Entity
@@ -47,9 +49,11 @@ public class SopticleEntity {
     @Basic
     @Column(name = "\"sopticleUrl\"", nullable = false, length = 500)
     private String sopticleUrl;
-    @Basic
-    @Column(name = "\"createdAt\"", nullable = false)
-    private Timestamp createdAt;
+
+    @CreatedDate
+    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
     @Basic
     @Column(name = "\"likeCount\"", nullable = false)
     private int likeCount;
@@ -63,5 +67,14 @@ public class SopticleEntity {
     public Part getPart() {
         return this.part;
     }
+
+    public void incrementLikeCount() {
+        this.likeCount++;
+    }
+
+    public void decrementLikeCount() {
+        this.likeCount--;
+    }
+
 
 }

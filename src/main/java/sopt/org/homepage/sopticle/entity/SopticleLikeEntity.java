@@ -4,27 +4,42 @@ import jakarta.persistence.*;
 
 
 import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
 
 @Getter
 @Entity
 @Table(name = "\"SopticleLike\"")
+@EntityListeners(AuditingEntityListener.class)  // 추가
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SopticleLikeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "\"id\"", nullable = false)
-    private int id;
+    private Long id;
 
     @Basic
     @Column(name = "\"sessionId\"", nullable = false, length = 50)
     private String sessionId;
 
-    @Basic
-    @Column(name = "\"createdAt\"", nullable = false)
+    @CreationTimestamp  // @CreatedDate 대신 사용
+    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "\"sopticleId\"")
     private SopticleEntity sopticle;
+
+    @Builder
+    public SopticleLikeEntity(SopticleEntity sopticle, String sessionId) {
+        this.sopticle = sopticle;
+        this.sessionId = sessionId;
+    }
 
 }
