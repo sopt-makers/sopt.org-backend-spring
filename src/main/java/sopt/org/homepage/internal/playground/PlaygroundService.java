@@ -135,7 +135,7 @@ public class PlaygroundService {
         return responseMapper.toProjectDetailResponse(projectResponse);
     }
 
-    public PlaygroundMemberListResponse getAllMembers(String part, Integer generation) {
+    public PlaygroundMemberListResponse getAllMembers(Integer generation) {
         return playgroundClient.getAllMembers(authConfig.getPlaygroundToken(), null, generation);
     }
 }

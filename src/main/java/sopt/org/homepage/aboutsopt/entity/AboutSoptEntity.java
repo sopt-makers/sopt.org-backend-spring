@@ -1,12 +1,18 @@
-package sopt.org.homepage.entity;
+package sopt.org.homepage.aboutsopt.entity;
 
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Objects;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "\"AboutSopt\"")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AboutSoptEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -48,5 +54,8 @@ public class AboutSoptEntity {
     @Basic
     @Column(name = "\"updatedAt\"", nullable = false)
     private Timestamp updatedAt;
+
+    @OneToMany(mappedBy = "aboutSopt", fetch = FetchType.LAZY)
+    private List<CoreValueEntity> coreValues;
 
 }

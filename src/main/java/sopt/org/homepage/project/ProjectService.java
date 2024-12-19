@@ -1,6 +1,7 @@
 package sopt.org.homepage.project;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -38,6 +39,10 @@ public class ProjectService {
         return playgroundService.getProjectDetail(projectId);
     }
 
-
-
+    public List<ProjectsResponseDto> findByGeneration(Integer generation) {
+        var allProjects = findAll(new GetProjectsRequestDto(1, Integer.MAX_VALUE, null, null));
+        return allProjects.stream()
+                .filter(project -> project.getGeneration() != null && project.getGeneration().equals(generation))
+                .collect(Collectors.toList());
+    }
 }
