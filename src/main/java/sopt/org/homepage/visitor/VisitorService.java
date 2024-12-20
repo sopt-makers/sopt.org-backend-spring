@@ -9,8 +9,6 @@ import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import sopt.org.homepage.common.constants.CacheType;
-
-
 import java.util.Objects;
 import java.util.Set;
 import sopt.org.homepage.visitor.dto.GetTodayVisitorResponseDto;

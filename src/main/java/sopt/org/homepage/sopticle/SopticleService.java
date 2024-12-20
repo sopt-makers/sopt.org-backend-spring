@@ -1,14 +1,11 @@
 package sopt.org.homepage.sopticle;
 
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
-import sopt.org.homepage.exception.BusinessLogicException;
-import sopt.org.homepage.exception.NotFoundException;
 import sopt.org.homepage.sopticle.dto.GetSopticleListRequestDto;
 import sopt.org.homepage.sopticle.dto.LikeSopticleResponseDto;
 import sopt.org.homepage.sopticle.entity.SopticleLikeEntity;
@@ -68,7 +65,6 @@ public class SopticleService {
                 .build();
     }
 
-
     @Transactional
     public LikeSopticleResponseDto like(Long id, String session) {
         SopticleEntity sopticle = sopticleRepository.findById(id)
@@ -116,9 +112,4 @@ public class SopticleService {
                 .createdAt(entity.getCreatedAt())
                 .build();
     }
-
-
-
-
-
 }

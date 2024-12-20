@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Getter
 @Entity
 @Table(name = "\"SopticleLike\"")
-@EntityListeners(AuditingEntityListener.class)  // 추가
+@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SopticleLikeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +29,9 @@ public class SopticleLikeEntity {
     @Column(name = "\"sessionId\"", nullable = false, length = 50)
     private String sessionId;
 
-    @CreationTimestamp  // @CreatedDate 대신 사용
+    @CreationTimestamp
     @Column(name = "\"createdAt\"", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "\"sopticleId\"")
@@ -43,5 +42,4 @@ public class SopticleLikeEntity {
         this.sopticle = sopticle;
         this.sessionId = sessionId;
     }
-
 }

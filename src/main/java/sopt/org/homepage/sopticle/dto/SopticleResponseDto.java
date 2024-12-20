@@ -10,7 +10,6 @@ import sopt.org.homepage.common.type.Part;
 @Getter
 @Builder
 public class SopticleResponseDto {
-
     @Schema(description = "Sopticle Id")
     private final Long id;
 

@@ -79,6 +79,4 @@ public class SopticleEntity {
     public void decrementLikeCount() {
         this.likeCount--;
     }
-
-
 }

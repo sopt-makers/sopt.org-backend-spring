@@ -30,9 +30,6 @@ public class SopticleQueryRepository {
                 .limit(requestDto.getLimit())
                 .fetch();
     }
-
-
-
     public Long countWithFilters(GetSopticleListRequestDto requestDto) {
         return queryFactory
                 .select(sopticle.count())
@@ -43,7 +40,6 @@ public class SopticleQueryRepository {
                 )
                 .fetchOne();
     }
-
 
     private BooleanExpression partEq(Part part) {
         if (part == null) {

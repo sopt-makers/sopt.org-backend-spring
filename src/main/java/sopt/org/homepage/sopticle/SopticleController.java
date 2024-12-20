@@ -1,8 +1,6 @@
 package sopt.org.homepage.sopticle;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -43,14 +41,7 @@ public class SopticleController {
         return ResponseEntity.ok(sopticleService.paginateSopticles(getSopticleListRequestDto, session));
     }
 
-
-
     @Operation(summary = "Sopticle 좋아요 누르기")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "이미 좋아요를 누른 게시글입니다. | session-id is required"),
-            @ApiResponse(responseCode = "404", description = "해당 sopticle이 존재하지 않습니다.")
-    })
     @PostMapping("/{id}/like")
     public ResponseEntity<LikeSopticleResponseDto> likeSopticle(
             @PathVariable Long id,
@@ -63,11 +54,6 @@ public class SopticleController {
     }
 
     @Operation(summary = "Sopticle 좋아요 취소하기")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "성공"),
-            @ApiResponse(responseCode = "400", description = "좋아요를 누르지 않았습니다. | session-id is required"),
-            @ApiResponse(responseCode = "404", description = "해당 sopticle이 존재하지 않습니다.")
-    })
     @PostMapping("/{id}/unlike")
     public ResponseEntity<LikeSopticleResponseDto> unlikeSopticle(
             @PathVariable Long id,
@@ -78,7 +64,4 @@ public class SopticleController {
         }
         return ResponseEntity.ok(sopticleService.unlike(id, session));
     }
-
-
-
 }
