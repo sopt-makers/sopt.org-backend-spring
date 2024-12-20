@@ -8,6 +8,7 @@ import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import sopt.org.homepage.common.constants.CacheType;
 
 import java.time.Duration;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Configuration
 @EnableCaching
 @Getter
+@EnableScheduling
 public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
