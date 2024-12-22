@@ -19,6 +19,7 @@ import sopt.org.homepage.project.ProjectService;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AboutSoptService {
+    private static final int MINIMUM_PROJECT_COUNT = 10;
     private final AboutSoptRepository aboutSoptRepository;
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
@@ -30,7 +31,8 @@ public class AboutSoptService {
                         .orElseThrow(() -> new NotFoundException("Not found Published about sopt with id: " + generation))
                 : aboutSoptRepository.findTopByIsPublishedTrueOrderByIdDesc()
                         .orElseThrow(() -> new NotFoundException("Not found any published AboutSopt"));
-        int targetGeneration = 33;        // TODO: 현재 34기 데이터가 모이지 않은 관계로 추후 돌려놓아야 함
+
+        int targetGeneration = determineTargetGeneration(generation != null ? generation : aboutSopt.getId());
 
         var members = playgroundService.getAllMembers(targetGeneration);
         var projects = projectService.findByGeneration(targetGeneration);
@@ -44,6 +46,16 @@ public class AboutSoptService {
                         .studyCounts(studyCount)
                         .build())
                 .build();
+    }
+
+    private int determineTargetGeneration(int currentGeneration) {
+        var projects = projectService.findByGeneration(currentGeneration);
+
+        if (projects.size() >= MINIMUM_PROJECT_COUNT) {
+            return currentGeneration;
+        }
+
+        return currentGeneration - 1;
     }
 
     private AboutSoptResponseDto convertToResponseDto(AboutSoptEntity entity) {
