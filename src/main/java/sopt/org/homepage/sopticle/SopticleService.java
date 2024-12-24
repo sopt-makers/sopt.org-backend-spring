@@ -1,19 +1,31 @@
 package sopt.org.homepage.sopticle;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
-import sopt.org.homepage.sopticle.dto.GetSopticleListRequestDto;
-import sopt.org.homepage.sopticle.dto.LikeSopticleResponseDto;
+import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.exception.BusinessLogicException;
+import sopt.org.homepage.sopticle.dto.request.CreateSopticleAuthorRole;
+import sopt.org.homepage.sopticle.dto.request.CreateSopticleDto;
+import sopt.org.homepage.sopticle.dto.request.GetSopticleListRequestDto;
+import sopt.org.homepage.sopticle.dto.response.CreateSopticleResponseDto;
+import sopt.org.homepage.sopticle.dto.response.LikeSopticleResponseDto;
+import sopt.org.homepage.sopticle.entity.SopticleAuthorEntity;
 import sopt.org.homepage.sopticle.entity.SopticleLikeEntity;
+import sopt.org.homepage.sopticle.repository.SopticleAuthorRepository;
 import sopt.org.homepage.sopticle.repository.SopticleLikeRepository;
-import sopt.org.homepage.sopticle.dto.SopticleResponseDto;
+import sopt.org.homepage.sopticle.dto.response.SopticleResponseDto;
 import sopt.org.homepage.sopticle.entity.SopticleEntity;
 import sopt.org.homepage.sopticle.repository.SopticleQueryRepository;
 import sopt.org.homepage.sopticle.repository.SopticleRepository;
+import sopt.org.homepage.sopticle.scrap.ScraperService;
+import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.sopticle.scrap.dto.ScrapArticleDto;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +34,8 @@ public class SopticleService {
     private final SopticleRepository sopticleRepository;
     private final SopticleQueryRepository sopticleQueryRepository;
     private final SopticleLikeRepository sopticleLikeRepository;
+    private final ScraperService scraperService;
+    private final SopticleAuthorRepository sopticleAuthorRepository;
 
     public PaginateResponseDto<SopticleResponseDto> paginateSopticles(
             GetSopticleListRequestDto requestDto,
@@ -111,5 +125,86 @@ public class SopticleService {
                 .sessionId(entity.getSessionId())
                 .createdAt(entity.getCreatedAt())
                 .build();
+    }
+
+
+    @Transactional
+    public CreateSopticleResponseDto createSopticle(CreateSopticleDto dto) {
+        // URL 중복 체크
+        if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
+            throw new BusinessLogicException("이미 등록된 솝티클입니다.");
+        }
+
+        // 스크래핑 수행
+        CreateScraperResponseDto scrapResult = scraperService.scrap(new ScrapArticleDto(dto.getLink()));
+
+        // 솝티클 엔티티 생성 및 저장
+        SopticleEntity sopticle = SopticleEntity.builder()
+                .pgSopticleId(dto.getId())
+                .part(convertToPart(dto.getAuthors().get(0).getPart()))
+                .generation(dto.getAuthors().get(0).getGeneration())
+                .thumbnailUrl(scrapResult.getThumbnailUrl())
+                .title(scrapResult.getTitle())
+                .description(scrapResult.getDescription())
+                .authorId(dto.getAuthors().get(0).getId())
+                .authorName(dto.getAuthors().get(0).getName())
+                .authorProfileImageUrl(dto.getAuthors().get(0).getProfileImage())
+                .sopticleUrl(scrapResult.getArticleUrl())
+                .build();
+
+        SopticleEntity savedSopticle = sopticleRepository.save(sopticle);
+
+        // 작성자 정보 저장
+        List<SopticleAuthorEntity> authorEntities = dto.getAuthors().stream()
+                .map(author -> SopticleAuthorEntity.builder()
+                        .sopticle(savedSopticle)
+                        .pgUserId(author.getId())
+                        .name(author.getName())
+                        .profileImage(author.getProfileImage())
+                        .generation(author.getGeneration())
+                        .part(author.getPart().getValue())
+                        .build())
+                .collect(Collectors.toList());
+
+        sopticleAuthorRepository.saveAll(authorEntities);
+
+        // 응답 생성
+        return CreateSopticleResponseDto.builder()
+                .id(savedSopticle.getId())
+                .part(savedSopticle.getPart())
+                .generation(savedSopticle.getGeneration())
+                .thumbnailUrl(savedSopticle.getThumbnailUrl())
+                .title(savedSopticle.getTitle())
+                .description(savedSopticle.getDescription())
+                .author(savedSopticle.getAuthorName())
+                .authorProfileImageUrl(savedSopticle.getAuthorProfileImageUrl())
+                .sopticleUrl(savedSopticle.getSopticleUrl())
+                .uploadedAt(savedSopticle.getCreatedAt())
+                .build();
+    }
+
+    private Part convertToPart(CreateSopticleAuthorRole role) {
+        switch (role) {
+            case WEB, WEB_LEADER -> {
+                return Part.WEB;
+            }
+            case PLAN, PLAN_LEADER, PRESIDENT, VICE_PRESIDENT,
+                    OPERATION_LEADER, MEDIA_LEADER -> {
+                return Part.PLAN;
+            }
+            case DESIGN, DESIGN_LEADER -> {
+                return Part.DESIGN;
+            }
+            case IOS, IOS_LEADER -> {
+                return Part.iOS;
+            }
+            case SERVER, SERVER_LEADER -> {
+                return Part.SERVER;
+            }
+            case ANDROID, ANDROID_LEADER -> {
+                return Part.ANDROID;
+            }
+            default -> throw new IllegalArgumentException("Unknown role: " + role);
+        }
     }
 }

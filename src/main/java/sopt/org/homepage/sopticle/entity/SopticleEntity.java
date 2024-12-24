@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sopt.org.homepage.common.type.Part;
@@ -43,7 +45,7 @@ public class SopticleEntity {
 
     @Basic
     @Column(name = "\"authorId\"", nullable = false)
-    private int authorId;
+    private Long authorId;
 
     @Basic
     @Column(name = "\"authorName\"", nullable = false, length = 20)
@@ -67,10 +69,14 @@ public class SopticleEntity {
 
     @Basic
     @Column(name = "\"pgSopticleId\"", nullable = false)
-    private int pgSopticleId;
+    private Long pgSopticleId;
 
     @OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL)
     private List<SopticleLikeEntity> sopticleLikes;
+
+    @OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SopticleAuthorEntity> authors = new ArrayList<>();
+
 
     public void incrementLikeCount() {
         this.likeCount++;
@@ -79,4 +85,24 @@ public class SopticleEntity {
     public void decrementLikeCount() {
         this.likeCount--;
     }
+
+
+
+    @Builder
+    private SopticleEntity(Part part, Integer generation, String thumbnailUrl, String title,
+                           String description, Long authorId, String authorName,
+                           String authorProfileImageUrl, String sopticleUrl, Long pgSopticleId) {
+        this.part = part;
+        this.generation = generation;
+        this.thumbnailUrl = thumbnailUrl;
+        this.title = title;
+        this.description = description;
+        this.authorId = authorId;
+        this.authorName = authorName;
+        this.authorProfileImageUrl = authorProfileImageUrl;
+        this.sopticleUrl = sopticleUrl;
+        this.pgSopticleId = pgSopticleId;
+    }
+
+
 }

@@ -6,4 +6,5 @@ import sopt.org.homepage.sopticle.entity.SopticleEntity;
 
 @Repository
 public interface SopticleRepository extends JpaRepository<SopticleEntity, Long> {
+    boolean existsBySopticleUrl(String sopticleUrl);
 }

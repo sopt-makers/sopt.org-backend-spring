@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import sopt.org.homepage.common.type.Part;
 
-import sopt.org.homepage.sopticle.dto.GetSopticleListRequestDto;
+import sopt.org.homepage.sopticle.dto.request.GetSopticleListRequestDto;
 import sopt.org.homepage.sopticle.entity.SopticleEntity;
 import sopt.org.homepage.sopticle.entity.QSopticleEntity;
 
