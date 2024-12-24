@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import sopt.org.homepage.common.type.Part;
 
 @Entity
@@ -59,6 +60,7 @@ public class SopticleEntity {
     @Column(name = "\"sopticleUrl\"", nullable = false, length = 500)
     private String sopticleUrl;
 
+    @CreationTimestamp
     @Basic
     @Column(name = "\"createdAt\"", nullable = false)
     private LocalDateTime createdAt;
