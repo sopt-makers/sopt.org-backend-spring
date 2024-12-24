@@ -88,8 +88,6 @@ public class SopticleEntity {
         this.likeCount--;
     }
 
-
-
     @Builder
     private SopticleEntity(Part part, Integer generation, String thumbnailUrl, String title,
                            String description, Long authorId, String authorName,

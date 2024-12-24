@@ -71,7 +71,6 @@ public class SopticleController {
         return ResponseEntity.ok(sopticleService.unlike(id, session));
     }
 
-
     @PostMapping
     @Operation(summary = "솝티클 생성", description = "솝티클을 생성합니다.")
     public ResponseEntity<CreateSopticleResponseDto> createSopticle(
@@ -88,11 +87,4 @@ public class SopticleController {
 
         return ResponseEntity.ok(sopticleService.createSopticle(dto));
     }
-
-
-
-
-
-
-
 }

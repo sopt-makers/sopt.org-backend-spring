@@ -130,15 +130,12 @@ public class SopticleService {
 
     @Transactional
     public CreateSopticleResponseDto createSopticle(CreateSopticleDto dto) {
-        // URL 중복 체크
         if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
             throw new BusinessLogicException("이미 등록된 솝티클입니다.");
         }
 
-        // 스크래핑 수행
         CreateScraperResponseDto scrapResult = scraperService.scrap(new ScrapArticleDto(dto.getLink()));
 
-        // 솝티클 엔티티 생성 및 저장
         SopticleEntity sopticle = SopticleEntity.builder()
                 .pgSopticleId(dto.getId())
                 .part(convertToPart(dto.getAuthors().get(0).getPart()))
@@ -154,7 +151,6 @@ public class SopticleService {
 
         SopticleEntity savedSopticle = sopticleRepository.save(sopticle);
 
-        // 작성자 정보 저장
         List<SopticleAuthorEntity> authorEntities = dto.getAuthors().stream()
                 .map(author -> SopticleAuthorEntity.builder()
                         .sopticle(savedSopticle)
@@ -168,7 +164,6 @@ public class SopticleService {
 
         sopticleAuthorRepository.saveAll(authorEntities);
 
-        // 응답 생성
         return CreateSopticleResponseDto.builder()
                 .id(savedSopticle.getId())
                 .part(savedSopticle.getPart())
