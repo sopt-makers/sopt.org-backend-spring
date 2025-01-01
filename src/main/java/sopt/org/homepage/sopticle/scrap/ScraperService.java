@@ -122,9 +122,13 @@ public class ScraperService {
 
     private WebDriver setupChromeDriver() {
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments(
+                "--headless=new",
+                "--no-sandbox",
+                "--disable-dev-shm-usage",
+                "--disable-gpu",
+                "--window-size=1920,1080"
+        );
 
         if ("prod".equals(activeProfile)) {
             options.setBinary("/usr/bin/chromium-browser");
