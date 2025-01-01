@@ -11,7 +11,7 @@ public interface CrewClient {
     //@GetMapping("/meeting/v2")
     @GetMapping("/meeting")
     CrewMeetingResponse getAllStudy(
-            //@RequestHeader("Authorization") String authToken,
+            //ㅈ@RequestHeader("Authorization") String authToken,
             @RequestParam("page") Integer page,
             @RequestParam("take") Integer take,
             @RequestParam("createdGenerations") Integer generation,

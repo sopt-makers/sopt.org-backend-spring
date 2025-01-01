@@ -49,13 +49,20 @@ public class AboutSoptService {
     }
 
     private int determineTargetGeneration(int currentGeneration) {
-        var projects = projectService.findByGeneration(currentGeneration);
+        return findGenerationWithMinimumProjects(currentGeneration, currentGeneration - 5); // 5기수 전까지(무한 루프 방지)
+    }
 
+    private int findGenerationWithMinimumProjects(int currentGeneration, int minGeneration) {
+        if (currentGeneration < minGeneration) {
+            return minGeneration; // 최소 기수보다 작아지면 최소 기수 반환
+        }
+
+        var projects = projectService.findByGeneration(currentGeneration);
         if (projects.size() >= MINIMUM_PROJECT_COUNT) {
             return currentGeneration;
         }
 
-        return currentGeneration - 1;
+        return findGenerationWithMinimumProjects(currentGeneration - 1, minGeneration);
     }
 
     private AboutSoptResponseDto convertToResponseDto(AboutSoptEntity entity) {
