@@ -11,6 +11,7 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -94,12 +95,15 @@ public class S3ServiceImpl implements S3Service {
 
     public String getFileUrl(String fileName) {
         try {
-            GetUrlRequest request = GetUrlRequest.builder()
-                    .bucket(bucket)
-                    .key(fileName)
+            GetObjectPresignRequest request = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(10))
+                    .getObjectRequest(b -> b
+                            .bucket(bucket)
+                            .key(fileName)
+                            .build())
                     .build();
 
-            return s3Client.utilities().getUrl(request).toString();
+            return s3Presigner.presignGetObject(request).url().toString();
         } catch (Exception e) {
             log.error("Error getting file URL: {}", fileName, e);
             throw new RuntimeException("Failed to get file URL", e);

@@ -36,6 +36,7 @@ import sopt.org.homepage.admin.dto.response.main.recruit.question.GetAdminRecrui
 import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminScheduleResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.news.GetAdminNewsResponseDto;
+import sopt.org.homepage.aws.s3.S3Service;
 import sopt.org.homepage.aws.s3.S3ServiceImpl;
 import sopt.org.homepage.cache.CacheService;
 import sopt.org.homepage.common.constants.CacheType;
@@ -73,7 +74,7 @@ public class MainServiceImpl implements MainService {
     private final MainRepository mainRepository;
     private final MainNewsRepository mainNewsRepository;
 
-    private final S3ServiceImpl s3Service;
+    private final S3Service s3Service;
     private final CacheService cacheService;
 
     public AddAdminResponseDto adminAddMainData(AddAdminRequestDto addAdminRequestDto) {
