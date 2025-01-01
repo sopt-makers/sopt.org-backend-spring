@@ -13,6 +13,8 @@ import sopt.org.homepage.aboutsopt.repository.AboutSoptRepository;
 import sopt.org.homepage.exception.NotFoundException;
 import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
+import sopt.org.homepage.main.entity.MainEntity;
+import sopt.org.homepage.main.repository.MainRepository;
 import sopt.org.homepage.project.ProjectService;
 
 @Service
@@ -21,18 +23,24 @@ import sopt.org.homepage.project.ProjectService;
 public class AboutSoptService {
     private static final int MINIMUM_PROJECT_COUNT = 10;
     private final AboutSoptRepository aboutSoptRepository;
+    private final MainRepository mainRepository;
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
     private final ProjectService projectService;
 
     public GetAboutSoptResponseDto getAboutSopt(Integer generation) {
-        AboutSoptEntity aboutSopt = generation != null ?
-                aboutSoptRepository.findByIdAndIsPublishedTrue(Long.valueOf(generation))
-                        .orElseThrow(() -> new NotFoundException("Not found Published about sopt with id: " + generation))
-                : aboutSoptRepository.findTopByIsPublishedTrueOrderByIdDesc()
-                        .orElseThrow(() -> new NotFoundException("Not found any published AboutSopt"));
 
-        int targetGeneration = determineTargetGeneration(generation != null ? generation : aboutSopt.getId());
+        // Main 테이블에서 최신 기수 조회
+        MainEntity mainEntity = mainRepository.findFirstByOrderByGenerationDesc();
+
+        // generation이 null이면 Main 테이블의 최신 기수 사용
+        int currentGeneration = generation != null ? generation : mainEntity.getGeneration();
+
+
+        AboutSoptEntity aboutSopt = aboutSoptRepository.findByIdAndIsPublishedTrue(Long.valueOf(currentGeneration))
+                .orElseThrow(() -> new NotFoundException("Not found Published about sopt with id: " + currentGeneration));
+
+        int targetGeneration = determineTargetGeneration(currentGeneration);
 
         var members = playgroundService.getAllMembers(targetGeneration);
         var projects = projectService.findByGeneration(targetGeneration);
