@@ -23,4 +23,5 @@ public interface MainService {
     GetMainPageResponseDto getMainPageData();
     GetAboutPageResponseDto getAboutPageData();
     GetRecruitingPageResponseDto getRecruitingPageData();
+    int getLatestGeneration();
 }

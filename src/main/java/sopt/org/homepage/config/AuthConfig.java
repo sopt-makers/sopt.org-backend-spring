@@ -16,5 +16,7 @@ public class AuthConfig {
     @Value("${internal.playground.token}")
     private String playgroundToken;
 
+    @Value("${internal.crew.token}")
+    private String crewApiToken;
 
 }
