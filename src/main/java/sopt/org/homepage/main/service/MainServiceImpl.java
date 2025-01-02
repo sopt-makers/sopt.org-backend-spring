@@ -444,4 +444,11 @@ public class MainServiceImpl implements MainService {
                 )
                 .build();
     }
+
+
+    @Override
+    public int getLatestGeneration() {
+        MainEntity mainEntity = mainRepository.findFirstByOrderByGenerationDesc();
+        return mainEntity.getGeneration();
+    }
 }

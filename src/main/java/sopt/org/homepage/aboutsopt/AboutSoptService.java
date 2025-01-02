@@ -15,6 +15,7 @@ import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
 import sopt.org.homepage.main.entity.MainEntity;
 import sopt.org.homepage.main.repository.MainRepository;
+import sopt.org.homepage.main.service.MainService;
 import sopt.org.homepage.project.ProjectService;
 
 @Service
@@ -23,18 +24,14 @@ import sopt.org.homepage.project.ProjectService;
 public class AboutSoptService {
     private static final int MINIMUM_PROJECT_COUNT = 10;
     private final AboutSoptRepository aboutSoptRepository;
-    private final MainRepository mainRepository;
+    private final MainService mainService;
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
     private final ProjectService projectService;
 
     public GetAboutSoptResponseDto getAboutSopt(Integer generation) {
 
-        // Main 테이블에서 최신 기수 조회
-        MainEntity mainEntity = mainRepository.findFirstByOrderByGenerationDesc();
-
-        // generation이 null이면 Main 테이블의 최신 기수 사용
-        int currentGeneration = generation != null ? generation : mainEntity.getGeneration();
+        int currentGeneration = generation != null ? generation : mainService.getLatestGeneration();
 
 
         AboutSoptEntity aboutSopt = aboutSoptRepository.findByIdAndIsPublishedTrue(Long.valueOf(currentGeneration))
