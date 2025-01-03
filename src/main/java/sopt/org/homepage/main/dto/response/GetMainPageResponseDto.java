@@ -10,6 +10,7 @@ import sopt.org.homepage.main.dto.response.main.branding.GetMainBrandingColorRes
 import sopt.org.homepage.main.dto.response.main.button.GetMainMainButtonResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.introduction.GetMainPartIntroductionResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.news.GetMainLatestNewsResponseRecordDto;
+import sopt.org.homepage.main.dto.response.main.recruit.schedule.GetMainRecruitScheduleResponseRecordDto;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ public class GetMainPageResponseDto {
     private GetMainMainButtonResponseRecordDto mainButton;
     private List<GetMainPartIntroductionResponseRecordDto> partIntroduction;
     private List<GetMainLatestNewsResponseRecordDto> latestNews;
+    private List<GetMainRecruitScheduleResponseRecordDto> recruitSchedule;
 }
 
 

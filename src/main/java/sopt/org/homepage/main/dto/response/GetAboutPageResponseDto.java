@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import sopt.org.homepage.aboutsopt.dto.GetAboutSoptResponseDto;
 import sopt.org.homepage.main.dto.response.main.branding.GetMainBrandingColorResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.core.GetMainCoreValueResponseRecordDto;
 import sopt.org.homepage.main.dto.response.main.curriculum.GetMainPartCurriculumResponseRecordDto;
@@ -33,6 +34,8 @@ public class GetAboutPageResponseDto {
     private List<GetMainCoreValueResponseRecordDto> coreValue;
     private List<GetMainPartCurriculumResponseRecordDto> partCurriculum;
     private List<GetMainMemberResponseRecordDto> member;
+
+    private GetAboutSoptResponseDto.ActivitiesRecords activitiesRecords;
 }
 
 

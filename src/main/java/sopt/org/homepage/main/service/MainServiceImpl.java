@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sopt.org.homepage.aboutsopt.AboutSoptService;
 import sopt.org.homepage.admin.dto.request.main.AddAdminConfirmRequestDto;
 import sopt.org.homepage.admin.dto.request.main.AddAdminRequestDto;
 import sopt.org.homepage.admin.dto.request.main.GetAdminRequestDto;
@@ -36,6 +37,7 @@ import sopt.org.homepage.admin.dto.response.main.recruit.question.GetAdminRecrui
 import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminScheduleResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.news.GetAdminNewsResponseDto;
+import sopt.org.homepage.aws.s3.S3Service;
 import sopt.org.homepage.aws.s3.S3ServiceImpl;
 import sopt.org.homepage.cache.CacheService;
 import sopt.org.homepage.common.constants.CacheType;
@@ -73,8 +75,10 @@ public class MainServiceImpl implements MainService {
     private final MainRepository mainRepository;
     private final MainNewsRepository mainNewsRepository;
 
-    private final S3ServiceImpl s3Service;
+    private final S3Service s3Service;
     private final CacheService cacheService;
+
+    private final AboutSoptService aboutSoptService;
 
     public AddAdminResponseDto adminAddMainData(AddAdminRequestDto addAdminRequestDto) {
         String baseDir = addAdminRequestDto.getGeneration() + "/";
@@ -348,6 +352,19 @@ public class MainServiceImpl implements MainService {
                                 .build())
                         .toList()
                 )
+                .recruitSchedule(mainEntity.getRecruitSchedule().stream().map(schedule -> GetMainRecruitScheduleResponseRecordDto.builder()
+                                .type(schedule.getType())
+                                .schedule(GetMainScheduleResponseRecordDto.builder()
+                                        .applicationStartTime(schedule.getSchedule().getApplicationStartTime())
+                                        .applicationEndTime(schedule.getSchedule().getApplicationEndTime())
+                                        .applicationResultTime(schedule.getSchedule().getApplicationResultTime())
+                                        .interviewStartTime(schedule.getSchedule().getInterviewStartTime())
+                                        .interviewEndTime(schedule.getSchedule().getInterviewEndTime())
+                                        .finalResultTime(schedule.getSchedule().getFinalResultTime())
+                                        .build())
+                                .build())
+                        .toList()
+                )
                 .build();
     }
 
@@ -393,6 +410,7 @@ public class MainServiceImpl implements MainService {
                                 .build())
                         .toList()
                 )
+                .activitiesRecords(aboutSoptService.getAboutSopt(mainEntity.getGeneration()).activitiesRecords())
                 .build();
     }
 
