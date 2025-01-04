@@ -51,6 +51,7 @@ internal:
     token: ${PLAYGROUND_API_URL_JWT_TOKEN}
   crew:
     url: ${CREW_API_URL}
+    token: ${CREW_API_URL_JWT_TOKEN}
 
 jwt:
   access: ${ACCESS_TOKEN_SECRET}

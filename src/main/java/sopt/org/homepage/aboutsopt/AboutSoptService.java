@@ -2,6 +2,7 @@ package sopt.org.homepage.aboutsopt;
 
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.aboutsopt.dto.AboutSoptResponseDto;
@@ -24,14 +25,14 @@ import sopt.org.homepage.project.ProjectService;
 public class AboutSoptService {
     private static final int MINIMUM_PROJECT_COUNT = 10;
     private final AboutSoptRepository aboutSoptRepository;
-    private final MainService mainService;
+    private final ObjectProvider<MainService> mainServiceProvider;
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
     private final ProjectService projectService;
 
     public GetAboutSoptResponseDto getAboutSopt(Integer generation) {
 
-        int currentGeneration = generation != null ? generation : mainService.getLatestGeneration();
+        int currentGeneration = generation != null ? generation : mainServiceProvider.getObject().getLatestGeneration();
 
 
         AboutSoptEntity aboutSopt = aboutSoptRepository.findByIdAndIsPublishedTrue(Long.valueOf(currentGeneration))
