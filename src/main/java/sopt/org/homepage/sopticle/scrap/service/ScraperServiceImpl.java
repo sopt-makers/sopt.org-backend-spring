@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap;
+package sopt.org.homepage.sopticle.scrap.service;
 
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;

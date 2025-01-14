@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle;
+package sopt.org.homepage.sopticle.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ import sopt.org.homepage.sopticle.repository.SopticleAuthorRepository;
 import sopt.org.homepage.sopticle.repository.SopticleLikeRepository;
 import sopt.org.homepage.sopticle.repository.SopticleQueryRepository;
 import sopt.org.homepage.sopticle.repository.SopticleRepository;
-import sopt.org.homepage.sopticle.scrap.ScraperService;
+import sopt.org.homepage.sopticle.scrap.service.ScraperService;
 import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.sopticle.scrap.dto.ScrapArticleDto;
 

@@ -1,4 +1,4 @@
-package sopt.org.homepage.project;
+package sopt.org.homepage.project.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

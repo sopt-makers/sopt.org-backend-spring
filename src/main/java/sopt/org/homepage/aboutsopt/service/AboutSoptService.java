@@ -1,4 +1,4 @@
-package sopt.org.homepage.aboutsopt;
+package sopt.org.homepage.aboutsopt.service;
 
 import sopt.org.homepage.aboutsopt.dto.GetAboutSoptResponseDto;
 

@@ -1,4 +1,4 @@
-package sopt.org.homepage.aboutsopt;
+package sopt.org.homepage.aboutsopt.service;
 
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import sopt.org.homepage.aboutsopt.repository.AboutSoptRepository;
 import sopt.org.homepage.exception.NotFoundException;
 import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
-import sopt.org.homepage.project.ProjectService;
+import sopt.org.homepage.project.service.ProjectService;
 
 @Service
 @RequiredArgsConstructor

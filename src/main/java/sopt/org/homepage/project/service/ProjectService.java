@@ -1,4 +1,4 @@
-package sopt.org.homepage.project;
+package sopt.org.homepage.project.service;
 
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;

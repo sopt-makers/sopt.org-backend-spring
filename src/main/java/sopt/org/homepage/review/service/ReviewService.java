@@ -1,4 +1,4 @@
-package sopt.org.homepage.review;
+package sopt.org.homepage.review.service;
 
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.review.dto.request.ReviewsRequestDto;

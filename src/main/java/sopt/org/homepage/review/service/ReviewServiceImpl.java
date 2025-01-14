@@ -1,4 +1,4 @@
-package sopt.org.homepage.review;
+package sopt.org.homepage.review.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

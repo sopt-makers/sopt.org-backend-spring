@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sopt.org.homepage.visitor.dto.GetTodayVisitorResponseDto;
 import sopt.org.homepage.visitor.dto.VisitorCountUpResponseDto;
-
+import sopt.org.homepage.visitor.service.VisitorService;
 
 
 @RestController

@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle;
+package sopt.org.homepage.sopticle.service;
 
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.sopticle.dto.request.CreateSopticleDto;

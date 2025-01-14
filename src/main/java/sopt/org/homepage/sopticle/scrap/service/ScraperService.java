@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap;
+package sopt.org.homepage.sopticle.scrap.service;
 
 import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.sopticle.scrap.dto.ScrapArticleDto;

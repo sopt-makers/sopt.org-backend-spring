@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.aboutsopt.AboutSoptService;
+import sopt.org.homepage.aboutsopt.service.AboutSoptService;
 import sopt.org.homepage.admin.dto.request.main.AddAdminConfirmRequestDto;
 import sopt.org.homepage.admin.dto.request.main.AddAdminRequestDto;
 import sopt.org.homepage.admin.dto.request.main.GetAdminRequestDto;
@@ -38,7 +38,6 @@ import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminRecrui
 import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminScheduleResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.news.GetAdminNewsResponseDto;
 import sopt.org.homepage.aws.s3.S3Service;
-import sopt.org.homepage.aws.s3.S3ServiceImpl;
 import sopt.org.homepage.cache.CacheService;
 import sopt.org.homepage.common.constants.CacheType;
 import sopt.org.homepage.exception.ClientBadRequestException;
