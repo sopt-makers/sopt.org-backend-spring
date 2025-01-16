@@ -463,9 +463,5 @@ public class MainServiceImpl implements MainService {
     }
 
 
-    @Override
-    public int getLatestGeneration() {
-        MainEntity mainEntity = mainRepository.findFirstByOrderByGenerationDesc();
-        return mainEntity.getGeneration();
-    }
+
 }

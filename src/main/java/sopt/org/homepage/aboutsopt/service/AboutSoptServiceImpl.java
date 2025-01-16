@@ -10,6 +10,7 @@ import sopt.org.homepage.aboutsopt.dto.GetAboutSoptResponseDto;
 import sopt.org.homepage.aboutsopt.entity.AboutSoptEntity;
 import sopt.org.homepage.aboutsopt.entity.CoreValueEntity;
 import sopt.org.homepage.aboutsopt.repository.AboutSoptRepository;
+import sopt.org.homepage.common.service.GenerationService;
 import sopt.org.homepage.exception.NotFoundException;
 import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
@@ -26,11 +27,12 @@ public class AboutSoptServiceImpl implements AboutSoptService {
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
     private final ProjectService projectService;
-    private final MainService mainService;
+    private final GenerationService generationService;
 
     @Override
     public GetAboutSoptResponseDto getAboutSopt(Integer generation) {
-        int currentGeneration = generation != null ? generation : mainService.getLatestGeneration();
+       int currentGeneration = generation != null ? generation : generationService.getLatestGeneration();
+
 
         AboutSoptEntity aboutSopt = aboutSoptRepository.findByIdAndIsPublishedTrue(Long.valueOf(currentGeneration))
                 .orElseThrow(() -> new NotFoundException("Not found Published about sopt with id: " + currentGeneration));
@@ -73,6 +75,11 @@ public class AboutSoptServiceImpl implements AboutSoptService {
         return findGenerationWithMinimumProjects(currentGeneration - 1, minGeneration);
     }
 
+    private int getCurrentGeneration() {
+        AboutSoptEntity latestAboutSopt = aboutSoptRepository.findTopByIsPublishedTrueOrderByIdDesc()
+                .orElseThrow(() -> new NotFoundException("Not found any published AboutSopt"));
+        return latestAboutSopt.getId();
+    }
 
     private AboutSoptResponseDto convertToAboutSoptDto(AboutSoptEntity entity) {
         return AboutSoptResponseDto.builder()
