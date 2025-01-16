@@ -13,6 +13,7 @@ import sopt.org.homepage.aboutsopt.repository.AboutSoptRepository;
 import sopt.org.homepage.exception.NotFoundException;
 import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
+import sopt.org.homepage.main.service.MainService;
 import sopt.org.homepage.project.service.ProjectService;
 
 @Service
@@ -25,10 +26,11 @@ public class AboutSoptServiceImpl implements AboutSoptService {
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
     private final ProjectService projectService;
+    private final MainService mainService;
 
     @Override
     public GetAboutSoptResponseDto getAboutSopt(Integer generation) {
-        int currentGeneration = generation != null ? generation : getCurrentGeneration();
+        int currentGeneration = generation != null ? generation : mainService.getLatestGeneration();
 
         AboutSoptEntity aboutSopt = aboutSoptRepository.findByIdAndIsPublishedTrue(Long.valueOf(currentGeneration))
                 .orElseThrow(() -> new NotFoundException("Not found Published about sopt with id: " + currentGeneration));
@@ -71,11 +73,6 @@ public class AboutSoptServiceImpl implements AboutSoptService {
         return findGenerationWithMinimumProjects(currentGeneration - 1, minGeneration);
     }
 
-    private int getCurrentGeneration() {
-        AboutSoptEntity latestAboutSopt = aboutSoptRepository.findTopByIsPublishedTrueOrderByIdDesc()
-                .orElseThrow(() -> new NotFoundException("Not found any published AboutSopt"));
-        return latestAboutSopt.getId();
-    }
 
     private AboutSoptResponseDto convertToAboutSoptDto(AboutSoptEntity entity) {
         return AboutSoptResponseDto.builder()
