@@ -1,9 +1,11 @@
 package sopt.org.homepage.main.service;
 
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sopt.org.homepage.aboutsopt.dto.GetAboutSoptResponseDto;
 import sopt.org.homepage.aboutsopt.service.AboutSoptService;
 import sopt.org.homepage.admin.dto.request.main.AddAdminConfirmRequestDto;
 import sopt.org.homepage.admin.dto.request.main.AddAdminRequestDto;
@@ -41,6 +43,8 @@ import sopt.org.homepage.aws.s3.S3Service;
 import sopt.org.homepage.cache.CacheService;
 import sopt.org.homepage.common.constants.CacheType;
 import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.internal.crew.CrewService;
+import sopt.org.homepage.internal.playground.PlaygroundService;
 import sopt.org.homepage.main.dto.response.GetAboutPageResponseDto;
 import sopt.org.homepage.main.dto.response.GetMainPageResponseDto;
 import sopt.org.homepage.main.dto.response.GetRecruitingPageResponseDto;
@@ -66,14 +70,19 @@ import sopt.org.homepage.main.repository.MainRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
+import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class MainServiceImpl implements MainService {
+    private static final int MINIMUM_PROJECT_COUNT = 10;
+
     private final MainRepository mainRepository;
     private final MainNewsRepository mainNewsRepository;
-
+    private final CrewService crewService;
+    private final PlaygroundService playgroundService;
     private final S3Service s3Service;
     private final CacheService cacheService;
 
@@ -369,7 +378,6 @@ public class MainServiceImpl implements MainService {
 
     public GetAboutPageResponseDto getAboutPageData() {
         MainEntity mainEntity = mainRepository.findFirstByOrderByGenerationDesc();
-
         return GetAboutPageResponseDto.builder()
                 .generation(mainEntity.getGeneration())
                 .name(mainEntity.getName())
@@ -409,7 +417,7 @@ public class MainServiceImpl implements MainService {
                                 .build())
                         .toList()
                 )
-                .activitiesRecords(aboutSoptService.getAboutSopt(mainEntity.getGeneration()).activitiesRecords())
+                .activitiesRecords(getActivitiesRecords(mainEntity.getGeneration()))
                 .build();
     }
 
@@ -462,6 +470,61 @@ public class MainServiceImpl implements MainService {
                 .build();
     }
 
+    private GetAboutSoptResponseDto.ActivitiesRecords getActivitiesRecords(int generation) {
+        int targetGeneration = determineTargetGeneration(generation);
+        var memberStats = getMemberStatistics(targetGeneration);
+        var projectCount = getProjectCount(targetGeneration);
+        var studyCount = getStudyCount(targetGeneration);
+
+        return new GetAboutSoptResponseDto.ActivitiesRecords(
+                memberStats,
+                projectCount,
+                studyCount
+        );
+    }
+
+    private int getMemberStatistics(int targetGeneration) {
+        return playgroundService.getAllMembers(targetGeneration)
+                .numberOfMembersAtGeneration();
+    }
+
+    private int getProjectCount(int targetGeneration) {
+        return findByGeneration(targetGeneration).size();
+    }
+
+
+    private int determineTargetGeneration(int currentGeneration) {
+        return findGenerationWithMinimumProjects(currentGeneration, currentGeneration - 5);
+    }
+
+    private int findGenerationWithMinimumProjects(int currentGeneration, int minGeneration) {
+        if (currentGeneration < minGeneration) {
+            return minGeneration;
+        }
+
+        var projects = findByGeneration(currentGeneration);
+        if (projects.size() >= MINIMUM_PROJECT_COUNT) {
+            return currentGeneration;
+        }
+
+        return findGenerationWithMinimumProjects(currentGeneration - 1, minGeneration);
+    }
+
+
+    private List<ProjectsResponseDto> findByGeneration(Integer generation) {
+        var allProjects = playgroundService.getAllProjects(
+                new GetProjectsRequestDto(1, Integer.MAX_VALUE, null, null)
+        );
+        return allProjects.stream()
+                .filter(project -> project.getGeneration() != null &&
+                        project.getGeneration().equals(generation))
+                .collect(Collectors.toList());
+    }
+
+
+    private Integer getStudyCount(Integer generation) {
+        return crewService.getStudyCount(generation);
+    }
 
 
 }

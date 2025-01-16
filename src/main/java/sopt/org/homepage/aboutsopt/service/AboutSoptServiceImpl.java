@@ -75,11 +75,7 @@ public class AboutSoptServiceImpl implements AboutSoptService {
         return findGenerationWithMinimumProjects(currentGeneration - 1, minGeneration);
     }
 
-    private int getCurrentGeneration() {
-        AboutSoptEntity latestAboutSopt = aboutSoptRepository.findTopByIsPublishedTrueOrderByIdDesc()
-                .orElseThrow(() -> new NotFoundException("Not found any published AboutSopt"));
-        return latestAboutSopt.getId();
-    }
+
 
     private AboutSoptResponseDto convertToAboutSoptDto(AboutSoptEntity entity) {
         return AboutSoptResponseDto.builder()
