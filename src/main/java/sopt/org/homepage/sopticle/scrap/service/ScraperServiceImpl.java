@@ -1,7 +1,6 @@
-package sopt.org.homepage.sopticle.scrap;
+package sopt.org.homepage.sopticle.scrap.service;
 
 import java.time.Duration;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -17,19 +16,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.io.IOException;
 import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.sopticle.scrap.dto.ScrapArticleDto;
+
+import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ScraperService {
+public class ScraperServiceImpl implements ScraperService {
 
     @Value("${spring.profiles.active}")
     private String activeProfile;
 
+    @Override
     public CreateScraperResponseDto scrap(ScrapArticleDto dto) {
         try {
             if (isNaverBlog(dto.getArticleUrl())) {
@@ -58,23 +59,20 @@ public class ScraperService {
     }
 
     private CreateScraperResponseDto scrapeNaverBlog(String url) throws IOException {
-        WebDriver driver = setupChromeDriver();        // Selenium 설정
+        WebDriver driver = setupChromeDriver();
         try {
             driver.get(url);
 
-            // iframe 대기 및 전환
             WebElement iframe = new WebDriverWait(driver, Duration.ofSeconds(10))
                     .until(ExpectedConditions.presenceOfElementLocated(By.id("mainFrame")));
             driver.switchTo().frame(iframe);
 
-            // 컨텐츠 추출
             String title = driver.findElement(By.cssSelector("span.se-fs-.se-ff-"))
                     .getText();
             String description = driver.findElement(By.cssSelector("div.se-main-container p"))
                     .getText();
             description = description.substring(0, Math.min(300, description.length()));
 
-            // 이미지 URL 추출
             List<WebElement> images = driver.findElements(By.cssSelector("div.se-main-container img"));
             String thumbnailUrl = images.stream()
                     .map(img -> img.getAttribute("src"))

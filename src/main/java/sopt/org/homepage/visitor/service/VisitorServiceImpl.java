@@ -1,4 +1,4 @@
-package sopt.org.homepage.visitor;
+package sopt.org.homepage.visitor.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.stream.Collectors;
@@ -17,10 +17,11 @@ import sopt.org.homepage.visitor.dto.VisitorCountUpResponseDto;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class VisitorService {
+public class VisitorServiceImpl implements VisitorService {
     private final CacheManager cacheManager;
     private static final String VISITOR_PREFIX = "visitor-";
 
+    @Override
     public VisitorCountUpResponseDto visitorCountUp(HttpServletRequest request) {
         try {
             String clientIp = extractClientIp(request);
@@ -37,6 +38,7 @@ public class VisitorService {
         }
     }
 
+    @Override
     public GetTodayVisitorResponseDto getTodayVisitor() {
         try {
             Set<String> keys = getCacheKeys();
@@ -51,6 +53,7 @@ public class VisitorService {
         }
     }
 
+    @Override
     @Scheduled(cron = "0 0 0 * * *", zone = "Asia/Seoul")
     public void visitorReset() {
         try {

@@ -1,9 +1,5 @@
-package sopt.org.homepage.review;
+package sopt.org.homepage.review.service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,16 +11,21 @@ import sopt.org.homepage.review.dto.response.ReviewsResponseDto;
 import sopt.org.homepage.review.repository.ReviewQueryRepository;
 import sopt.org.homepage.review.repository.ReviewRepository;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ReviewService {
+public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewQueryRepository reviewQueryRepository;
     private final ReviewRepository reviewRepository;
-
     private final ResponseMapper responseMapper;
 
+    @Override
     public PaginateResponseDto<ReviewsResponseDto> getReviews(ReviewsRequestDto requestDto) {
         long totalCount = reviewQueryRepository.countWithFilters(requestDto);
 
@@ -46,6 +47,7 @@ public class ReviewService {
         );
     }
 
+    @Override
     public List<ReviewsResponseDto> getRandomReviewByPart() {
         return Arrays.stream(Part.values())
                 .map(reviewQueryRepository::findRandomReviewByPart)

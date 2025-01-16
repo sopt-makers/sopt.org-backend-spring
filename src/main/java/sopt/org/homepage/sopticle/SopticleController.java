@@ -24,6 +24,7 @@ import sopt.org.homepage.sopticle.dto.request.GetSopticleListRequestDto;
 import sopt.org.homepage.sopticle.dto.response.CreateSopticleResponseDto;
 import sopt.org.homepage.sopticle.dto.response.LikeSopticleResponseDto;
 import sopt.org.homepage.sopticle.dto.response.SopticleResponseDto;
+import sopt.org.homepage.sopticle.service.SopticleService;
 
 @Tag(name = "Sopticle")
 @RestController

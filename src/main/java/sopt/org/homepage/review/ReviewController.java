@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.review.dto.request.ReviewsRequestDto;
 import sopt.org.homepage.review.dto.response.ReviewsResponseDto;
+import sopt.org.homepage.review.service.ReviewService;
 
 @Tag(name = "Reviews")
 @RestController

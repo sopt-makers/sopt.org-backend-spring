@@ -1,9 +1,6 @@
-package sopt.org.homepage.project;
+package sopt.org.homepage.project.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.common.util.ArrayUtil;
@@ -12,13 +9,16 @@ import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
 import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
 import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 
-@RequiredArgsConstructor
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-public class ProjectService {
+@RequiredArgsConstructor
+public class ProjectServiceImpl implements ProjectService {
     private final PlaygroundService playgroundService;
     private final ArrayUtil arrayUtil;
 
-
+    @Override
     public PaginateResponseDto<ProjectsResponseDto> paginateProjects(GetProjectsRequestDto dto) {
         var allProjects = findAll(dto);
         var paginatedProject = arrayUtil.paginateArray(allProjects, dto.getPageNo(), dto.getLimit());
@@ -31,14 +31,17 @@ public class ProjectService {
         );
     }
 
+    @Override
     public List<ProjectsResponseDto> findAll(GetProjectsRequestDto dto) {
         return playgroundService.getAllProjects(dto);
     }
 
+    @Override
     public ProjectDetailResponseDto findOne(Long projectId) {
         return playgroundService.getProjectDetail(projectId);
     }
 
+    @Override
     public List<ProjectsResponseDto> findByGeneration(Integer generation) {
         var allProjects = findAll(new GetProjectsRequestDto(1, Integer.MAX_VALUE, null, null));
         return allProjects.stream()

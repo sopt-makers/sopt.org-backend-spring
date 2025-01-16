@@ -1,8 +1,7 @@
-package sopt.org.homepage.aboutsopt;
+package sopt.org.homepage.aboutsopt.service;
 
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.aboutsopt.dto.AboutSoptResponseDto;
@@ -11,28 +10,28 @@ import sopt.org.homepage.aboutsopt.dto.GetAboutSoptResponseDto;
 import sopt.org.homepage.aboutsopt.entity.AboutSoptEntity;
 import sopt.org.homepage.aboutsopt.entity.CoreValueEntity;
 import sopt.org.homepage.aboutsopt.repository.AboutSoptRepository;
+import sopt.org.homepage.common.service.GenerationService;
 import sopt.org.homepage.exception.NotFoundException;
 import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
-import sopt.org.homepage.main.entity.MainEntity;
-import sopt.org.homepage.main.repository.MainRepository;
 import sopt.org.homepage.main.service.MainService;
-import sopt.org.homepage.project.ProjectService;
+import sopt.org.homepage.project.service.ProjectService;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class AboutSoptService {
+public class AboutSoptServiceImpl implements AboutSoptService {
     private static final int MINIMUM_PROJECT_COUNT = 10;
+
     private final AboutSoptRepository aboutSoptRepository;
-    private final ObjectProvider<MainService> mainServiceProvider;
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
     private final ProjectService projectService;
+    private final GenerationService generationService;
 
+    @Override
     public GetAboutSoptResponseDto getAboutSopt(Integer generation) {
-
-        int currentGeneration = generation != null ? generation : mainServiceProvider.getObject().getLatestGeneration();
+       int currentGeneration = generation != null ? generation : generationService.getLatestGeneration();
 
 
         AboutSoptEntity aboutSopt = aboutSoptRepository.findByIdAndIsPublishedTrue(Long.valueOf(currentGeneration))
@@ -45,13 +44,18 @@ public class AboutSoptService {
         var studyCount = crewService.getStudyCount(targetGeneration);
 
         return GetAboutSoptResponseDto.builder()
-                .aboutSopt(convertToResponseDto(aboutSopt))
+                .aboutSopt(convertToAboutSoptDto(aboutSopt))
                 .activitiesRecords(GetAboutSoptResponseDto.ActivitiesRecords.builder()
                         .activitiesMemberCount(members.numberOfMembersAtGeneration())
                         .projectCounts(projects.size())
                         .studyCounts(studyCount)
                         .build())
                 .build();
+    }
+
+    @Override
+    public Integer getStudyCount(Integer generation) {
+        return crewService.getStudyCount(generation);
     }
 
     private int determineTargetGeneration(int currentGeneration) {
@@ -71,7 +75,9 @@ public class AboutSoptService {
         return findGenerationWithMinimumProjects(currentGeneration - 1, minGeneration);
     }
 
-    private AboutSoptResponseDto convertToResponseDto(AboutSoptEntity entity) {
+
+
+    private AboutSoptResponseDto convertToAboutSoptDto(AboutSoptEntity entity) {
         return AboutSoptResponseDto.builder()
                 .id((long) entity.getId())
                 .isPublished(entity.isPublished())

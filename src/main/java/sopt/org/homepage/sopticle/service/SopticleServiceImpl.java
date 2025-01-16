@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle;
+package sopt.org.homepage.sopticle.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,32 +15,30 @@ import sopt.org.homepage.sopticle.dto.request.CreateSopticleDto;
 import sopt.org.homepage.sopticle.dto.request.GetSopticleListRequestDto;
 import sopt.org.homepage.sopticle.dto.response.CreateSopticleResponseDto;
 import sopt.org.homepage.sopticle.dto.response.LikeSopticleResponseDto;
+import sopt.org.homepage.sopticle.dto.response.SopticleResponseDto;
 import sopt.org.homepage.sopticle.entity.SopticleAuthorEntity;
+import sopt.org.homepage.sopticle.entity.SopticleEntity;
 import sopt.org.homepage.sopticle.entity.SopticleLikeEntity;
 import sopt.org.homepage.sopticle.repository.SopticleAuthorRepository;
 import sopt.org.homepage.sopticle.repository.SopticleLikeRepository;
-import sopt.org.homepage.sopticle.dto.response.SopticleResponseDto;
-import sopt.org.homepage.sopticle.entity.SopticleEntity;
 import sopt.org.homepage.sopticle.repository.SopticleQueryRepository;
 import sopt.org.homepage.sopticle.repository.SopticleRepository;
-import sopt.org.homepage.sopticle.scrap.ScraperService;
+import sopt.org.homepage.sopticle.scrap.service.ScraperService;
 import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.sopticle.scrap.dto.ScrapArticleDto;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SopticleService {
+public class SopticleServiceImpl implements SopticleService {
     private final SopticleRepository sopticleRepository;
     private final SopticleQueryRepository sopticleQueryRepository;
     private final SopticleLikeRepository sopticleLikeRepository;
-    private final ScraperService scraperService;
     private final SopticleAuthorRepository sopticleAuthorRepository;
+    private final ScraperService scraperService;
 
-    public PaginateResponseDto<SopticleResponseDto> paginateSopticles(
-            GetSopticleListRequestDto requestDto,
-            String sessionId
-    ) {
+    @Override
+    public PaginateResponseDto<SopticleResponseDto> paginateSopticles(GetSopticleListRequestDto requestDto, String sessionId) {
         var sopticles = sopticleQueryRepository.findAllWithFilters(requestDto, sessionId);
         var totalCount = sopticleQueryRepository.countWithFilters(requestDto);
 
@@ -62,31 +60,14 @@ public class SopticleService {
         );
     }
 
-    private SopticleResponseDto toSopticleResponseDto(SopticleEntity entity, boolean liked) {
-        return SopticleResponseDto.builder()
-                .id( entity.getId())
-                .part(entity.getPart())
-                .generation(entity.getGeneration())
-                .thumbnailUrl(entity.getThumbnailUrl())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .author(entity.getAuthorName())
-                .authorProfileImageUrl(entity.getAuthorProfileImageUrl())
-                .url(entity.getSopticleUrl())
-                .uploadedAt(entity.getCreatedAt())
-                .likeCount(entity.getLikeCount())
-                .liked(liked)
-                .build();
-    }
-
+    @Override
     @Transactional
     public LikeSopticleResponseDto like(Long id, String session) {
         SopticleEntity sopticle = sopticleRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"NotFoundSopticle id: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NotFoundSopticle id: " + id));
 
         if (isLiked(id, session)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "AlreadyLike");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AlreadyLike");
         }
 
         SopticleLikeEntity sopticleLike = SopticleLikeEntity.builder()
@@ -100,13 +81,14 @@ public class SopticleService {
         return toLikeSopticleResponseDto(sopticleLike);
     }
 
+    @Override
     @Transactional
     public LikeSopticleResponseDto unlike(Long id, String session) {
         SopticleEntity sopticle = sopticleRepository.findById(id)
-                .orElseThrow(() ->  new ResponseStatusException(HttpStatus.NOT_FOUND,"NotFoundSopticle id: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NotFoundSopticle id: " + id));
 
         SopticleLikeEntity sopticleLike = sopticleLikeRepository.findBySopticleIdAndSessionId(id, session)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Like 하지 않은 상태입니다."));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Like 하지 않은 상태입니다."));
 
         sopticle.decrementLikeCount();
         sopticleLikeRepository.delete(sopticleLike);
@@ -114,20 +96,7 @@ public class SopticleService {
         return toLikeSopticleResponseDto(sopticleLike);
     }
 
-    private boolean isLiked(Long sopticleId, String session) {
-        return sopticleLikeRepository.existsBySopticleIdAndSessionId(sopticleId, session);
-    }
-
-    private LikeSopticleResponseDto toLikeSopticleResponseDto(SopticleLikeEntity entity) {
-        return LikeSopticleResponseDto.builder()
-                .id(entity.getId())
-                .sopticleId(entity.getSopticle().getId())
-                .sessionId(entity.getSessionId())
-                .createdAt(entity.getCreatedAt())
-                .build();
-    }
-
-
+    @Override
     @Transactional
     public CreateSopticleResponseDto createSopticle(CreateSopticleDto dto) {
         if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
@@ -178,28 +147,46 @@ public class SopticleService {
                 .build();
     }
 
+    private SopticleResponseDto toSopticleResponseDto(SopticleEntity entity, boolean liked) {
+        return SopticleResponseDto.builder()
+                .id(entity.getId())
+                .part(entity.getPart())
+                .generation(entity.getGeneration())
+                .thumbnailUrl(entity.getThumbnailUrl())
+                .title(entity.getTitle())
+                .description(entity.getDescription())
+                .author(entity.getAuthorName())
+                .authorProfileImageUrl(entity.getAuthorProfileImageUrl())
+                .url(entity.getSopticleUrl())
+                .uploadedAt(entity.getCreatedAt())
+                .likeCount(entity.getLikeCount())
+                .liked(liked)
+                .build();
+    }
+
+    private boolean isLiked(Long sopticleId, String session) {
+        return sopticleLikeRepository.existsBySopticleIdAndSessionId(sopticleId, session);
+    }
+
+    private LikeSopticleResponseDto toLikeSopticleResponseDto(SopticleLikeEntity entity) {
+        return LikeSopticleResponseDto.builder()
+                .id(entity.getId())
+                .sopticleId(entity.getSopticle().getId())
+                .sessionId(entity.getSessionId())
+                .createdAt(entity.getCreatedAt())
+                .build();
+    }
+
     private Part convertToPart(CreateSopticleAuthorRole role) {
-        switch (role) {
-            case WEB, WEB_LEADER -> {
-                return Part.WEB;
-            }
+        return switch (role) {
+            case WEB, WEB_LEADER -> Part.WEB;
             case PLAN, PLAN_LEADER, PRESIDENT, VICE_PRESIDENT,
-                    OPERATION_LEADER, MEDIA_LEADER -> {
-                return Part.PLAN;
-            }
-            case DESIGN, DESIGN_LEADER -> {
-                return Part.DESIGN;
-            }
-            case IOS, IOS_LEADER -> {
-                return Part.iOS;
-            }
-            case SERVER, SERVER_LEADER -> {
-                return Part.SERVER;
-            }
-            case ANDROID, ANDROID_LEADER -> {
-                return Part.ANDROID;
-            }
+                    OPERATION_LEADER, MEDIA_LEADER -> Part.PLAN;
+            case DESIGN, DESIGN_LEADER -> Part.DESIGN;
+            case IOS, IOS_LEADER -> Part.iOS;
+            case SERVER, SERVER_LEADER -> Part.SERVER;
+            case ANDROID, ANDROID_LEADER -> Part.ANDROID;
             default -> throw new IllegalArgumentException("Unknown role: " + role);
-        }
+        };
     }
 }
