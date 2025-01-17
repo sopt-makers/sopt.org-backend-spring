@@ -17,5 +17,5 @@ public interface AboutSoptService {
      * @param generation 조회할 기수
      * @return 해당 기수의 스터디 수
      */
-    Integer getStudyCount(Integer generation);
+    Integer getStudyCount(Integer generation, boolean isActive);
 }

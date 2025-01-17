@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
@@ -64,7 +63,11 @@ public class S3ServiceImpl implements S3Service {
     public String getOriginalUrl(String presignedUrl) {
         try {
             URL url = new URL(presignedUrl);
+            System.out.println(url);
             String key = url.getPath().substring(1);
+            if (key.startsWith(this.bucket + "/")) {
+                key = key.substring(this.bucket.length() + 1); // 버킷 제거
+            }
 
             return getFileUrl(key);
         } catch (MalformedURLException e) {
@@ -93,19 +96,19 @@ public class S3ServiceImpl implements S3Service {
         }
     }
 
-    public String getFileUrl(String fileName) {
+    public String getFileUrl(String fileKey) {
         try {
             GetObjectPresignRequest request = GetObjectPresignRequest.builder()
                     .signatureDuration(Duration.ofMinutes(10))
                     .getObjectRequest(b -> b
                             .bucket(bucket)
-                            .key(fileName)
+                            .key(fileKey)
                             .build())
                     .build();
 
             return s3Presigner.presignGetObject(request).url().toString();
         } catch (Exception e) {
-            log.error("Error getting file URL: {}", fileName, e);
+            log.error("Error getting file URL: {}", fileKey, e);
             throw new RuntimeException("Failed to get file URL", e);
         }
     }
