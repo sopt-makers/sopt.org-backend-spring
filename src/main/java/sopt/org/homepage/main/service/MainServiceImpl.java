@@ -474,7 +474,7 @@ public class MainServiceImpl implements MainService {
         int targetGeneration = determineTargetGeneration(generation);
         var memberStats = getMemberStatistics(targetGeneration);
         var projectCount = getProjectCount(targetGeneration);
-        var studyCount = getStudyCount(targetGeneration);
+        var studyCount = getStudyCount(targetGeneration, targetGeneration == generation);
 
         return new GetAboutSoptResponseDto.ActivitiesRecords(
                 memberStats,
@@ -522,8 +522,8 @@ public class MainServiceImpl implements MainService {
     }
 
 
-    private Integer getStudyCount(Integer generation) {
-        return crewService.getStudyCount(generation);
+    private Integer getStudyCount(Integer generation, boolean isActive) {
+        return crewService.getStudyCount(generation, isActive);
     }
 
 

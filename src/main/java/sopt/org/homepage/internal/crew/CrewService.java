@@ -21,25 +21,19 @@ public class CrewService {
     private final ResponseMapper responseMapper;
     private final AuthConfig authConfig;
     private final String studyCategory = URLEncoder.encode("스터디", StandardCharsets.UTF_8);
-    private final Integer PREV_GEN = 33;
 
-    public List<StudyResponse> getAllStudy(Integer generation){
+    public List<StudyResponse> getAllStudy(Integer generation, boolean isActive){
         val MAX_TAKE_COUNT = 50;
-        val activeGen = (generation != null) ? generation : PREV_GEN;
-        val active = !activeGen.equals(PREV_GEN);
 
-        val crewApiResponse = crewClient.getAllStudy(1, MAX_TAKE_COUNT, activeGen, active, studyCategory);
+        val crewApiResponse = crewClient.getAllStudy(1, MAX_TAKE_COUNT, generation, isActive, studyCategory);
 
 //        val crewApiResponse = crewClient.getAllStudy(authConfig.getCrewApiToken(),1, MAX_TAKE_COUNT, activeGen, active, studyCategory);
 
         return crewApiResponse.data().meetings().stream().map(responseMapper::toStudyResponse).toList();
     }
 
-    public Integer getStudyCount(Integer generation) {
-        val activeGen = (generation != null) ? generation : PREV_GEN;
-        val active = !activeGen.equals(PREV_GEN);
-
-        val crewApiResponse = crewClient.getAllStudy(1, 1, activeGen, active, studyCategory);
+    public Integer getStudyCount(Integer generation, boolean isActive) {
+        val crewApiResponse = crewClient.getAllStudy(1, 1, generation, isActive, studyCategory);
 
         return crewApiResponse.data().meta().itemCount();
 //        try {
