@@ -27,7 +27,7 @@ public class NotificationController {
 
 	@PostMapping("register")
 	public ResponseEntity<RegisterNotificationResponseDto> registerNotification(
-		@Valid @RequestBody @ModelAttribute RegisterNotificationRequestDto registerNotificationRequestDto
+		@Valid @RequestBody RegisterNotificationRequestDto registerNotificationRequestDto
 	) {
 		RegisterNotificationResponseDto result = notificationService.registerNotification(
 			registerNotificationRequestDto);
