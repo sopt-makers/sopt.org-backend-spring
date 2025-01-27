@@ -1,19 +1,5 @@
 package sopt.org.homepage.aws.s3;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.sync.RequestBody;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
-import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,142 +9,150 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class S3ServiceImpl implements S3Service {
-    private final S3Presigner s3Presigner;
-    private final S3Client s3Client;
+	private final S3Presigner s3Presigner;
+	private final S3Client s3Client;
 
-    @Value("${aws.bucket.image}")
-    private String bucket;
+	@Value("${aws.bucket.image}")
+	private String bucket;
 
-    @Value("${aws.bucket.dir}")
-    private String baseDir;
+	@Value("${aws.region}")
+	private String region;
 
-    public String generatePresignedUrl(String fileName, String path) {
-        try {
-            String contentType = getContentTypeFromFileName(fileName);
-            String key = baseDir + path + fileName;
+	@Value("${aws.bucket.dir}")
+	private String baseDir;
 
-            PutObjectRequest objectRequest = PutObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(key)
-                    .contentType(contentType)
-                    .build();
+	public String generatePresignedUrl(String fileName, String path) {
+		try {
+			String contentType = getContentTypeFromFileName(fileName);
+			String key = baseDir + path + fileName;
 
-            PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(5))
-                    .putObjectRequest(objectRequest)
-                    .build();
+			PutObjectRequest objectRequest = PutObjectRequest.builder()
+				.bucket(bucket)
+				.key(key)
+				.contentType(contentType)
+				.build();
 
-            PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
-            return presignedRequest.url().toString();
-        } catch (Exception e) {
-            log.error("Error generating presigned URL for file: {}", fileName, e);
-            throw new RuntimeException("Failed to generate presigned URL", e);
-        }
-    }
+			PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+				.signatureDuration(Duration.ofMinutes(5))
+				.putObjectRequest(objectRequest)
+				.build();
 
-    public String getOriginalUrl(String presignedUrl) {
-        try {
-            URL url = new URL(presignedUrl);
-            System.out.println(url);
-            String key = url.getPath().substring(1);
-            if (key.startsWith(this.bucket + "/")) {
-                key = key.substring(this.bucket.length() + 1); // 버킷 제거
-            }
+			PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
+			return presignedRequest.url().toString();
+		} catch (Exception e) {
+			log.error("Error generating presigned URL for file: {}", fileName, e);
+			throw new RuntimeException("Failed to generate presigned URL", e);
+		}
+	}
 
-            return getFileUrl(key);
-        } catch (MalformedURLException e) {
-            log.error("Error parsing presigned URL: {}", presignedUrl, e);
-            throw new RuntimeException("Failed to parse presigned URL", e);
-        }
-    }
-    public String uploadFile(MultipartFile file, String path) {
-        String fileName = createFileName(file.getOriginalFilename());
+	public String getOriginalUrl(String presignedUrl) {
+		try {
+			URL url = new URL(presignedUrl);
+			System.out.println(url);
+			String key = url.getPath().substring(1);
+			if (key.startsWith(this.bucket + "/")) {
+				key = key.substring(this.bucket.length() + 1); // 버킷 제거
+			}
 
-        String key = baseDir + path + fileName;
-        try {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(key)
-                    .contentType(file.getContentType())
-                    .build();
+			return getFileUrl(key);
+		} catch (MalformedURLException e) {
+			log.error("Error parsing presigned URL: {}", presignedUrl, e);
+			throw new RuntimeException("Failed to parse presigned URL", e);
+		}
+	}
 
-            s3Client.putObject(putObjectRequest,
-                    RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+	public String uploadFile(MultipartFile file, String path) {
+		String fileName = createFileName(file.getOriginalFilename());
 
-            return getFileUrl(key);
-        } catch (IOException e) {
-            log.error("Error uploading file: {}", fileName, e);
-            throw new RuntimeException("Failed to upload file", e);
-        }
-    }
+		String key = baseDir + path + fileName;
+		try {
+			PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+				.bucket(bucket)
+				.key(key)
+				.contentType(file.getContentType())
+				.build();
 
-    public String getFileUrl(String fileKey) {
-        try {
-            GetObjectPresignRequest request = GetObjectPresignRequest.builder()
-                    .signatureDuration(Duration.ofMinutes(10))
-                    .getObjectRequest(b -> b
-                            .bucket(bucket)
-                            .key(fileKey)
-                            .build())
-                    .build();
+			s3Client.putObject(putObjectRequest,
+				RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 
-            return s3Presigner.presignGetObject(request).url().toString();
-        } catch (Exception e) {
-            log.error("Error getting file URL: {}", fileKey, e);
-            throw new RuntimeException("Failed to get file URL", e);
-        }
-    }
+			return getFileUrl(key);
+		} catch (IOException e) {
+			log.error("Error uploading file: {}", fileName, e);
+			throw new RuntimeException("Failed to upload file", e);
+		}
+	}
 
-    public void deleteFile(String fileUrl) {
-        try {
-            String fileName = extractKeyFromUrl(fileUrl);
-            DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(fileName)
-                    .build();
+	public String getFileUrl(String fileKey) {
+		return String.format("https://%s.s3.%s.amazonaws.com/%s",
+			bucket,
+			region,
+			fileKey);
+	}
 
-            s3Client.deleteObject(deleteObjectRequest);
-        } catch (Exception e) {
-            log.error("Error deleting file: {}", fileUrl, e);
-            throw new RuntimeException("Failed to delete file", e);
-        }
-    }
+	public void deleteFile(String fileUrl) {
+		try {
+			String fileName = extractKeyFromUrl(fileUrl);
+			DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+				.bucket(bucket)
+				.key(fileName)
+				.build();
 
-    private String extractKeyFromUrl(String fileUrl) {
-        try {
-            String[] parts = fileUrl.split("/");
-            return String.join("/", Arrays.copyOfRange(parts, 4, parts.length));
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid S3 URL format", e);
-        }
-    }
+			s3Client.deleteObject(deleteObjectRequest);
+		} catch (Exception e) {
+			log.error("Error deleting file: {}", fileUrl, e);
+			throw new RuntimeException("Failed to delete file", e);
+		}
+	}
 
-    private String createFileName(String originalFileName) {
-        return UUID.randomUUID().toString() + "_" + originalFileName;
-    }
+	private String extractKeyFromUrl(String fileUrl) {
+		try {
+			String[] parts = fileUrl.split("/");
+			return String.join("/", Arrays.copyOfRange(parts, 4, parts.length));
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid S3 URL format", e);
+		}
+	}
 
-    private String getContentTypeFromFileName(String fileName) {
-        Map<String, String> contentTypeMap = new HashMap<>();
-        contentTypeMap.put("jpg", "image/jpeg");
-        contentTypeMap.put("jpeg", "image/jpeg");
-        contentTypeMap.put("png", "image/png");
-        contentTypeMap.put("gif", "image/gif");
-        contentTypeMap.put("pdf", "application/pdf");
-        contentTypeMap.put("txt", "text/plain");
-        contentTypeMap.put("html", "text/html");
-        contentTypeMap.put("json", "application/json");
-        // 필요한 파일타입 추가
+	private String createFileName(String originalFileName) {
+		return UUID.randomUUID().toString() + "_" + originalFileName;
+	}
 
-        String extension = getFileExtension(fileName);
-        return contentTypeMap.getOrDefault(extension, "application/octet-stream");
-    }
+	private String getContentTypeFromFileName(String fileName) {
+		Map<String, String> contentTypeMap = new HashMap<>();
+		contentTypeMap.put("jpg", "image/jpeg");
+		contentTypeMap.put("jpeg", "image/jpeg");
+		contentTypeMap.put("png", "image/png");
+		contentTypeMap.put("gif", "image/gif");
+		contentTypeMap.put("pdf", "application/pdf");
+		contentTypeMap.put("txt", "text/plain");
+		contentTypeMap.put("html", "text/html");
+		contentTypeMap.put("json", "application/json");
+		// 필요한 파일타입 추가
 
-    private String getFileExtension(String fileName) {
-        int lastIndexOfDot = fileName.lastIndexOf(".");
-        return (lastIndexOfDot == -1) ? "" : fileName.substring(lastIndexOfDot + 1).toLowerCase();
-    }
+		String extension = getFileExtension(fileName);
+		return contentTypeMap.getOrDefault(extension, "application/octet-stream");
+	}
+
+	private String getFileExtension(String fileName) {
+		int lastIndexOfDot = fileName.lastIndexOf(".");
+		return (lastIndexOfDot == -1) ? "" : fileName.substring(lastIndexOfDot + 1).toLowerCase();
+	}
 }
