@@ -101,9 +101,9 @@ public class S3ServiceImpl implements S3Service {
 	}
 
 	public String getFileUrl(String fileKey) {
-		return String.format("https://%s.s3.%s.amazonaws.com/%s",
-			bucket,
+		return String.format("https://s3.%s.amazonaws.com/%s/%s",
 			region,
+			bucket,
 			fileKey);
 	}
 
