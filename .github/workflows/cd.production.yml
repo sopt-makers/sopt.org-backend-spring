@@ -33,17 +33,16 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: ssh command deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.PROD_HOST }}
-        username: ubuntu
-        key: ${{ secrets.PEM_KEY }}
-        script: |
-          sudo docker stop spring-prod-server
-          sudo docker rm spring-prod-server
-          sudo docker rm -f $(docker ps -qa)
-          sudo docker image prune -a -f
-          sudo docker pull public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
-          sudo docker run --name spring-prod-server --env-file .env -d -p 8080:8080 -t public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
+      - name: ssh command deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ubuntu
+          key: ${{ secrets.PEM_KEY }}
+          script: |
+            sudo docker stop spring-prod-server
+            sudo docker rm spring-prod-server
+            sudo docker image prune -a -f
+            sudo docker pull public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
+            sudo docker run --name spring-prod-server --env-file .env -d -p 8080:8080 -t public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
           
