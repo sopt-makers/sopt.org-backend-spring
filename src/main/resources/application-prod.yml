@@ -7,7 +7,12 @@ spring:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC;
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-
+    hikari: # t3.micro 환경에 맞게 hikari pool 설정
+      maximum-pool-size: 5  # vCPU * 2 + 1 = 5
+      minimum-idle: 2       # 최소한의 idle 커넥션만 유지
+      idle-timeout: 300000  # 5분 (기본값 10분에서 줄임)
+      connection-timeout: 20000  # 20초
+      max-lifetime: 1200000     # 20분 (기본값 30분에서 줄임)
   jpa:
     hibernate:
       ddl-auto: none
@@ -16,9 +21,9 @@ spring:
 
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
-        use_sql_comments: true
+        show_sql: false # Production 환경에서 로깅 OFF
+        format_sql: false
+        use_sql_comments: false
         default_schema: public
 
 springdoc:

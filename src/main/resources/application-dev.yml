@@ -7,6 +7,12 @@ spring:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC;
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
 
   jpa:
     hibernate:
