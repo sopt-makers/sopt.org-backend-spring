@@ -41,7 +41,7 @@ public class AboutSoptServiceImpl implements AboutSoptService {
 
         var members = playgroundService.getAllMembers(targetGeneration);
         var projects = projectService.findByGeneration(targetGeneration);
-        var studyCount = crewService.getStudyCount(targetGeneration, targetGeneration == currentGeneration);
+        var studyCount = crewService.getStudyCount(targetGeneration);
 
         return GetAboutSoptResponseDto.builder()
                 .aboutSopt(convertToAboutSoptDto(aboutSopt))
@@ -55,7 +55,7 @@ public class AboutSoptServiceImpl implements AboutSoptService {
 
     @Override
     public Integer getStudyCount(Integer generation, boolean isActive) {
-        return crewService.getStudyCount(generation, isActive);
+        return crewService.getStudyCount(generation);
     }
 
     private int determineTargetGeneration(int currentGeneration) {
