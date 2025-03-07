@@ -44,5 +44,5 @@ jobs:
             sudo docker rm spring-dev-server
             sudo docker image prune -a -f
             sudo docker pull public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
-            sudo docker run --name spring-dev-server --env-file .env -d -p 8086:8080 -t public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
+            sudo docker run --name spring-dev-server --env-file /home/ec2-user/official/.env -d -p 8086:8080 -t public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
           
