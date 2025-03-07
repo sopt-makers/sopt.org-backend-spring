@@ -2,8 +2,6 @@ package sopt.org.homepage.common.mapper;
 
 import org.springframework.stereotype.Component;
 import sopt.org.homepage.review.entity.ReviewEntity;
-import sopt.org.homepage.internal.crew.dto.CrewMeetingVo;
-import sopt.org.homepage.internal.crew.dto.StudyResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectDetailResponse;
 import sopt.org.homepage.internal.playground.dto.PlaygroundProjectResponseDto;
 import sopt.org.homepage.internal.playground.dto.Role;
@@ -28,18 +26,6 @@ public class ResponseMapper {
         );
     }
 
-    public StudyResponse toStudyResponse(CrewMeetingVo meeting) {
-        return new StudyResponse(
-                meeting.id(),
-                meeting.createdGeneration(),
-                meeting.joinableParts(),
-                meeting.title(),
-                meeting.imageURL().isEmpty() ? null : meeting.imageURL().get(0).url(),
-                meeting.startDate(),
-                meeting.endDate(),
-                meeting.appliedInfo().size()
-        );
-    }
 
 
     public ProjectsResponseDto toProjectResponse(PlaygroundProjectResponseDto project) {
