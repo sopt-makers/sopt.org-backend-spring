@@ -38,7 +38,7 @@ jobs:
         with:
           host: ${{ secrets.HOST }}
           username: ec2-user
-          key: ${{ secrets.PEM_KEY }}
+          key: ${{ secrets.DEV_PEM_KEY }}
           script: |
             sudo docker stop spring-dev-server
             sudo docker rm spring-dev-server
