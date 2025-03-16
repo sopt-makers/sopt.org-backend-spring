@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap.dto;
+package sopt.org.homepage.scrap.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateScraperResponseDto {
-    private String thumbnailUrl;
-    private String title;
-    private String description;
-    private String articleUrl;
+	private String thumbnailUrl;
+	private String title;
+	private String description;
+	private String articleUrl;
+	private String platform;
 }

@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap;
+package sopt.org.homepage.scrap;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
