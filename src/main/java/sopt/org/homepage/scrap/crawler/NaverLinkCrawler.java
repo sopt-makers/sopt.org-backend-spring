@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap.crawler;
+package sopt.org.homepage.scrap.crawler;
 
 import java.io.IOException;
 
@@ -8,9 +8,9 @@ import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
-import sopt.org.homepage.sopticle.scrap.LinkCrawler;
-import sopt.org.homepage.sopticle.scrap.LinkSource;
-import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.scrap.LinkCrawler;
+import sopt.org.homepage.scrap.LinkSource;
+import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 
 @Slf4j
 @Component
@@ -33,7 +33,8 @@ public class NaverLinkCrawler implements LinkCrawler {
 		String url = fetchMeta(iframe, "url");
 		String image = fetchMeta(iframe, "image");
 		String description = fetchMeta(iframe, "description");
-		return new CreateScraperResponseDto(image, title, description, url);
+		String platform = "네이버 블로그";
+		return new CreateScraperResponseDto(image, title, description, url, platform);
 	}
 
 	private Document scrap(String link) throws IOException {

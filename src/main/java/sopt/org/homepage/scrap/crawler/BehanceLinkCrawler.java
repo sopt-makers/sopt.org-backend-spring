@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap.crawler;
+package sopt.org.homepage.scrap.crawler;
 
 import java.time.Duration;
 
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import sopt.org.homepage.sopticle.scrap.LinkCrawler;
-import sopt.org.homepage.sopticle.scrap.LinkSource;
-import sopt.org.homepage.sopticle.scrap.WebDriverManager;
-import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.scrap.LinkCrawler;
+import sopt.org.homepage.scrap.LinkSource;
+import sopt.org.homepage.scrap.WebDriverManager;
+import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 
 @Slf4j
 @Component
@@ -40,7 +40,8 @@ public class BehanceLinkCrawler implements LinkCrawler {
 			String url = fetchMeta(driver, "url");
 			String image = fetchMeta(driver, "image");
 			String description = fetchMeta(driver, "description");
-			return new CreateScraperResponseDto(image, title, description, url);
+			String platform = "비핸스";
+			return new CreateScraperResponseDto(image, title, description, url, platform);
 		} catch (Exception ex) {
 			log.error("비핸스 크롤링에 실패하였습니다.");
 			throw ex;

@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap.crawler;
+package sopt.org.homepage.scrap.crawler;
 
 import java.io.IOException;
 
@@ -7,19 +7,19 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
-import sopt.org.homepage.sopticle.scrap.LinkCrawler;
-import sopt.org.homepage.sopticle.scrap.LinkSource;
-import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.scrap.LinkCrawler;
+import sopt.org.homepage.scrap.LinkSource;
+import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 
 @Component
-public class BrunchLinkCrawler implements LinkCrawler {
+public class BasicLinkCrawler implements LinkCrawler {
 
 	private static final int TIMEOUT_MILLISECONDS = 10000;
 	private static final String EMPTY_STRING = "";
 
 	@Override
 	public LinkSource supportSource() {
-		return LinkSource.BRUNCH;
+		return LinkSource.BASIC;
 	}
 
 	@Override
@@ -27,9 +27,10 @@ public class BrunchLinkCrawler implements LinkCrawler {
 		Document target = scrap(link);
 		String title = fetchMeta(target, "title");
 		String url = fetchMeta(target, "url");
-		String image = "https:" + fetchMeta(target, "image");
+		String image = fetchMeta(target, "image");
 		String description = fetchMeta(target, "description");
-		return new CreateScraperResponseDto(image, title, description, url);
+		String platform = determinePlatform(link);
+		return new CreateScraperResponseDto(image, title, description, url, platform);
 	}
 
 	private Document scrap(String link) throws IOException {
@@ -45,4 +46,19 @@ public class BrunchLinkCrawler implements LinkCrawler {
 		}
 		return element.attr("content");
 	}
+
+	private String determinePlatform(String link) {
+		if (link.contains("tistory.com")) {
+			return "티스토리";
+		} else if (link.contains("github.com") || link.contains("github.io")) {
+			return "깃헙";
+		} else if (link.contains("medium.com")) {
+			return "미디엄";
+		} else if (link.contains("notion.so") || link.contains("notion.site")) {
+			return "노션";
+		} else {
+			return "기타";
+		}
+	}
+
 }

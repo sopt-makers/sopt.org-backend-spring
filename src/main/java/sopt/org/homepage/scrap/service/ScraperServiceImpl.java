@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap.service;
+package sopt.org.homepage.scrap.service;
 
 import java.io.IOException;
 
@@ -8,10 +8,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import sopt.org.homepage.sopticle.scrap.CrawlerComposite;
-import sopt.org.homepage.sopticle.scrap.LinkSource;
-import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
-import sopt.org.homepage.sopticle.scrap.dto.ScrapArticleDto;
+import sopt.org.homepage.scrap.CrawlerComposite;
+import sopt.org.homepage.scrap.LinkSource;
+import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.scrap.dto.ScrapArticleDto;
 
 @Slf4j
 @Service

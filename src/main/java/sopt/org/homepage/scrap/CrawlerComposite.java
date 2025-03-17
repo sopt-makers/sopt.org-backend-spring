@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.scrap;
+package sopt.org.homepage.scrap;
 
 import java.io.IOException;
 import java.util.Map;
@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
-import sopt.org.homepage.sopticle.scrap.crawler.BasicLinkCrawler;
-import sopt.org.homepage.sopticle.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.scrap.crawler.BasicLinkCrawler;
+import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 
 @Slf4j
 @Component
