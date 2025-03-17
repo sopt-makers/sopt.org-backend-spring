@@ -1,6 +1,9 @@
 package sopt.org.homepage.scrap.crawler;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,9 +37,18 @@ public class BasicLinkCrawler implements LinkCrawler {
 	}
 
 	private Document scrap(String link) throws IOException {
-		return Jsoup.connect(link)
-			.timeout(TIMEOUT_MILLISECONDS)
-			.get();
+		URL url = new URL(link);
+
+		URLConnection connection = url.openConnection();
+		connection.setConnectTimeout(TIMEOUT_MILLISECONDS);
+		connection.setReadTimeout(TIMEOUT_MILLISECONDS);
+
+		InputStream inputStream = connection.getInputStream();
+
+		Document doc = Jsoup.parse(inputStream, "UTF-8", link);
+		inputStream.close();
+
+		return doc;
 	}
 
 	private String fetchMeta(Document target, String tag) {
