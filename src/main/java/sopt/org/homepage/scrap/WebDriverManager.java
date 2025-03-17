@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class WebDriverManager {
 
 	public WebDriver fetch() {
-		io.github.bonigarcia.wdm.WebDriverManager.chromedriver().browserVersion("120").clearDriverCache().setup();
+		io.github.bonigarcia.wdm.WebDriverManager.chromedriver().clearDriverCache().setup();
 
 		ChromeOptions options = new ChromeOptions();
 		options.addArguments("--headless");
