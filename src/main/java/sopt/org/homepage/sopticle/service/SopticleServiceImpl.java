@@ -1,8 +1,5 @@
 package sopt.org.homepage.sopticle.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -109,32 +106,27 @@ public class SopticleServiceImpl implements SopticleService {
 		CreateScraperResponseDto scrapResult = scraperService.scrap(new ScrapArticleDto(dto.getLink()));
 
 		SopticleEntity sopticle = SopticleEntity.builder()
-			.pgSopticleId(dto.getId())
-			.part(convertToPart(dto.getAuthors().get(0).getPart()))
-			.generation(dto.getAuthors().get(0).getGeneration())
+			.part(convertToPart(dto.getAuthor().getPart()))
+			.generation(dto.getAuthor().getGeneration())
 			.thumbnailUrl(scrapResult.getThumbnailUrl())
 			.title(scrapResult.getTitle())
 			.description(scrapResult.getDescription())
-			.authorId(dto.getAuthors().get(0).getId())
-			.authorName(dto.getAuthors().get(0).getName())
-			.authorProfileImageUrl(dto.getAuthors().get(0).getProfileImage())
 			.sopticleUrl(scrapResult.getArticleUrl())
 			.build();
 
 		SopticleEntity savedSopticle = sopticleRepository.save(sopticle);
 
-		List<SopticleAuthorEntity> authorEntities = dto.getAuthors().stream()
-			.map(author -> SopticleAuthorEntity.builder()
-				.sopticle(savedSopticle)
-				.pgUserId(author.getId())
-				.name(author.getName())
-				.profileImage(author.getProfileImage())
-				.generation(author.getGeneration())
-				.part(author.getPart().getValue())
-				.build())
-			.collect(Collectors.toList());
+		// 단일 작성자 정보를 저장
+		SopticleAuthorEntity authorEntity = SopticleAuthorEntity.builder()
+			.sopticle(savedSopticle)
+			.pgUserId(dto.getAuthor().getId())
+			.name(dto.getAuthor().getName())
+			.profileImage(dto.getAuthor().getProfileImage())
+			.generation(dto.getAuthor().getGeneration())
+			.part(dto.getAuthor().getPart().getValue())
+			.build();
 
-		sopticleAuthorRepository.saveAll(authorEntities);
+		sopticleAuthorRepository.save(authorEntity);
 
 		return CreateSopticleResponseDto.builder()
 			.id(savedSopticle.getId())
@@ -143,8 +135,8 @@ public class SopticleServiceImpl implements SopticleService {
 			.thumbnailUrl(savedSopticle.getThumbnailUrl())
 			.title(savedSopticle.getTitle())
 			.description(savedSopticle.getDescription())
-			.author(savedSopticle.getAuthorName())
-			.authorProfileImageUrl(savedSopticle.getAuthorProfileImageUrl())
+			.author(authorEntity.getName())
+			.authorProfileImageUrl(authorEntity.getProfileImage())
 			.sopticleUrl(savedSopticle.getSopticleUrl())
 			.uploadedAt(savedSopticle.getCreatedAt())
 			.build();
@@ -158,8 +150,8 @@ public class SopticleServiceImpl implements SopticleService {
 			.thumbnailUrl(entity.getThumbnailUrl())
 			.title(entity.getTitle())
 			.description(entity.getDescription())
-			.author(entity.getAuthorName())
-			.authorProfileImageUrl(entity.getAuthorProfileImageUrl())
+			.author(entity.getAuthor().getName())
+			.authorProfileImageUrl(entity.getAuthor().getProfileImage())
 			.url(entity.getSopticleUrl())
 			.uploadedAt(entity.getCreatedAt())
 			.likeCount(entity.getLikeCount())
@@ -184,7 +176,7 @@ public class SopticleServiceImpl implements SopticleService {
 		return switch (role) {
 			case WEB, WEB_LEADER -> Part.WEB;
 			case PLAN, PLAN_LEADER, PRESIDENT, VICE_PRESIDENT,
-				OPERATION_LEADER, MEDIA_LEADER -> Part.PLAN;
+				 OPERATION_LEADER, MEDIA_LEADER -> Part.PLAN;
 			case DESIGN, DESIGN_LEADER -> Part.DESIGN;
 			case IOS, IOS_LEADER -> Part.iOS;
 			case SERVER, SERVER_LEADER -> Part.SERVER;
