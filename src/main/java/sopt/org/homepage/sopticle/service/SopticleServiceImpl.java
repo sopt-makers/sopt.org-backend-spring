@@ -123,7 +123,7 @@ public class SopticleServiceImpl implements SopticleService {
 			.name(dto.getAuthor().getName())
 			.profileImage(dto.getAuthor().getProfileImage())
 			.generation(dto.getAuthor().getGeneration())
-			.part(dto.getAuthor().getPart().getValue())
+			.part(convertToPart(dto.getAuthor().getPart()).getValue())
 			.build();
 
 		sopticleAuthorRepository.save(authorEntity);

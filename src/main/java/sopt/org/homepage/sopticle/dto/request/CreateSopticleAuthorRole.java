@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum CreateSopticleAuthorRole {
-	WEB("WEB"),
-	PLAN("PLAN"),
-	DESIGN("DESIGN"),
+	WEB("웹"),
+	PLAN("기획"),
+	DESIGN("디자인"),
 	IOS("iOS"),
-	SERVER("SERVER"),
-	ANDROID("ANDROID"),
+	SERVER("서버"),
+	ANDROID("안드로이드"),
 	WEB_LEADER("웹 파트장"),
 	PLAN_LEADER("기획 파트장"),
 	DESIGN_LEADER("디자인 파트장"),

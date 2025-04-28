@@ -29,7 +29,7 @@ public class CreateSopticleAuthorDto {
 	private Integer generation;
 
 	@Schema(description = "작성자 역할", requiredMode = Schema.RequiredMode.REQUIRED,
-		example = "WEB")
+		example = "iOS")
 	@NotNull(message = "역할은 필수입니다")
 	private CreateSopticleAuthorRole part;
 }
