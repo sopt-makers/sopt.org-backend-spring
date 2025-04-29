@@ -19,7 +19,9 @@ import sopt.org.homepage.review.dto.request.AddReviewMainCategory;
 import sopt.org.homepage.review.dto.request.AddReviewRequestDto;
 import sopt.org.homepage.review.dto.request.AddReviewSubActivity;
 import sopt.org.homepage.review.dto.request.AddReviewSubRecruiting;
+import sopt.org.homepage.review.dto.request.ReviewsInternalRequestDto;
 import sopt.org.homepage.review.dto.request.ReviewsRequestDto;
+import sopt.org.homepage.review.dto.response.ReviewsInternalResponseDto;
 import sopt.org.homepage.review.dto.response.ReviewsResponseDto;
 import sopt.org.homepage.review.entity.ReviewEntity;
 import sopt.org.homepage.review.repository.ReviewQueryRepository;
@@ -116,5 +118,22 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 
 		return subjects;
+	}
+
+	@Override
+	public ReviewsInternalResponseDto getUserReviews(ReviewsInternalRequestDto requestDto) {
+
+		List<ReviewEntity> reviews = reviewRepository.findAllByAuthor(
+			requestDto.getName()
+		);
+
+		List<ReviewsResponseDto> reviewData = reviews.stream()
+			.map(responseMapper::toReviewResponseDto)
+			.toList();
+
+		return ReviewsInternalResponseDto.builder()
+			.reviewCount(reviews.size())
+			.reviews(reviewData)
+			.build();
 	}
 }
