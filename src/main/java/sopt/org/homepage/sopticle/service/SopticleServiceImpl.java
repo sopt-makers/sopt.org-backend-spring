@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.common.type.Part;
-import sopt.org.homepage.exception.BusinessLogicException;
 import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.scrap.dto.ScrapArticleDto;
 import sopt.org.homepage.scrap.service.ScraperService;
@@ -18,7 +17,6 @@ import sopt.org.homepage.sopticle.dto.request.GetSopticleListRequestDto;
 import sopt.org.homepage.sopticle.dto.response.CreateSopticleResponseDto;
 import sopt.org.homepage.sopticle.dto.response.LikeSopticleResponseDto;
 import sopt.org.homepage.sopticle.dto.response.SopticleResponseDto;
-import sopt.org.homepage.sopticle.entity.SopticleAuthorEntity;
 import sopt.org.homepage.sopticle.entity.SopticleEntity;
 import sopt.org.homepage.sopticle.entity.SopticleLikeEntity;
 import sopt.org.homepage.sopticle.repository.SopticleAuthorRepository;
@@ -99,46 +97,41 @@ public class SopticleServiceImpl implements SopticleService {
 	@Override
 	@Transactional
 	public CreateSopticleResponseDto createSopticle(CreateSopticleDto dto) {
-		if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
-			throw new BusinessLogicException("이미 등록된 솝티클입니다.");
-		}
+		// // 25.04.28 공홈 솝티클 제거에 따른 저장 로직 주석화
+		// if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
+		// 	throw new BusinessLogicException("이미 등록된 솝티클입니다.");
+		// }
 
 		CreateScraperResponseDto scrapResult = scraperService.scrap(new ScrapArticleDto(dto.getLink()));
 
-		SopticleEntity sopticle = SopticleEntity.builder()
-			.part(convertToPart(dto.getAuthor().getPart()))
-			.generation(dto.getAuthor().getGeneration())
+		// SopticleEntity sopticle = SopticleEntity.builder()
+		// 	.part(convertToPart(dto.getAuthor().getPart()))
+		// 	.generation(dto.getAuthor().getGeneration())
+		// 	.thumbnailUrl(scrapResult.getThumbnailUrl())
+		// 	.title(scrapResult.getTitle())
+		// 	.description(scrapResult.getDescription())
+		// 	.sopticleUrl(scrapResult.getArticleUrl())
+		// 	.build();
+		//
+		// SopticleEntity savedSopticle = sopticleRepository.save(sopticle);
+		//
+		// // 단일 작성자 정보를 저장
+		// SopticleAuthorEntity authorEntity = SopticleAuthorEntity.builder()
+		// 	.sopticle(savedSopticle)
+		// 	.pgUserId(dto.getAuthor().getId())
+		// 	.name(dto.getAuthor().getName())
+		// 	.profileImage(dto.getAuthor().getProfileImage())
+		// 	.generation(dto.getAuthor().getGeneration())
+		// 	.part(convertToPart(dto.getAuthor().getPart()).getValue())
+		// 	.build();
+		//
+		// sopticleAuthorRepository.save(authorEntity);
+
+		return CreateSopticleResponseDto.builder()
 			.thumbnailUrl(scrapResult.getThumbnailUrl())
 			.title(scrapResult.getTitle())
 			.description(scrapResult.getDescription())
 			.sopticleUrl(scrapResult.getArticleUrl())
-			.build();
-
-		SopticleEntity savedSopticle = sopticleRepository.save(sopticle);
-
-		// 단일 작성자 정보를 저장
-		SopticleAuthorEntity authorEntity = SopticleAuthorEntity.builder()
-			.sopticle(savedSopticle)
-			.pgUserId(dto.getAuthor().getId())
-			.name(dto.getAuthor().getName())
-			.profileImage(dto.getAuthor().getProfileImage())
-			.generation(dto.getAuthor().getGeneration())
-			.part(convertToPart(dto.getAuthor().getPart()).getValue())
-			.build();
-
-		sopticleAuthorRepository.save(authorEntity);
-
-		return CreateSopticleResponseDto.builder()
-			.id(savedSopticle.getId())
-			.part(savedSopticle.getPart())
-			.generation(savedSopticle.getGeneration())
-			.thumbnailUrl(savedSopticle.getThumbnailUrl())
-			.title(savedSopticle.getTitle())
-			.description(savedSopticle.getDescription())
-			.author(authorEntity.getName())
-			.authorProfileImageUrl(authorEntity.getProfileImage())
-			.sopticleUrl(savedSopticle.getSopticleUrl())
-			.uploadedAt(savedSopticle.getCreatedAt())
 			.build();
 	}
 
