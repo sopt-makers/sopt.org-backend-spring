@@ -1,7 +1,6 @@
 package sopt.org.homepage.sopticle.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,8 +16,8 @@ public class CreateSopticleDto {
 	@NotEmpty(message = "솝티클 주소는 필수입니다")
 	private String link;
 
-	@Schema(description = "작성자 정보", requiredMode = Schema.RequiredMode.REQUIRED)
-	@NotEmpty(message = "작성자 정보는 필수입니다")
-	@Valid
-	private CreateSopticleAuthorDto author;
+	// @Schema(description = "작성자 정보", requiredMode = Schema.RequiredMode.REQUIRED)
+	// @NotEmpty(message = "작성자 정보는 필수입니다")
+	// @Valid
+	// private CreateSopticleAuthorDto author;
 }
