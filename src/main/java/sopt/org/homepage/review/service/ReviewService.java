@@ -4,7 +4,9 @@ import java.util.List;
 
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.review.dto.request.AddReviewRequestDto;
+import sopt.org.homepage.review.dto.request.ReviewsInternalRequestDto;
 import sopt.org.homepage.review.dto.request.ReviewsRequestDto;
+import sopt.org.homepage.review.dto.response.ReviewsInternalResponseDto;
 import sopt.org.homepage.review.dto.response.ReviewsResponseDto;
 
 public interface ReviewService {
@@ -13,4 +15,6 @@ public interface ReviewService {
 	List<ReviewsResponseDto> getRandomReviewByPart();
 
 	void addReview(AddReviewRequestDto request);
+
+	ReviewsInternalResponseDto getUserReviews(ReviewsInternalRequestDto requestDto);
 }

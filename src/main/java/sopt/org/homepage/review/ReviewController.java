@@ -20,7 +20,9 @@ import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.config.AuthConfig;
 import sopt.org.homepage.exception.BusinessLogicException;
 import sopt.org.homepage.review.dto.request.AddReviewRequestDto;
+import sopt.org.homepage.review.dto.request.ReviewsInternalRequestDto;
 import sopt.org.homepage.review.dto.request.ReviewsRequestDto;
+import sopt.org.homepage.review.dto.response.ReviewsInternalResponseDto;
 import sopt.org.homepage.review.dto.response.ReviewsResponseDto;
 import sopt.org.homepage.review.service.ReviewService;
 
@@ -65,5 +67,22 @@ public class ReviewController {
 		reviewService.addReview(request);
 
 		return ResponseEntity.ok("Success");
+	}
+
+	@Operation(summary = "Playground Internal 유저 활동후기 데이터 요청", description = "활동후기를 추가한 유저명을 입력하여 해당 유저가 추가한 활동후기 정보를 조회합니다.")
+	@GetMapping("/internal")
+	public ResponseEntity<ReviewsInternalResponseDto> getUserReviews(
+		@ParameterObject @ModelAttribute ReviewsInternalRequestDto reviewsInternalRequestDto,
+		@RequestHeader("api-key") String apiKey
+	) {
+		if (apiKey == null) {
+			throw new BusinessLogicException("api-key is required");
+		}
+
+		if (!apiKey.equals(authConfig.getApiKey())) {
+			throw new BusinessLogicException("api-key is invalid");
+		}
+
+		return ResponseEntity.ok(reviewService.getUserReviews(reviewsInternalRequestDto));
 	}
 }
