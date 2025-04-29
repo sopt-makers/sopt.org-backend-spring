@@ -133,6 +133,7 @@ public class SopticleServiceImpl implements SopticleService {
 			.description(scrapResult.getDescription())
 			.sopticleUrl(scrapResult.getArticleUrl())
 			.build();
+
 	}
 
 	private SopticleResponseDto toSopticleResponseDto(SopticleEntity entity, boolean liked) {
