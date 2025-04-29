@@ -1,16 +1,26 @@
 package sopt.org.homepage.sopticle.entity;
 
-import jakarta.persistence.*;
-
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+
+import jakarta.persistence.Basic;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import sopt.org.homepage.common.type.Part;
 
 @Entity
@@ -18,91 +28,68 @@ import sopt.org.homepage.common.type.Part;
 @Table(name = "\"Sopticle\"")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SopticleEntity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    @Column(name = "\"id\"", nullable = false)
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@Column(name = "\"id\"", nullable = false)
+	private Long id;
 
-    @Getter
-    @Enumerated(EnumType.STRING)
-    @Column(name = "\"part\"")
-    private Part part;
+	@Getter
+	@Enumerated(EnumType.STRING)
+	@Column(name = "\"part\"")
+	private Part part;
 
-    @Basic
-    @Column(name = "\"generation\"", nullable = false)
-    private int generation;
+	@Basic
+	@Column(name = "\"generation\"", nullable = false)
+	private int generation;
 
-    @Basic
-    @Column(name = "\"thumbnailUrl\"", nullable = true, length = 500)
-    private String thumbnailUrl;
+	@Basic
+	@Column(name = "\"thumbnailUrl\"", nullable = true, length = 500)
+	private String thumbnailUrl;
 
-    @Basic
-    @Column(name = "\"title\"", nullable = false, length = 100)
-    private String title;
+	@Basic
+	@Column(name = "\"title\"", nullable = false, length = 100)
+	private String title;
 
-    @Basic
-    @Column(name = "\"description\"", nullable = false, length = 600)
-    private String description;
+	@Basic
+	@Column(name = "\"description\"", nullable = false, length = 600)
+	private String description;
 
-    @Basic
-    @Column(name = "\"authorId\"", nullable = false)
-    private Long authorId;
+	@Basic
+	@Column(name = "\"sopticleUrl\"", nullable = false, length = 500)
+	private String sopticleUrl;
 
-    @Basic
-    @Column(name = "\"authorName\"", nullable = false, length = 20)
-    private String authorName;
+	@CreationTimestamp
+	@Basic
+	@Column(name = "\"createdAt\"", nullable = false)
+	private LocalDateTime createdAt;
 
-    @Basic
-    @Column(name = "\"authorProfileImageUrl\"", nullable = true, length = 500)
-    private String authorProfileImageUrl;
+	@Basic
+	@Column(name = "\"likeCount\"", nullable = false)
+	private int likeCount;
 
-    @Basic
-    @Column(name = "\"sopticleUrl\"", nullable = false, length = 500)
-    private String sopticleUrl;
+	@OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL)
+	private List<SopticleLikeEntity> sopticleLikes;
 
-    @CreationTimestamp
-    @Basic
-    @Column(name = "\"createdAt\"", nullable = false)
-    private LocalDateTime createdAt;
+	@OneToOne(mappedBy = "sopticle", cascade = CascadeType.ALL, orphanRemoval = true)
+	private SopticleAuthorEntity author;
 
-    @Basic
-    @Column(name = "\"likeCount\"", nullable = false)
-    private int likeCount;
+	public void incrementLikeCount() {
+		this.likeCount++;
+	}
 
-    @Basic
-    @Column(name = "\"pgSopticleId\"", nullable = false)
-    private Long pgSopticleId;
+	public void decrementLikeCount() {
+		this.likeCount--;
+	}
 
-    @OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL)
-    private List<SopticleLikeEntity> sopticleLikes;
-
-    @OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SopticleAuthorEntity> authors = new ArrayList<>();
-
-
-    public void incrementLikeCount() {
-        this.likeCount++;
-    }
-
-    public void decrementLikeCount() {
-        this.likeCount--;
-    }
-
-    @Builder
-    private SopticleEntity(Part part, Integer generation, String thumbnailUrl, String title,
-                           String description, Long authorId, String authorName,
-                           String authorProfileImageUrl, String sopticleUrl, Long pgSopticleId) {
-        this.part = part;
-        this.generation = generation;
-        this.thumbnailUrl = thumbnailUrl;
-        this.title = title;
-        this.description = description;
-        this.authorId = authorId;
-        this.authorName = authorName;
-        this.authorProfileImageUrl = authorProfileImageUrl;
-        this.sopticleUrl = sopticleUrl;
-        this.pgSopticleId = pgSopticleId;
-    }
-
+	@Builder
+	private SopticleEntity(Part part, Integer generation, String thumbnailUrl, String title,
+		String description, String sopticleUrl) {
+		this.part = part;
+		this.generation = generation;
+		this.thumbnailUrl = thumbnailUrl;
+		this.title = title;
+		this.description = description;
+		this.sopticleUrl = sopticleUrl;
+	}
 
 }

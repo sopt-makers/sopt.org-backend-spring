@@ -1,8 +1,5 @@
 package sopt.org.homepage.sopticle.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.common.type.Part;
-import sopt.org.homepage.exception.BusinessLogicException;
 import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.scrap.dto.ScrapArticleDto;
 import sopt.org.homepage.scrap.service.ScraperService;
@@ -21,7 +17,6 @@ import sopt.org.homepage.sopticle.dto.request.GetSopticleListRequestDto;
 import sopt.org.homepage.sopticle.dto.response.CreateSopticleResponseDto;
 import sopt.org.homepage.sopticle.dto.response.LikeSopticleResponseDto;
 import sopt.org.homepage.sopticle.dto.response.SopticleResponseDto;
-import sopt.org.homepage.sopticle.entity.SopticleAuthorEntity;
 import sopt.org.homepage.sopticle.entity.SopticleEntity;
 import sopt.org.homepage.sopticle.entity.SopticleLikeEntity;
 import sopt.org.homepage.sopticle.repository.SopticleAuthorRepository;
@@ -102,52 +97,43 @@ public class SopticleServiceImpl implements SopticleService {
 	@Override
 	@Transactional
 	public CreateSopticleResponseDto createSopticle(CreateSopticleDto dto) {
-		if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
-			throw new BusinessLogicException("이미 등록된 솝티클입니다.");
-		}
+		// // 25.04.28 공홈 솝티클 제거에 따른 저장 로직 주석화
+		// if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
+		// 	throw new BusinessLogicException("이미 등록된 솝티클입니다.");
+		// }
 
 		CreateScraperResponseDto scrapResult = scraperService.scrap(new ScrapArticleDto(dto.getLink()));
 
-		SopticleEntity sopticle = SopticleEntity.builder()
-			.pgSopticleId(dto.getId())
-			.part(convertToPart(dto.getAuthors().get(0).getPart()))
-			.generation(dto.getAuthors().get(0).getGeneration())
+		// SopticleEntity sopticle = SopticleEntity.builder()
+		// 	.part(convertToPart(dto.getAuthor().getPart()))
+		// 	.generation(dto.getAuthor().getGeneration())
+		// 	.thumbnailUrl(scrapResult.getThumbnailUrl())
+		// 	.title(scrapResult.getTitle())
+		// 	.description(scrapResult.getDescription())
+		// 	.sopticleUrl(scrapResult.getArticleUrl())
+		// 	.build();
+		//
+		// SopticleEntity savedSopticle = sopticleRepository.save(sopticle);
+		//
+		// // 단일 작성자 정보를 저장
+		// SopticleAuthorEntity authorEntity = SopticleAuthorEntity.builder()
+		// 	.sopticle(savedSopticle)
+		// 	.pgUserId(dto.getAuthor().getId())
+		// 	.name(dto.getAuthor().getName())
+		// 	.profileImage(dto.getAuthor().getProfileImage())
+		// 	.generation(dto.getAuthor().getGeneration())
+		// 	.part(convertToPart(dto.getAuthor().getPart()).getValue())
+		// 	.build();
+		//
+		// sopticleAuthorRepository.save(authorEntity);
+
+		return CreateSopticleResponseDto.builder()
 			.thumbnailUrl(scrapResult.getThumbnailUrl())
 			.title(scrapResult.getTitle())
 			.description(scrapResult.getDescription())
-			.authorId(dto.getAuthors().get(0).getId())
-			.authorName(dto.getAuthors().get(0).getName())
-			.authorProfileImageUrl(dto.getAuthors().get(0).getProfileImage())
 			.sopticleUrl(scrapResult.getArticleUrl())
 			.build();
 
-		SopticleEntity savedSopticle = sopticleRepository.save(sopticle);
-
-		List<SopticleAuthorEntity> authorEntities = dto.getAuthors().stream()
-			.map(author -> SopticleAuthorEntity.builder()
-				.sopticle(savedSopticle)
-				.pgUserId(author.getId())
-				.name(author.getName())
-				.profileImage(author.getProfileImage())
-				.generation(author.getGeneration())
-				.part(author.getPart().getValue())
-				.build())
-			.collect(Collectors.toList());
-
-		sopticleAuthorRepository.saveAll(authorEntities);
-
-		return CreateSopticleResponseDto.builder()
-			.id(savedSopticle.getId())
-			.part(savedSopticle.getPart())
-			.generation(savedSopticle.getGeneration())
-			.thumbnailUrl(savedSopticle.getThumbnailUrl())
-			.title(savedSopticle.getTitle())
-			.description(savedSopticle.getDescription())
-			.author(savedSopticle.getAuthorName())
-			.authorProfileImageUrl(savedSopticle.getAuthorProfileImageUrl())
-			.sopticleUrl(savedSopticle.getSopticleUrl())
-			.uploadedAt(savedSopticle.getCreatedAt())
-			.build();
 	}
 
 	private SopticleResponseDto toSopticleResponseDto(SopticleEntity entity, boolean liked) {
@@ -158,8 +144,8 @@ public class SopticleServiceImpl implements SopticleService {
 			.thumbnailUrl(entity.getThumbnailUrl())
 			.title(entity.getTitle())
 			.description(entity.getDescription())
-			.author(entity.getAuthorName())
-			.authorProfileImageUrl(entity.getAuthorProfileImageUrl())
+			.author(entity.getAuthor().getName())
+			.authorProfileImageUrl(entity.getAuthor().getProfileImage())
 			.url(entity.getSopticleUrl())
 			.uploadedAt(entity.getCreatedAt())
 			.likeCount(entity.getLikeCount())
@@ -184,7 +170,7 @@ public class SopticleServiceImpl implements SopticleService {
 		return switch (role) {
 			case WEB, WEB_LEADER -> Part.WEB;
 			case PLAN, PLAN_LEADER, PRESIDENT, VICE_PRESIDENT,
-				OPERATION_LEADER, MEDIA_LEADER -> Part.PLAN;
+				 OPERATION_LEADER, MEDIA_LEADER -> Part.PLAN;
 			case DESIGN, DESIGN_LEADER -> Part.DESIGN;
 			case IOS, IOS_LEADER -> Part.iOS;
 			case SERVER, SERVER_LEADER -> Part.SERVER;

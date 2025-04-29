@@ -88,6 +88,20 @@ public class ResponseMapper {
     }
 
     public ReviewsResponseDto toReviewResponseDto(ReviewEntity entity) {
+        // subject List<String>을 단일 String으로 변환
+        String subjectStr;
+        List<String> subjects = entity.getSubject();
+        
+        if (subjects == null || subjects.isEmpty()) {
+            subjectStr = "";
+        } else if (subjects.size() == 1) {
+            // 배열 길이가 1이면 그 값만 사용
+            subjectStr = subjects.get(0);
+        } else {
+            // 배열 길이가 2 이상이면 " | "로 구분하여 하나의 문자열로 결합
+            subjectStr = String.join(" | ", subjects);
+        }
+        
         return ReviewsResponseDto.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())
@@ -96,7 +110,7 @@ public class ResponseMapper {
                 .generation(entity.getGeneration())
                 .description(entity.getDescription())
                 .part(entity.getPart())
-                .subject(entity.getSubject())
+                .subject(subjectStr)
                 .thumbnailUrl(entity.getThumbnailUrl())
                 .platform(entity.getPlatform())
                 .url(entity.getUrl())
