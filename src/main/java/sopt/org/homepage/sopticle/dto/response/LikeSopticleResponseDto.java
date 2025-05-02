@@ -17,6 +17,4 @@ public class LikeSopticleResponseDto {
     @Schema(description = "session Id")
     private final String sessionId;
 
-    @Schema(description = "생성일자")
-    private final LocalDateTime createdAt;
 }

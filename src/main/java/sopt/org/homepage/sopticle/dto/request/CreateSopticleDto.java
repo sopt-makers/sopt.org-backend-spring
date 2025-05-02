@@ -15,9 +15,4 @@ public class CreateSopticleDto {
 	@Schema(description = "솝티클 주소", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotEmpty(message = "솝티클 주소는 필수입니다")
 	private String link;
-
-	// @Schema(description = "작성자 정보", requiredMode = Schema.RequiredMode.REQUIRED)
-	// @NotEmpty(message = "작성자 정보는 필수입니다")
-	// @Valid
-	// private CreateSopticleAuthorDto author;
 }

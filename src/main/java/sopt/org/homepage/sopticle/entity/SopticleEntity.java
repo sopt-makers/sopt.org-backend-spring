@@ -15,7 +15,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,15 +31,6 @@ public class SopticleEntity {
 	@Id
 	@Column(name = "\"id\"", nullable = false)
 	private Long id;
-
-	@Getter
-	@Enumerated(EnumType.STRING)
-	@Column(name = "\"part\"")
-	private Part part;
-
-	@Basic
-	@Column(name = "\"generation\"", nullable = false)
-	private int generation;
 
 	@Basic
 	@Column(name = "\"thumbnailUrl\"", nullable = true, length = 500)
@@ -70,9 +60,6 @@ public class SopticleEntity {
 	@OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL)
 	private List<SopticleLikeEntity> sopticleLikes;
 
-	@OneToOne(mappedBy = "sopticle", cascade = CascadeType.ALL, orphanRemoval = true)
-	private SopticleAuthorEntity author;
-
 	public void incrementLikeCount() {
 		this.likeCount++;
 	}
@@ -82,10 +69,7 @@ public class SopticleEntity {
 	}
 
 	@Builder
-	private SopticleEntity(Part part, Integer generation, String thumbnailUrl, String title,
-		String description, String sopticleUrl) {
-		this.part = part;
-		this.generation = generation;
+	private SopticleEntity(String thumbnailUrl, String title,String description, String sopticleUrl) {
 		this.thumbnailUrl = thumbnailUrl;
 		this.title = title;
 		this.description = description;
