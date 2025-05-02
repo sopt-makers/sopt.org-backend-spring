@@ -36,7 +36,7 @@ public class SopticleController {
     private final AuthConfig authConfig;
 
     @GetMapping("")
-    @Operation(summary = "Sopticle 리스트 조회")
+    @Operation(summary = "Sopticle 리스트 조회(정렬)")
     public ResponseEntity<PaginateResponseDto<SopticleResponseDto>> getSopticleList(
             @ParameterObject @ModelAttribute GetSopticleListRequestDto getSopticleListRequestDto,
             @RequestHeader(value = "session-id", required = false) String session

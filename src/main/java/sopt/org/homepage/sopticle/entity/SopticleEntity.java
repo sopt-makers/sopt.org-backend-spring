@@ -55,7 +55,7 @@ public class SopticleEntity {
 
 	@Basic
 	@Column(name = "\"likeCount\"", nullable = false)
-	private int likeCount;
+	private int likeCount=0;
 
 	@OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL)
 	private List<SopticleLikeEntity> sopticleLikes;

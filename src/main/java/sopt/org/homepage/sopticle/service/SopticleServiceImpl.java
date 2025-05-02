@@ -8,6 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 import lombok.RequiredArgsConstructor;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.exception.BusinessLogicException;
 import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.scrap.dto.ScrapArticleDto;
 import sopt.org.homepage.scrap.service.ScraperService;
@@ -29,14 +30,13 @@ public class SopticleServiceImpl implements SopticleService {
 	private final SopticleRepository sopticleRepository;
 	private final SopticleQueryRepository sopticleQueryRepository;
 	private final SopticleLikeRepository sopticleLikeRepository;
-	private final SopticleAuthorRepository sopticleAuthorRepository;
 	private final ScraperService scraperService;
 
 	@Override
 	public PaginateResponseDto<SopticleResponseDto> paginateSopticles(GetSopticleListRequestDto requestDto,
 		String sessionId) {
-		var sopticles = sopticleQueryRepository.findAllWithFilters(requestDto, sessionId);
-		var totalCount = sopticleQueryRepository.countWithFilters(requestDto);
+		var sopticles = sopticleQueryRepository.findAllSorted(requestDto);
+		var totalCount = (int)sopticleRepository.count();
 
 		var likedSopticles = sopticleLikeRepository.findAllBySessionIdAndSopticleIn(sessionId, sopticles);
 
@@ -50,7 +50,7 @@ public class SopticleServiceImpl implements SopticleService {
 
 		return new PaginateResponseDto<>(
 			sopticleDtos,
-			totalCount.intValue(),
+				totalCount,
 			requestDto.getLimit(),
 			requestDto.getPageNo()
 		);
@@ -76,6 +76,9 @@ public class SopticleServiceImpl implements SopticleService {
 
 		return toLikeSopticleResponseDto(sopticleLike);
 	}
+	private boolean isLiked(Long sopticleId, String session) {
+		return sopticleLikeRepository.existsBySopticleIdAndSessionId(sopticleId, session);
+	}
 
 	@Override
 	@Transactional
@@ -95,35 +98,20 @@ public class SopticleServiceImpl implements SopticleService {
 	@Override
 	@Transactional
 	public CreateSopticleResponseDto createSopticle(CreateSopticleDto dto) {
-		// // 25.04.28 공홈 솝티클 제거에 따른 저장 로직 주석화
-		// if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
-		// 	throw new BusinessLogicException("이미 등록된 솝티클입니다.");
-		// }
+		 if (sopticleRepository.existsBySopticleUrl(dto.getLink())) {
+		 	throw new BusinessLogicException("이미 등록된 솝티클입니다.");
+		 }
 
 		CreateScraperResponseDto scrapResult = scraperService.scrap(new ScrapArticleDto(dto.getLink()));
 
-		// SopticleEntity sopticle = SopticleEntity.builder()
-		// 	.part(convertToPart(dto.getAuthor().getPart()))
-		// 	.generation(dto.getAuthor().getGeneration())
-		// 	.thumbnailUrl(scrapResult.getThumbnailUrl())
-		// 	.title(scrapResult.getTitle())
-		// 	.description(scrapResult.getDescription())
-		// 	.sopticleUrl(scrapResult.getArticleUrl())
-		// 	.build();
-		//
-		// SopticleEntity savedSopticle = sopticleRepository.save(sopticle);
-		//
-		// // 단일 작성자 정보를 저장
-		// SopticleAuthorEntity authorEntity = SopticleAuthorEntity.builder()
-		// 	.sopticle(savedSopticle)
-		// 	.pgUserId(dto.getAuthor().getId())
-		// 	.name(dto.getAuthor().getName())
-		// 	.profileImage(dto.getAuthor().getProfileImage())
-		// 	.generation(dto.getAuthor().getGeneration())
-		// 	.part(convertToPart(dto.getAuthor().getPart()).getValue())
-		// 	.build();
-		//
-		// sopticleAuthorRepository.save(authorEntity);
+		SopticleEntity sopticle = SopticleEntity.builder()
+				.thumbnailUrl(scrapResult.getThumbnailUrl())
+				.title(scrapResult.getTitle())
+				.description(scrapResult.getDescription())
+				.sopticleUrl(scrapResult.getArticleUrl())
+				.build();
+
+		sopticleRepository.save(sopticle);
 
 		return CreateSopticleResponseDto.builder()
 			.thumbnailUrl(scrapResult.getThumbnailUrl())
@@ -137,22 +125,13 @@ public class SopticleServiceImpl implements SopticleService {
 	private SopticleResponseDto toSopticleResponseDto(SopticleEntity entity, boolean liked) {
 		return SopticleResponseDto.builder()
 			.id(entity.getId())
-			.part(entity.getPart())
-			.generation(entity.getGeneration())
 			.thumbnailUrl(entity.getThumbnailUrl())
 			.title(entity.getTitle())
 			.description(entity.getDescription())
-			.author(entity.getAuthor().getName())
-			.authorProfileImageUrl(entity.getAuthor().getProfileImage())
 			.url(entity.getSopticleUrl())
 			.uploadedAt(entity.getCreatedAt())
 			.likeCount(entity.getLikeCount())
-			.liked(liked)
 			.build();
-	}
-
-	private boolean isLiked(Long sopticleId, String session) {
-		return sopticleLikeRepository.existsBySopticleIdAndSessionId(sopticleId, session);
 	}
 
 	private LikeSopticleResponseDto toLikeSopticleResponseDto(SopticleLikeEntity entity) {
@@ -160,20 +139,6 @@ public class SopticleServiceImpl implements SopticleService {
 			.id(entity.getId())
 			.sopticleId(entity.getSopticle().getId())
 			.sessionId(entity.getSessionId())
-			.createdAt(entity.getCreatedAt())
 			.build();
-	}
-
-	private Part convertToPart(CreateSopticleAuthorRole role) {
-		return switch (role) {
-			case WEB, WEB_LEADER -> Part.WEB;
-			case PLAN, PLAN_LEADER, PRESIDENT, VICE_PRESIDENT,
-				 OPERATION_LEADER, MEDIA_LEADER -> Part.PLAN;
-			case DESIGN, DESIGN_LEADER -> Part.DESIGN;
-			case IOS, IOS_LEADER -> Part.iOS;
-			case SERVER, SERVER_LEADER -> Part.SERVER;
-			case ANDROID, ANDROID_LEADER -> Part.ANDROID;
-			default -> throw new IllegalArgumentException("Unknown role: " + role);
-		};
 	}
 }

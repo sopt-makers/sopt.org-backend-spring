@@ -9,15 +9,15 @@ import sopt.org.homepage.common.type.Part;
 @Schema(description = "Sopticle 조회 요청")
 public class GetSopticleListRequestDto extends PaginateRequest {
 
-    @Schema(description = "Part별로 필터링 합니다, 값을 넣지 않을 경우 전체 조회합니다.")
-    private final Part part;
+    @Schema(
+            description = "정렬 기준: 'latest' 또는 'likes'",
+            defaultValue = "latest",
+            example = "likes"
+    )
+    private final String sort;
 
-    @Schema(description = "활동기수로 필터링 합니다, 값을 넣지 않을 경우 전체 조회합니다.")
-    private final Integer generation;
-
-    public GetSopticleListRequestDto(Integer pageNo, Integer limit, Part part, Integer generation) {
+    public GetSopticleListRequestDto(Integer pageNo, Integer limit, String sort) {
         super(pageNo, limit);
-        this.part = part;
-        this.generation = generation;
+        this.sort = (sort == null || sort.isBlank()) ? "latest" : sort;
     }
 }

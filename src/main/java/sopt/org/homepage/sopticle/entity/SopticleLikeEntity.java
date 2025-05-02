@@ -29,10 +29,6 @@ public class SopticleLikeEntity {
     @Column(name = "\"sessionId\"", nullable = false, length = 50)
     private String sessionId;
 
-    @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "\"sopticleId\"")
     private SopticleEntity sopticle;

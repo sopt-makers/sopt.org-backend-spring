@@ -13,12 +13,6 @@ public class SopticleResponseDto {
     @Schema(description = "Sopticle Id")
     private final Long id;
 
-    @Schema(description = "활동 파트")
-    private final Part part;
-
-    @Schema(description = "기수")
-    private final Integer generation;
-
     @Schema(description = "솝티클 썸네일 이미지")
     private final String thumbnailUrl;
 
@@ -28,11 +22,6 @@ public class SopticleResponseDto {
     @Schema(description = "솝티클 설명")
     private final String description;
 
-    @Schema(description = "작성자 이름")
-    private final String author;
-
-    @Schema(description = "작성자 프로필 이미지")
-    private final String authorProfileImageUrl;
 
     @Schema(description = "솝티클 리다이렉트 주소")
     private final String url;
@@ -43,6 +32,4 @@ public class SopticleResponseDto {
     @Schema(description = "좋아요 수")
     private final Integer likeCount;
 
-    @Schema(description = "좋아요 여부")
-    private final Boolean liked;
 }
