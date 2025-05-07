@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.service;
+package sopt.org.homepage.soptstory.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -7,21 +7,20 @@ import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
-import sopt.org.homepage.common.type.Part;
 import sopt.org.homepage.exception.BusinessLogicException;
 import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.scrap.dto.ScrapArticleDto;
 import sopt.org.homepage.scrap.service.ScraperService;
-import sopt.org.homepage.sopticle.dto.request.CreateSopticleDto;
-import sopt.org.homepage.sopticle.dto.request.GetSopticleListRequestDto;
-import sopt.org.homepage.sopticle.dto.response.CreateSopticleResponseDto;
-import sopt.org.homepage.sopticle.dto.response.LikeSopticleResponseDto;
-import sopt.org.homepage.sopticle.dto.response.SopticleResponseDto;
-import sopt.org.homepage.sopticle.entity.SopticleEntity;
-import sopt.org.homepage.sopticle.entity.SopticleLikeEntity;
-import sopt.org.homepage.sopticle.repository.SopticleLikeRepository;
-import sopt.org.homepage.sopticle.repository.SopticleQueryRepository;
-import sopt.org.homepage.sopticle.repository.SopticleRepository;
+import sopt.org.homepage.soptstory.dto.request.CreateSopticleDto;
+import sopt.org.homepage.soptstory.dto.request.GetSopticleListRequestDto;
+import sopt.org.homepage.soptstory.dto.response.CreateSopticleResponseDto;
+import sopt.org.homepage.soptstory.dto.response.LikeSopticleResponseDto;
+import sopt.org.homepage.soptstory.dto.response.SopticleResponseDto;
+import sopt.org.homepage.soptstory.entity.SoptStoryEntity;
+import sopt.org.homepage.soptstory.entity.SoptStoryLikeEntity;
+import sopt.org.homepage.soptstory.repository.SopticleLikeRepository;
+import sopt.org.homepage.soptstory.repository.SopticleQueryRepository;
+import sopt.org.homepage.soptstory.repository.SopticleRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +43,7 @@ public class SopticleServiceImpl implements SopticleService {
 			.map(sopticle -> toSopticleResponseDto(
 				sopticle,
 				likedSopticles.stream()
-					.anyMatch(like -> like.getSopticle().getId().equals(sopticle.getId()))
+					.anyMatch(like -> like.getSoptStroy().getId().equals(sopticle.getId()))
 			))
 			.toList();
 
@@ -59,15 +58,15 @@ public class SopticleServiceImpl implements SopticleService {
 	@Override
 	@Transactional
 	public LikeSopticleResponseDto like(Long id, String session) {
-		SopticleEntity sopticle = sopticleRepository.findById(id)
+		SoptStoryEntity sopticle = sopticleRepository.findById(id)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NotFoundSopticle id: " + id));
 
 		if (isLiked(id, session)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AlreadyLike");
 		}
 
-		SopticleLikeEntity sopticleLike = SopticleLikeEntity.builder()
-			.sopticle(sopticle)
+		SoptStoryLikeEntity sopticleLike = SoptStoryLikeEntity.builder()
+			.soptStroy(sopticle)
 			.sessionId(session)
 			.build();
 
@@ -83,10 +82,10 @@ public class SopticleServiceImpl implements SopticleService {
 	@Override
 	@Transactional
 	public LikeSopticleResponseDto unlike(Long id, String session) {
-		SopticleEntity sopticle = sopticleRepository.findById(id)
+		SoptStoryEntity sopticle = sopticleRepository.findById(id)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NotFoundSopticle id: " + id));
 
-		SopticleLikeEntity sopticleLike = sopticleLikeRepository.findBySopticleIdAndSessionId(id, session)
+		SoptStoryLikeEntity sopticleLike = sopticleLikeRepository.findBySopticleIdAndSessionId(id, session)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Like 하지 않은 상태입니다."));
 
 		sopticle.decrementLikeCount();
@@ -104,11 +103,11 @@ public class SopticleServiceImpl implements SopticleService {
 
 		CreateScraperResponseDto scrapResult = scraperService.scrap(new ScrapArticleDto(dto.getLink()));
 
-		SopticleEntity sopticle = SopticleEntity.builder()
+		SoptStoryEntity sopticle = SoptStoryEntity.builder()
 				.thumbnailUrl(scrapResult.getThumbnailUrl())
 				.title(scrapResult.getTitle())
 				.description(scrapResult.getDescription())
-				.sopticleUrl(scrapResult.getArticleUrl())
+				.soptStoryUrl(scrapResult.getArticleUrl())
 				.build();
 
 		sopticleRepository.save(sopticle);
@@ -122,22 +121,22 @@ public class SopticleServiceImpl implements SopticleService {
 
 	}
 
-	private SopticleResponseDto toSopticleResponseDto(SopticleEntity entity, boolean liked) {
+	private SopticleResponseDto toSopticleResponseDto(SoptStoryEntity entity, boolean liked) {
 		return SopticleResponseDto.builder()
 			.id(entity.getId())
 			.thumbnailUrl(entity.getThumbnailUrl())
 			.title(entity.getTitle())
 			.description(entity.getDescription())
-			.url(entity.getSopticleUrl())
+			.url(entity.getSoptStoryUrl())
 			.uploadedAt(entity.getCreatedAt())
 			.likeCount(entity.getLikeCount())
 			.build();
 	}
 
-	private LikeSopticleResponseDto toLikeSopticleResponseDto(SopticleLikeEntity entity) {
+	private LikeSopticleResponseDto toLikeSopticleResponseDto(SoptStoryLikeEntity entity) {
 		return LikeSopticleResponseDto.builder()
 			.id(entity.getId())
-			.sopticleId(entity.getSopticle().getId())
+			.sopticleId(entity.getSoptStroy().getId())
 			.sessionId(entity.getSessionId())
 			.build();
 	}

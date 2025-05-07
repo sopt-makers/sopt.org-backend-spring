@@ -1,11 +1,11 @@
-package sopt.org.homepage.sopticle.service;
+package sopt.org.homepage.soptstory.service;
 
 import sopt.org.homepage.common.dto.PaginateResponseDto;
-import sopt.org.homepage.sopticle.dto.request.CreateSopticleDto;
-import sopt.org.homepage.sopticle.dto.request.GetSopticleListRequestDto;
-import sopt.org.homepage.sopticle.dto.response.CreateSopticleResponseDto;
-import sopt.org.homepage.sopticle.dto.response.LikeSopticleResponseDto;
-import sopt.org.homepage.sopticle.dto.response.SopticleResponseDto;
+import sopt.org.homepage.soptstory.dto.request.CreateSopticleDto;
+import sopt.org.homepage.soptstory.dto.request.GetSopticleListRequestDto;
+import sopt.org.homepage.soptstory.dto.response.CreateSopticleResponseDto;
+import sopt.org.homepage.soptstory.dto.response.LikeSopticleResponseDto;
+import sopt.org.homepage.soptstory.dto.response.SopticleResponseDto;
 
 public interface SopticleService {
     /**

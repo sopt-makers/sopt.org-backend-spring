@@ -1,10 +1,9 @@
-package sopt.org.homepage.sopticle.dto.response;
+package sopt.org.homepage.soptstory.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
-import sopt.org.homepage.common.type.Part;
 
 @Schema(description = "Sopticle 응답")
 @Getter

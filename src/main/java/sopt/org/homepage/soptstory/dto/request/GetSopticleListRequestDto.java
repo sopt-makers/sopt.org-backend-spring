@@ -1,9 +1,8 @@
-package sopt.org.homepage.sopticle.dto.request;
+package sopt.org.homepage.soptstory.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import sopt.org.homepage.common.dto.PaginateRequest;
-import sopt.org.homepage.common.type.Part;
 
 @Getter
 @Schema(description = "Sopticle 조회 요청")

@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.dto.response;
+package sopt.org.homepage.soptstory.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

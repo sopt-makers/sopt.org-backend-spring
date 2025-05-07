@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.entity;
+package sopt.org.homepage.soptstory.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,8 +9,6 @@ import jakarta.persistence.Basic;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,13 +18,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.common.type.Part;
 
 @Entity
 @Getter
-@Table(name = "\"Sopticle\"")
+@Table(name = "\"SoptStory\"")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SopticleEntity {
+public class SoptStoryEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Id
 	@Column(name = "\"id\"", nullable = false)
@@ -45,8 +42,8 @@ public class SopticleEntity {
 	private String description;
 
 	@Basic
-	@Column(name = "\"sopticleUrl\"", nullable = false, length = 500)
-	private String sopticleUrl;
+	@Column(name = "\"soptStoryUrl\"", nullable = false, length = 500)
+	private String soptStoryUrl;
 
 	@CreationTimestamp
 	@Basic
@@ -57,8 +54,8 @@ public class SopticleEntity {
 	@Column(name = "\"likeCount\"", nullable = false)
 	private int likeCount=0;
 
-	@OneToMany(mappedBy = "sopticle", cascade = CascadeType.ALL)
-	private List<SopticleLikeEntity> sopticleLikes;
+	@OneToMany(mappedBy = "soptStroy", cascade = CascadeType.ALL)
+	private List<SoptStoryLikeEntity> soptStoryLikes;
 
 	public void incrementLikeCount() {
 		this.likeCount++;
@@ -69,11 +66,11 @@ public class SopticleEntity {
 	}
 
 	@Builder
-	private SopticleEntity(String thumbnailUrl, String title,String description, String sopticleUrl) {
+	private SoptStoryEntity(String thumbnailUrl, String title, String description, String soptStoryUrl) {
 		this.thumbnailUrl = thumbnailUrl;
 		this.title = title;
 		this.description = description;
-		this.sopticleUrl = sopticleUrl;
+		this.soptStoryUrl = soptStoryUrl;
 	}
 
 }

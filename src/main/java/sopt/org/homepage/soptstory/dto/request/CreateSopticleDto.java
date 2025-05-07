@@ -1,4 +1,4 @@
-package sopt.org.homepage.sopticle.dto.request;
+package sopt.org.homepage.soptstory.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
