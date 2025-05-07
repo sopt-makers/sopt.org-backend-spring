@@ -6,21 +6,20 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import sopt.org.homepage.soptstory.dto.request.GetSopticleListRequestDto;
+import sopt.org.homepage.soptstory.dto.request.GetSoptStoryListRequestDto;
+import sopt.org.homepage.soptstory.entity.QSoptStoryEntity;
 import sopt.org.homepage.soptstory.entity.SoptStoryEntity;
-import sopt.org.homepage.soptstory.entity.QSopticleEntity;
 
 @Repository
 @RequiredArgsConstructor
-public class SopticleQueryRepository {
+public class SoptStoryQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final QSopticleEntity sopticle = QSopticleEntity.sopticleEntity;
+    private final QSoptStoryEntity soptStory = QSoptStoryEntity.soptStoryEntity;
 
-    public List<SoptStoryEntity> findAllSorted(GetSopticleListRequestDto requestDto) {
+    public List<SoptStoryEntity> findAllSorted(GetSoptStoryListRequestDto requestDto) {
         return queryFactory
-                .selectFrom(sopticle)
+                .selectFrom(soptStory)
                 .orderBy(
                         getOrderSpecifier(requestDto.getSort())
                 )
@@ -31,9 +30,9 @@ public class SopticleQueryRepository {
 
     private OrderSpecifier<?> getOrderSpecifier(String sort) {
         if ("likes".equalsIgnoreCase(sort)) {
-            return sopticle.likeCount.desc();
+            return soptStory.likeCount.desc();
         } else {
-            return sopticle.createdAt.desc(); // 기본은 최신순
+            return soptStory.createdAt.desc(); // 기본은 최신순
         }
     }
 }

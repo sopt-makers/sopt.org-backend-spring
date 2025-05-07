@@ -19,63 +19,63 @@ import org.springframework.web.server.ResponseStatusException;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.config.AuthConfig;
 import sopt.org.homepage.exception.BusinessLogicException;
-import sopt.org.homepage.soptstory.dto.request.CreateSopticleDto;
-import sopt.org.homepage.soptstory.dto.request.GetSopticleListRequestDto;
-import sopt.org.homepage.soptstory.dto.response.CreateSopticleResponseDto;
-import sopt.org.homepage.soptstory.dto.response.LikeSopticleResponseDto;
-import sopt.org.homepage.soptstory.dto.response.SopticleResponseDto;
-import sopt.org.homepage.soptstory.service.SopticleService;
+import sopt.org.homepage.soptstory.dto.request.CreateSoptStoryDto;
+import sopt.org.homepage.soptstory.dto.request.GetSoptStoryListRequestDto;
+import sopt.org.homepage.soptstory.dto.response.CreateSoptStoryResponseDto;
+import sopt.org.homepage.soptstory.dto.response.LikeSoptStoryResponseDto;
+import sopt.org.homepage.soptstory.dto.response.SoptStoryResponseDto;
+import sopt.org.homepage.soptstory.service.SoptStoryService;
 
-@Tag(name = "Sopticle")
+@Tag(name = "SoptStory")
 @RestController
-@RequestMapping("sopticle")
+@RequestMapping("soptstory")// 외부 요청 확인
 @RequiredArgsConstructor
-public class SopticleController {
+public class SoptStoryController {
 
-    private final SopticleService sopticleService;
+    private final SoptStoryService soptStoryService;
     private final AuthConfig authConfig;
 
     @GetMapping("")
-    @Operation(summary = "Sopticle 리스트 조회(정렬)")
-    public ResponseEntity<PaginateResponseDto<SopticleResponseDto>> getSopticleList(
-            @ParameterObject @ModelAttribute GetSopticleListRequestDto getSopticleListRequestDto,
+    @Operation(summary = "솝트스토리 리스트 조회(정렬)")
+    public ResponseEntity<PaginateResponseDto<SoptStoryResponseDto>> getSoptStoryList(
+            @ParameterObject @ModelAttribute GetSoptStoryListRequestDto getSoptStoryListRequestDto,
             @RequestHeader(value = "session-id", required = false) String session
     ) {
         if (session == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "session-id is required");
         }
-        return ResponseEntity.ok(sopticleService.paginateSopticles(getSopticleListRequestDto, session));
+        return ResponseEntity.ok(soptStoryService.paginateSoptStorys(getSoptStoryListRequestDto, session));
     }
 
-    @Operation(summary = "Sopticle 좋아요 누르기")
+    @Operation(summary = "솝트스토리 좋아요 누르기")
     @PostMapping("/{id}/like")
-    public ResponseEntity<LikeSopticleResponseDto> likeSopticle(
+    public ResponseEntity<LikeSoptStoryResponseDto> likeSoptStory(
             @PathVariable Long id,
             @RequestHeader(value = "session-id", required = false) String session
     ) {
         if (session == null) {
             throw new BusinessLogicException("session-id is required");
         }
-        return ResponseEntity.ok(sopticleService.like(id, session));
+        return ResponseEntity.ok(soptStoryService.like(id, session));
     }
 
-    @Operation(summary = "Sopticle 좋아요 취소하기")
+    @Operation(summary = "솝트 스토리 좋아요 취소하기")
     @PostMapping("/{id}/unlike")
-    public ResponseEntity<LikeSopticleResponseDto> unlikeSopticle(
+    public ResponseEntity<LikeSoptStoryResponseDto> unlikeSoptStory(
             @PathVariable Long id,
             @RequestHeader(value = "session-id", required = false) String session
     ) {
         if (session == null) {
             throw new BusinessLogicException("session-id is required");
         }
-        return ResponseEntity.ok(sopticleService.unlike(id, session));
+        return ResponseEntity.ok(soptStoryService.unlike(id, session));
     }
 
     @PostMapping
-    @Operation(summary = "솝티클 생성", description = "솝티클을 생성합니다.")
-    public ResponseEntity<CreateSopticleResponseDto> createSopticle(
-            @Valid @RequestBody CreateSopticleDto dto,
+    @Operation(summary = "솝트스토리 생성", description = "솝트스토리를 생성합니다.")
+    public ResponseEntity<CreateSoptStoryResponseDto> createSoptStory(
+            @Valid @RequestBody CreateSoptStoryDto dto,
             @RequestHeader("api-key") String apiKey
     ) {
         if (apiKey == null) {
@@ -86,6 +86,6 @@ public class SopticleController {
             throw new BusinessLogicException("api-key is invalid");
         }
 
-        return ResponseEntity.ok(sopticleService.createSopticle(dto));
+        return ResponseEntity.ok(soptStoryService.CreateSoptStory(dto));
     }
 }

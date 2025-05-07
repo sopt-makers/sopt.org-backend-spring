@@ -54,7 +54,7 @@ public class SoptStoryEntity {
 	@Column(name = "\"likeCount\"", nullable = false)
 	private int likeCount=0;
 
-	@OneToMany(mappedBy = "soptStroy", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "soptStory", cascade = CascadeType.ALL)
 	private List<SoptStoryLikeEntity> soptStoryLikes;
 
 	public void incrementLikeCount() {

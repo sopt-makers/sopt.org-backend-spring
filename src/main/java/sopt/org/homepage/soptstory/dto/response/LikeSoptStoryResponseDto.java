@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class LikeSopticleResponseDto {
+public class LikeSoptStoryResponseDto {
     @Schema(description = "like Id")
     private final Long id;
 
-    @Schema(description = "sopticle Id")
-    private final Long sopticleId;
+    @Schema(description = "soptStory Id")
+    private final Long soptStoryId;
 
     @Schema(description = "session Id")
     private final String sessionId;

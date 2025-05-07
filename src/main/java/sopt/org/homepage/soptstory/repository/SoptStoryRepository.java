@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 import sopt.org.homepage.soptstory.entity.SoptStoryEntity;
 
 @Repository
-public interface SopticleRepository extends JpaRepository<SoptStoryEntity, Long> {
-    boolean existsBySopticleUrl(String sopticleUrl);
+public interface SoptStoryRepository extends JpaRepository<SoptStoryEntity, Long> {
+    boolean existsBySoptStoryUrl(String soptStoryUrl);
 }

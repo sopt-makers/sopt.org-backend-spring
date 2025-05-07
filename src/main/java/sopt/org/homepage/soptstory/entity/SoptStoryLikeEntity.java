@@ -28,11 +28,11 @@ public class SoptStoryLikeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "\"soptStoryId\"")
-    private SoptStoryEntity soptStroy;
+    private SoptStoryEntity soptStory;
 
     @Builder
-    public SoptStoryLikeEntity(SoptStoryEntity soptStroy, String sessionId) {
-        this.soptStroy = soptStroy;
+    public SoptStoryLikeEntity(SoptStoryEntity soptStory, String sessionId) {
+        this.soptStory = soptStory;
         this.sessionId = sessionId;
     }
 }

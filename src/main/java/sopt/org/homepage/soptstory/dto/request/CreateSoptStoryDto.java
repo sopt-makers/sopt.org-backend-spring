@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "솝티클 생성 요청")
-public class CreateSopticleDto {
+@Schema(description = "솝트스토리 생성 요청")
+public class CreateSoptStoryDto {
 
-	@Schema(description = "솝티클 주소", requiredMode = Schema.RequiredMode.REQUIRED)
-	@NotEmpty(message = "솝티클 주소는 필수입니다")
+	@Schema(description = "솝트스토리 주소", requiredMode = Schema.RequiredMode.REQUIRED)
+	@NotEmpty(message = "솝트스토리 주소는 필수입니다")
 	private String link;
 }
