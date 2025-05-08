@@ -1,25 +1,22 @@
-package sopt.org.homepage.sopticle.entity;
+package sopt.org.homepage.soptstory.entity;
 
 import jakarta.persistence.*;
 
 
-import java.time.LocalDateTime;
 import lombok.Getter;
 
 import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 
 @Getter
 @Entity
-@Table(name = "\"SopticleLike\"")
+@Table(name = "\"SoptStoryLike\"")
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SopticleLikeEntity {
+public class SoptStoryLikeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "\"id\"", nullable = false)
@@ -29,17 +26,13 @@ public class SopticleLikeEntity {
     @Column(name = "\"sessionId\"", nullable = false, length = 50)
     private String sessionId;
 
-    @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "\"sopticleId\"")
-    private SopticleEntity sopticle;
+    @JoinColumn(name = "\"soptStoryId\"")
+    private SoptStoryEntity soptStory;
 
     @Builder
-    public SopticleLikeEntity(SopticleEntity sopticle, String sessionId) {
-        this.sopticle = sopticle;
+    public SoptStoryLikeEntity(SoptStoryEntity soptStory, String sessionId) {
+        this.soptStory = soptStory;
         this.sessionId = sessionId;
     }
 }
