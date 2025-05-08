@@ -97,7 +97,7 @@ public class SoptStoryServiceImpl implements SoptStoryService {
 
 	@Override
 	@Transactional
-	public CreateSoptStoryResponseDto CreateSoptStory(CreateSoptStoryDto dto) {
+	public CreateSoptStoryResponseDto createSoptStory(CreateSoptStoryDto dto) {
 		 if (soptStoryRepository.existsBySoptStoryUrl(dto.getLink())) {
 		 	throw new BusinessLogicException("이미 등록된 솝티클입니다.");
 		 }

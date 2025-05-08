@@ -41,5 +41,5 @@ public interface SoptStoryService {
      * @param dto 생성할 솝트스토리 정보
      * @return 생성된 솝트스토리 정보
      */
-    CreateSoptStoryResponseDto CreateSoptStory(CreateSoptStoryDto dto);
+    CreateSoptStoryResponseDto createSoptStory(CreateSoptStoryDto dto);
 }

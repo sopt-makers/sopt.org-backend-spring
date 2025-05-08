@@ -86,6 +86,6 @@ public class SoptStoryController {
             throw new BusinessLogicException("api-key is invalid");
         }
 
-        return ResponseEntity.ok(soptStoryService.CreateSoptStory(dto));
+        return ResponseEntity.ok(soptStoryService.createSoptStory(dto));
     }
 }
