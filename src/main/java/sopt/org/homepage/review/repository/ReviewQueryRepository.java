@@ -1,68 +1,100 @@
 package sopt.org.homepage.review.repository;
 
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import java.util.Objects;
+
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import lombok.RequiredArgsConstructor;
 import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.review.dto.request.ReviewsRequestDto;
 import sopt.org.homepage.review.entity.QReviewEntity;
 import sopt.org.homepage.review.entity.ReviewEntity;
-import sopt.org.homepage.review.dto.request.ReviewsRequestDto;
-
 
 @Repository
 @RequiredArgsConstructor
 public class ReviewQueryRepository {
 
-    private final JPAQueryFactory queryFactory;
-    private final QReviewEntity review = QReviewEntity.reviewEntity;
+	private final JPAQueryFactory queryFactory;
+	private final QReviewEntity review = QReviewEntity.reviewEntity;
 
-    public List<ReviewEntity> findAllWithFilters(ReviewsRequestDto requestDto, long offset, int limit) {
-        var query = queryFactory
-                .selectFrom(review);
+	public List<ReviewEntity> findAllWithFilters(ReviewsRequestDto requestDto, long offset, int limit) {
+		System.out.println(requestDto.toString());
+		var query = queryFactory
+			.selectFrom(review)
+			.where(review.category.eq(requestDto.getCategory()));
 
-        if (requestDto.getPart() != null) {
-            query.where(review.part.eq(requestDto.getPart()));
-        }
+		if (Objects.equals(requestDto.getCategory(), "전체 활동") && requestDto.getActivity() != null
+			&& !requestDto.getActivity().equals("전체")) {
+			String searchTerm = "\"" + requestDto.getActivity() + "\"";
 
-        if (requestDto.getGeneration() != null) {
-            query.where(review.generation.eq(requestDto.getGeneration()));
-        }
+			BooleanExpression subjectContains = Expressions.booleanTemplate(
+				"CAST({0} AS string) LIKE {1}",
+				review.subject,
+				"%" + searchTerm + "%"
+			);
 
-        return query
-                .orderBy(review.generation.desc())
-                .orderBy(review.author.asc())
-                .orderBy(review.id.asc())
-                .offset(offset)
-                .limit(limit)
-                .fetch();
-    }
+			query.where(subjectContains);
 
-    public long countWithFilters(ReviewsRequestDto requestDto) {
-        var query = queryFactory
-                .select(review.count())
-                .from(review);
+		}
 
-        if (requestDto.getPart() != null) {
-            query.where(review.part.eq(requestDto.getPart()));
-        }
+		if (requestDto.getPart() != null) {
+			query.where(review.part.eq(requestDto.getPart()));
+		}
 
-        if (requestDto.getGeneration() != null) {
-            query.where(review.generation.eq(requestDto.getGeneration()));
-        }
+		if (requestDto.getGeneration() != null) {
+			query.where(review.generation.eq(requestDto.getGeneration()));
+		}
 
-        return query.fetchOne();
-    }
+		return query
+			.orderBy(review.generation.desc())
+			.orderBy(review.author.asc())
+			.orderBy(review.id.asc())
+			.offset(offset)
+			.limit(limit)
+			.fetch();
+	}
 
-    public ReviewEntity findRandomReviewByPart(Part part) {
-        return queryFactory
-                .selectFrom(review)
-                .where(review.part.eq(part))
-                .orderBy(Expressions.numberTemplate(Double.class, "RANDOM()").asc())
-                .limit(1)
-                .fetchFirst();
-    }
+	public long countWithFilters(ReviewsRequestDto requestDto) {
+		var query = queryFactory
+			.select(review.count())
+			.from(review)
+			.where(review.category.eq(requestDto.getCategory()));
+
+		if (Objects.equals(requestDto.getCategory(), "전체 활동") && requestDto.getActivity() != null
+			&& !requestDto.getActivity().equals("전체")) {
+			String searchTerm = "\"" + requestDto.getActivity() + "\"";
+
+			BooleanExpression subjectContains = Expressions.booleanTemplate(
+				"CAST({0} AS string) LIKE {1}",
+				review.subject,
+				"%" + searchTerm + "%"
+			);
+
+			query.where(subjectContains);
+		}
+
+		if (requestDto.getPart() != null) {
+			query.where(review.part.eq(requestDto.getPart()));
+		}
+
+		if (requestDto.getGeneration() != null) {
+			query.where(review.generation.eq(requestDto.getGeneration()));
+		}
+
+		return query.fetchOne();
+	}
+
+	public ReviewEntity findRandomReviewByPart(Part part) {
+		return queryFactory
+			.selectFrom(review)
+			.where(review.part.eq(part))
+			.orderBy(Expressions.numberTemplate(Double.class, "RANDOM()").asc())
+			.limit(1)
+			.fetchFirst();
+	}
 }
