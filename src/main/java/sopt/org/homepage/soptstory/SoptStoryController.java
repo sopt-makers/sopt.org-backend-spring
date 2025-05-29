@@ -2,6 +2,7 @@ package sopt.org.homepage.soptstory;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
+import sopt.org.homepage.common.util.IpAddressUtil;
 import sopt.org.homepage.config.AuthConfig;
 import sopt.org.homepage.exception.BusinessLogicException;
 import sopt.org.homepage.soptstory.dto.request.CreateSoptStoryDto;
@@ -39,37 +41,40 @@ public class SoptStoryController {
     @Operation(summary = "솝트스토리 리스트 조회(정렬)")
     public ResponseEntity<PaginateResponseDto<SoptStoryResponseDto>> getSoptStoryList(
             @ParameterObject @ModelAttribute GetSoptStoryListRequestDto getSoptStoryListRequestDto,
-            @RequestHeader(value = "session-id", required = false) String session
+            HttpServletRequest request
     ) {
-        if (session == null) {
+        String ip = IpAddressUtil.getClientIpAddress(request);
+        if (!IpAddressUtil.isValidIpAddress(ip)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "session-id is required");
+                    "Unable to determine client IP address");
         }
-        return ResponseEntity.ok(soptStoryService.paginateSoptStorys(getSoptStoryListRequestDto, session));
+        return ResponseEntity.ok(soptStoryService.paginateSoptStorys(getSoptStoryListRequestDto, ip));
     }
 
     @Operation(summary = "솝트스토리 좋아요 누르기")
     @PostMapping("/{id}/like")
     public ResponseEntity<LikeSoptStoryResponseDto> likeSoptStory(
             @PathVariable Long id,
-            @RequestHeader(value = "session-id", required = false) String session
+            HttpServletRequest request
     ) {
-        if (session == null) {
-            throw new BusinessLogicException("session-id is required");
+        String ip = IpAddressUtil.getClientIpAddress(request);
+        if (!IpAddressUtil.isValidIpAddress(ip)) {
+            throw new BusinessLogicException("Unable to determine client IP address");
         }
-        return ResponseEntity.ok(soptStoryService.like(id, session));
+        return ResponseEntity.ok(soptStoryService.like(id, ip));
     }
 
     @Operation(summary = "솝트 스토리 좋아요 취소하기")
     @PostMapping("/{id}/unlike")
     public ResponseEntity<LikeSoptStoryResponseDto> unlikeSoptStory(
             @PathVariable Long id,
-            @RequestHeader(value = "session-id", required = false) String session
+            HttpServletRequest request
     ) {
-        if (session == null) {
-            throw new BusinessLogicException("session-id is required");
+        String ip = IpAddressUtil.getClientIpAddress(request);
+        if (!IpAddressUtil.isValidIpAddress(ip)) {
+            throw new BusinessLogicException("Unable to determine client IP address");
         }
-        return ResponseEntity.ok(soptStoryService.unlike(id, session));
+        return ResponseEntity.ok(soptStoryService.unlike(id, ip));
     }
 
     @PostMapping
