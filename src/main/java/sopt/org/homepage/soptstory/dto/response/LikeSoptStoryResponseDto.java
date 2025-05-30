@@ -13,7 +13,7 @@ public class LikeSoptStoryResponseDto {
     @Schema(description = "soptStory Id")
     private final Long soptStoryId;
 
-    @Schema(description = "session Id")
-    private final String sessionId;
+    @Schema(description = "IP address")
+    private final String ip;
 
 }
