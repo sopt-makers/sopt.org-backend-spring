@@ -23,16 +23,16 @@ public class SoptStoryLikeEntity {
     private Long id;
 
     @Basic
-    @Column(name = "\"sessionId\"", nullable = false, length = 50)
-    private String sessionId;
+    @Column(name = "\"ip\"", nullable = false, length = 45)
+    private String ip;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "\"soptStoryId\"")
     private SoptStoryEntity soptStory;
 
     @Builder
-    public SoptStoryLikeEntity(SoptStoryEntity soptStory, String sessionId) {
+    public SoptStoryLikeEntity(SoptStoryEntity soptStory, String ip) {
         this.soptStory = soptStory;
-        this.sessionId = sessionId;
+        this.ip = ip;
     }
 }

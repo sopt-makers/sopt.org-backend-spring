@@ -33,23 +33,23 @@ public class SoptStoryServiceImpl implements SoptStoryService {
 
 	@Override
 	public PaginateResponseDto<SoptStoryResponseDto> paginateSoptStorys(GetSoptStoryListRequestDto requestDto,
-																	   String sessionId) {
+		String ip) {
 		var soptStorys = soptStoryQueryRepository.findAllSorted(requestDto);
-		var totalCount = (int) soptStoryRepository.count();
+		var totalCount = (int)soptStoryRepository.count();
 
-		var likedSoptStorys = soptStoryLikeRepository.findAllBySessionIdAndSoptStoryIn(sessionId, soptStorys);
+		var likedSoptStorys = soptStoryLikeRepository.findAllByIpAndSoptStoryIn(ip, soptStorys);
 
 		var soptStoryDtos = soptStorys.stream()
 			.map(soptStory -> toSoptStoryResponseDto(
-					soptStory,
-					likedSoptStorys.stream()
+				soptStory,
+				likedSoptStorys.stream()
 					.anyMatch(like -> like.getSoptStory().getId().equals(soptStory.getId()))
 			))
 			.toList();
 
 		return new PaginateResponseDto<>(
-				soptStoryDtos,
-				totalCount,
+			soptStoryDtos,
+			totalCount,
 			requestDto.getLimit(),
 			requestDto.getPageNo()
 		);
@@ -57,17 +57,17 @@ public class SoptStoryServiceImpl implements SoptStoryService {
 
 	@Override
 	@Transactional
-	public LikeSoptStoryResponseDto like(Long id, String session) {
+	public LikeSoptStoryResponseDto like(Long id, String ip) {
 		SoptStoryEntity soptStory = soptStoryRepository.findById(id)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NotFoundSoptStory id: " + id));
 
-		if (isLiked(id, session)) {
+		if (isLiked(id, ip)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "AlreadyLike");
 		}
 
 		SoptStoryLikeEntity soptStoryLike = SoptStoryLikeEntity.builder()
 			.soptStory(soptStory)
-			.sessionId(session)
+			.ip(ip)
 			.build();
 
 		soptStoryLikeRepository.save(soptStoryLike);
@@ -76,17 +76,17 @@ public class SoptStoryServiceImpl implements SoptStoryService {
 		return toLikeSoptStoryResponseDto(soptStoryLike);
 	}
 
-	private boolean isLiked(Long soptStoryId, String session) {
-		return soptStoryLikeRepository.existsBySoptStoryIdAndSessionId(soptStoryId, session);
+	private boolean isLiked(Long soptStoryId, String ip) {
+		return soptStoryLikeRepository.existsBySoptStoryIdAndIp(soptStoryId, ip);
 	}
 
 	@Override
 	@Transactional
-	public LikeSoptStoryResponseDto unlike(Long id, String session) {
+	public LikeSoptStoryResponseDto unlike(Long id, String ip) {
 		SoptStoryEntity soptStory = soptStoryRepository.findById(id)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "NotFoundSoptStory id: " + id));
 
-		SoptStoryLikeEntity soptStoryLike = soptStoryLikeRepository.findBySoptStoryIdAndSessionId(id, session)
+		SoptStoryLikeEntity soptStoryLike = soptStoryLikeRepository.findBySoptStoryIdAndIp(id, ip)
 			.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Like 하지 않은 상태입니다."));
 
 		soptStory.decrementLikeCount();
@@ -98,18 +98,18 @@ public class SoptStoryServiceImpl implements SoptStoryService {
 	@Override
 	@Transactional
 	public CreateSoptStoryResponseDto createSoptStory(CreateSoptStoryDto dto) {
-		 if (soptStoryRepository.existsBySoptStoryUrl(dto.getLink())) {
-		 	throw new BusinessLogicException("이미 등록된 솝티클입니다.");
-		 }
+		if (soptStoryRepository.existsBySoptStoryUrl(dto.getLink())) {
+			throw new BusinessLogicException("이미 등록된 솝티클입니다.");
+		}
 
 		CreateScraperResponseDto scrapResult = scraperService.scrap(new ScrapArticleDto(dto.getLink()));
 
 		SoptStoryEntity soptStory = SoptStoryEntity.builder()
-				.thumbnailUrl(scrapResult.getThumbnailUrl())
-				.title(scrapResult.getTitle())
-				.description(scrapResult.getDescription())
-				.soptStoryUrl(scrapResult.getArticleUrl())
-				.build();
+			.thumbnailUrl(scrapResult.getThumbnailUrl())
+			.title(scrapResult.getTitle())
+			.description(scrapResult.getDescription())
+			.soptStoryUrl(scrapResult.getArticleUrl())
+			.build();
 
 		soptStoryRepository.save(soptStory);
 
@@ -131,6 +131,7 @@ public class SoptStoryServiceImpl implements SoptStoryService {
 			.url(entity.getSoptStoryUrl())
 			.uploadedAt(entity.getCreatedAt())
 			.likeCount(entity.getLikeCount())
+			.isLikedByUser(liked)
 			.build();
 	}
 
@@ -138,7 +139,7 @@ public class SoptStoryServiceImpl implements SoptStoryService {
 		return LikeSoptStoryResponseDto.builder()
 			.id(entity.getId())
 			.soptStoryId(entity.getSoptStory().getId())
-			.sessionId(entity.getSessionId())
+			.ip(entity.getIp())
 			.build();
 	}
 }
