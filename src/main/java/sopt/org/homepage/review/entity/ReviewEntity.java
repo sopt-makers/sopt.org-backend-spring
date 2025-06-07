@@ -31,7 +31,7 @@ public class ReviewEntity {
 	private Long id;
 
 	@Basic
-	@Column(name = "\"title\"", nullable = false, length = 200)
+	@Column(name = "\"title\"", nullable = false, length = 1000)
 	private String title;
 
 	@Basic
@@ -67,7 +67,7 @@ public class ReviewEntity {
 	private String url;
 
 	@Basic
-	@Column(name = "\"description\"", nullable = false, length = 600)
+	@Column(name = "\"description\"", nullable = false, length = 2000)
 	private String description;
 
 	@Basic
