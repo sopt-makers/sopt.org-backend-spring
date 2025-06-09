@@ -1,8 +1,11 @@
 package sopt.org.homepage.review.entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Basic;
@@ -73,6 +76,14 @@ public class ReviewEntity {
 	@Basic
 	@Column(name = "\"authorProfileImageUrl\"", nullable = true, length = 500)
 	private String authorProfileImageUrl;
+
+	@CreationTimestamp
+	@Column(name = "\"createdAt\"", nullable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@UpdateTimestamp
+	@Column(name = "\"updatedAt\"", nullable = false)
+	private LocalDateTime updatedAt;
 
 	@Builder
 	public ReviewEntity(String title, String author, int generation, Part part, String category,
