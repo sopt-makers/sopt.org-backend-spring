@@ -58,6 +58,10 @@ internal:
   crew:
     url: ${CREW_API_URL}
     token: ${CREW_API_URL_JWT_TOKEN}
+  auth:
+    url: https://auth.api.dev.sopt.org
+    api-key: ${AUTH_API_KEY}
+    service-name: ${OUR_SERVICE_NAME}
 
 jwt:
   access: ${ACCESS_TOKEN_SECRET}
