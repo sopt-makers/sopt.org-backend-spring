@@ -64,7 +64,7 @@ internal:
     url: ${CREW_API_URL}
     token: ${CREW_API_URL_JWT_TOKEN}
   auth:
-    url: https://auth.api.dev.sopt.org
+    url: https://auth.api.sopt.org
     api-key: ${AUTH_API_KEY}
     service-name: ${OUR_SERVICE_NAME}
 

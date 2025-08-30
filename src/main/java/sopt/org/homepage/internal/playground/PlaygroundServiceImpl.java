@@ -68,11 +68,13 @@ public class PlaygroundServiceImpl implements PlaygroundService {
 		var platform = projectRequest.getPlatform();
 
 		var uniqueResponse = arrayUtil.dropDuplication(projectListResponse, PlaygroundProjectResponseDto::name);
-		var uniqueLinkResponse = uniqueResponse.stream()
-			.map(response -> response.ProjectWithLink(
-				arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponseDto.ProjectLinkResponse::linkId)
-			))
-			.toList();
+        var uniqueLinkResponse = uniqueResponse.stream()
+                .map(response -> response.ProjectWithLink(
+                        response.links() != null ?
+                                arrayUtil.dropDuplication(response.links(), PlaygroundProjectResponseDto.ProjectLinkResponse::linkId) :
+                                Collections.emptyList()
+                ))
+                .toList();
 
 		if (uniqueLinkResponse.isEmpty()) {
 			return Collections.emptyList();
@@ -105,7 +107,6 @@ public class PlaygroundServiceImpl implements PlaygroundService {
 
 		for (int i = 0; i < totalCount + 1; i = i + limit) {
 			PlaygroundProjectAxiosResponseDto projectData = playgroundClient.getAllProjects(
-				authConfig.getPlaygroundToken(),
 				limit,
 				cursor
 			);

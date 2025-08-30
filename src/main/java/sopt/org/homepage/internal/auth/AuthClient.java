@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import sopt.org.homepage.internal.auth.dto.AuthUserCountResponse;
 
-@FeignClient(value = "AuthClient", url = "https://auth.api.dev.sopt.org")
+@FeignClient(value = "AuthClient", url = "https://auth.api.sopt.org")
 public interface AuthClient {
 
     @GetMapping("/api/v1/users/count")
