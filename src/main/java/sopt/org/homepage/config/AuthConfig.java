@@ -19,4 +19,12 @@ public class AuthConfig {
     @Value("${internal.crew.token}")
     private String crewApiToken;
 
+    @Value("${internal.auth.api-key}")
+    private String authApiKey;
+
+    @Value("${internal.auth.service-name}")
+    private String authServiceName;
+
+
+
 }

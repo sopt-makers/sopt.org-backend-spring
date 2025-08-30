@@ -1,5 +1,6 @@
 package sopt.org.homepage.common.mapper;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -27,32 +28,39 @@ public class ResponseMapper {
 		);
 	}
 
-	public ProjectsResponseDto toProjectResponse(PlaygroundProjectResponseDto project) {
-		List<Link> links = project.links().stream()
-			.map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl()))
-			.toList();
-		Category category = new Category(project.category());
+    public ProjectsResponseDto toProjectResponse(PlaygroundProjectResponseDto project) {
+        List<Link> links = project.links() != null ?
+                project.links().stream()
+                        .map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl()))
+                        .toList() :
+                Collections.emptyList();
 
-		return ProjectsResponseDto.builder()
-			.id(project.id())
-			.name(project.name())
-			.generation(project.generation())
-			.category(category)
-			.serviceType(project.serviceType())
-			.summary(project.summary())
-			.detail(project.detail())
-			.logoImage(project.logoImage())
-			.thumbnailImage(project.thumbnailImage())
-			.isAvailable(project.isAvailable())
-			.isFounding(project.isFounding())
-			.links(links)
-			.build();
-	}
+        Category category = new Category(project.category());
 
-	public ProjectDetailResponseDto toProjectDetailResponse(PlaygroundProjectDetailResponse project) {
-		List<Link> links = project.links().stream()
-			.map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl()))
-			.toList();
+        return ProjectsResponseDto.builder()
+                .id(project.id())
+                .name(project.name())
+                .generation(project.generation())
+                .category(category)
+                .serviceType(project.serviceType())
+                .summary(project.summary())
+                .detail(project.detail())
+                .logoImage(project.logoImage())
+                .thumbnailImage(project.thumbnailImage())
+                .isAvailable(project.isAvailable())
+                .isFounding(project.isFounding())
+                .links(links)
+                .build();
+    }
+
+    public ProjectDetailResponseDto toProjectDetailResponse(PlaygroundProjectDetailResponse project) {
+        List<Link> links = project.links() != null ?
+                project.links().stream()
+                        .map(link -> new Link(LinkType.fromValue(link.linkTitle()), link.linkUrl()))
+                        .toList() :
+                Collections.emptyList();
+
+
 		Category category = new Category(project.category());
 		List<Member> members = project.members().stream()
 			.map(member -> new Member(

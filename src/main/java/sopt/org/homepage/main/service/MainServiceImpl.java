@@ -43,6 +43,7 @@ import sopt.org.homepage.aws.s3.S3Service;
 import sopt.org.homepage.cache.CacheService;
 import sopt.org.homepage.common.constants.CacheType;
 import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.internal.auth.AuthService;
 import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
 import sopt.org.homepage.main.dto.response.GetAboutPageResponseDto;
@@ -83,6 +84,7 @@ public class MainServiceImpl implements MainService {
     private final MainNewsRepository mainNewsRepository;
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
+    private final AuthService authService;
     private final S3Service s3Service;
     private final CacheService cacheService;
 
@@ -484,8 +486,7 @@ public class MainServiceImpl implements MainService {
     }
 
     private int getMemberStatistics(int targetGeneration) {
-        return playgroundService.getAllMembers(targetGeneration)
-                .numberOfMembersAtGeneration();
+        return authService.getUserCountByGeneration(targetGeneration);
     }
 
     private int getProjectCount(int targetGeneration) {

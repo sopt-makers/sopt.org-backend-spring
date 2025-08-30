@@ -18,7 +18,6 @@ public interface PlaygroundClient {
 
     @GetMapping("/api/v1/projects")
     PlaygroundProjectAxiosResponseDto getAllProjects(
-            @RequestHeader("Authorization") String playgroundToken,
             @RequestParam("limit") Integer limit,
             @RequestParam("cursor") Integer cursor
     );
