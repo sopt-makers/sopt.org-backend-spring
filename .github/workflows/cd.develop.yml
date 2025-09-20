@@ -20,6 +20,35 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # NEW: ECR Repository의 모든 이미지 삭제
+      - name: Delete all ECR images
+        env:
+          ECR_REPOSITORY: ${{ secrets.DEV_ECR_REPO }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_PUBLIC_REPO_REGION: ${{ secrets.AWS_PUBLIC_REPO_REGION }}
+        run: |
+          echo "Deleting all images from ECR repository: $ECR_REPOSITORY"
+          
+          # ECR Public에서 이미지 목록 조회
+          IMAGE_IDS=$(aws ecr-public describe-images \
+            --region $AWS_PUBLIC_REPO_REGION \
+            --repository-name $ECR_REPOSITORY \
+            --query 'imageDetails[*].{imageDigest:imageDigest}' \
+            --output json 2>/dev/null || echo "[]")
+          
+          # 이미지가 있는 경우에만 삭제 실행
+          if [ "$IMAGE_IDS" != "[]" ] && [ "$IMAGE_IDS" != "" ]; then
+            echo "Found images to delete..."
+            aws ecr-public batch-delete-image \
+              --region $AWS_PUBLIC_REPO_REGION \
+              --repository-name $ECR_REPOSITORY \
+              --image-ids "$IMAGE_IDS" \
+              && echo "Successfully deleted all images" \
+              || echo "Failed to delete some images"
+          else
+            echo "No images to delete or repository is empty"
+          fi
+
       - name: Push Image to AWS ECR Public Repo
         id: ecr-image-push
         run: |
