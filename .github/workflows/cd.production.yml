@@ -20,6 +20,34 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      #  Production에서는 최근 3개 이미지만 유지하고 나머지 삭제
+      - name: Clean old ECR images (keep latest 3)
+        env:
+          ECR_REPOSITORY: ${{ secrets.PROD_ECR_REPO }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_PUBLIC_REPO_REGION: ${{ secrets.AWS_PUBLIC_REPO_REGION }}
+        run: |
+          echo "Cleaning old images from ECR repository: $ECR_REPOSITORY (keeping latest 3)"
+          
+          # 이미지들을 날짜순으로 정렬하여 오래된 것들만 삭제
+          OLD_IMAGES=$(aws ecr-public describe-images \
+            --region $AWS_PUBLIC_REPO_REGION \
+            --repository-name $ECR_REPOSITORY \
+            --query 'sort_by(imageDetails, &imagePushedAt)[:-3].[{imageDigest:imageDigest}]' \
+            --output json 2>/dev/null || echo "[]")
+          
+          if [ "$OLD_IMAGES" != "[]" ] && [ "$OLD_IMAGES" != "" ]; then
+            echo "Found old images to delete..."
+            aws ecr-public batch-delete-image \
+              --region $AWS_PUBLIC_REPO_REGION \
+              --repository-name $ECR_REPOSITORY \
+              --image-ids "$OLD_IMAGES" \
+              && echo "Successfully cleaned old images" \
+              || echo "Failed to delete some old images"
+          else
+            echo "No old images to clean"
+          fi
+
       - name: Push Image to AWS ECR Public Repo
         id: ecr-image-push
         run: |
