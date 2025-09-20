@@ -20,7 +20,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      #  Production에서는 최근 3개 이미지만 유지하고 나머지 삭제
+      # Production에서는 최근 3개 이미지만 유지하고 나머지 삭제
       - name: Clean old ECR images (keep latest 3)
         env:
           ECR_REPOSITORY: ${{ secrets.PROD_ECR_REPO }}
@@ -29,23 +29,43 @@ jobs:
         run: |
           echo "Cleaning old images from ECR repository: $ECR_REPOSITORY (keeping latest 3)"
           
-          # 이미지들을 날짜순으로 정렬하여 오래된 것들만 삭제
-          OLD_IMAGES=$(aws ecr-public describe-images \
+          # 먼저 전체 이미지 개수 확인
+          TOTAL_IMAGES=$(aws ecr-public describe-images \
             --region $AWS_PUBLIC_REPO_REGION \
             --repository-name $ECR_REPOSITORY \
-            --query 'sort_by(imageDetails, &imagePushedAt)[:-3].[{imageDigest:imageDigest}]' \
-            --output json 2>/dev/null || echo "[]")
+            --query 'length(imageDetails)' \
+            --output text 2>/dev/null || echo "0")
           
-          if [ "$OLD_IMAGES" != "[]" ] && [ "$OLD_IMAGES" != "" ]; then
-            echo "Found old images to delete..."
-            aws ecr-public batch-delete-image \
+          echo "Total images found: $TOTAL_IMAGES"
+          
+          # 3개 이하면 삭제하지 않음
+          if [ "$TOTAL_IMAGES" -le 3 ]; then
+            echo "Total images ($TOTAL_IMAGES) is 3 or less. No cleanup needed."
+          else
+            # 오래된 이미지들의 다이제스트 추출 (최신 3개 제외)
+            OLD_IMAGES=$(aws ecr-public describe-images \
               --region $AWS_PUBLIC_REPO_REGION \
               --repository-name $ECR_REPOSITORY \
-              --image-ids "$OLD_IMAGES" \
-              && echo "Successfully cleaned old images" \
-              || echo "Failed to delete some old images"
-          else
-            echo "No old images to clean"
+              --query 'sort_by(imageDetails, &imagePushedAt)[:-3][].{imageDigest:imageDigest}' \
+              --output json 2>/dev/null || echo "[]")
+          
+            echo "Old images to delete: $OLD_IMAGES"
+          
+            if [ "$OLD_IMAGES" != "[]" ] && [ "$OLD_IMAGES" != "" ] && [ "$OLD_IMAGES" != "null" ]; then
+              echo "Found old images to delete..."
+              echo "$OLD_IMAGES" | jq -c '.' | while read -r batch; do
+                if [ "$batch" != "[]" ]; then
+                  aws ecr-public batch-delete-image \
+                    --region $AWS_PUBLIC_REPO_REGION \
+                    --repository-name $ECR_REPOSITORY \
+                    --image-ids "$batch" \
+                    && echo "Successfully deleted batch of old images" \
+                    || echo "Failed to delete some old images"
+                fi
+              done
+            else
+              echo "No old images to clean"
+            fi
           fi
 
       - name: Push Image to AWS ECR Public Repo
