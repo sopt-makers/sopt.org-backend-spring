@@ -8,6 +8,7 @@ import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.domain.vo.Email;
 import sopt.org.homepage.notification.domain.vo.Generation;
+import sopt.org.homepage.notification.exception.DuplicateNotificationException;
 import sopt.org.homepage.notification.repository.command.NotificationCommandRepository;
 import sopt.org.homepage.notification.service.command.dto.NotificationResult;
 import sopt.org.homepage.notification.service.command.dto.RegisterNotificationCommand;
@@ -33,6 +34,11 @@ public class NotificationCommandService {
      * @throws ClientBadRequestException 이미 등록된 이메일인 경우
      */
     public NotificationResult register(RegisterNotificationCommand command) {
+
+        log.info("모집 알림 신청 시작 - email: {}, generation: {}",
+                command.email(), command.generation());
+
+
         // 1. Command를 VO로 변환 (검증 포함)
         Email email = command.toEmailVo();
         Generation generation = command.toGenerationVo();
@@ -46,7 +52,10 @@ public class NotificationCommandService {
         // 4. 저장
         Notification saved = notificationCommandRepository.save(notification);
 
-        log.info("Notification registered: {}", saved);
+        log.info("모집 알림 신청 완료 - id: {}, email: {}, generation: {}",
+                saved.getId(), email.getValue(), generation.getValue());
+
+
 
         // 5. 결과 반환
         return NotificationResult.from(saved);
@@ -58,9 +67,9 @@ public class NotificationCommandService {
      */
     private void validateNotDuplicate(Email email, Generation generation) {
         if (notificationCommandRepository.existsByEmailAndGeneration(email, generation)) {
-            throw new ClientBadRequestException(
-                    String.format("이미 등록된 이메일입니다: %s (기수: %d)",
-                            email.getValue(), generation.getValue())
+            throw new DuplicateNotificationException(
+                    email.getValue(),
+                    generation.getValue()
             );
         }
     }
