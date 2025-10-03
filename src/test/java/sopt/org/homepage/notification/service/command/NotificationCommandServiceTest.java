@@ -20,7 +20,6 @@ import static org.assertj.core.api.Assertions.*;
  * - 트랜잭션 롤백으로 테스트 격리
  */
 @DisplayName("NotificationCommandService 통합 테스트")
-@ActiveProfiles("test")
 class NotificationCommandServiceTest extends IntegrationTestBase {
 
     @Autowired
