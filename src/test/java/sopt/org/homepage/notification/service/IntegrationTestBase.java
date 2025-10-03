@@ -15,17 +15,18 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * - 고전파 스타일 테스트 (Mock 최소화)
  */
 @SpringBootTest
-@Testcontainers
 @ActiveProfiles("test")
-@DirtiesContext
 public abstract class IntegrationTestBase {
 
-    @Container
-    static PostgreSQLContainer<?> postgres =     new PostgreSQLContainer<>("postgres:14.17-alpine")
-            .withDatabaseName("testdb")
-            .withUsername("test")
-            .withPassword("test")
-            .withReuse(true);
+    private static final PostgreSQLContainer<?> postgres;
+
+    static {
+        postgres = new PostgreSQLContainer<>("postgres:14.17-alpine")
+                .withDatabaseName("testdb")
+                .withUsername("test")
+                .withPassword("test");
+        postgres.start();
+    }
 
 
     @DynamicPropertySource
