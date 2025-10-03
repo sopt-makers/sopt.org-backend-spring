@@ -22,7 +22,8 @@ public abstract class IntegrationTestBase {
     static PostgreSQLContainer<?> postgres =     new PostgreSQLContainer<>("postgres:14.17-alpine")
             .withDatabaseName("testdb")
             .withUsername("test")
-            .withPassword("test");
+            .withPassword("test")
+            .withReuse(true);  // 컨테이너 재사용
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {

@@ -14,9 +14,10 @@ spring:
     hikari:
       maximum-pool-size: 5
       minimum-idle: 2
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
+      connection-timeout: 5000      # 10초로 줄임
+      validation-timeout: 5000       # 추가
+      max-lifetime: 300000           # 10분
+      leak-detection-threshold: 60000  # 추가: 커넥션 누수 감지
       pool-name: TestHikariPool
 
   # JPA 설정
