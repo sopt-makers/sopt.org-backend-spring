@@ -65,10 +65,7 @@ jobs:
       - name: Run tests with coverage
         env:
           SPRING_PROFILES_ACTIVE: test
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
-          SPRING_DATASOURCE_USERNAME: test
-          SPRING_DATASOURCE_PASSWORD: test
-        run: ./gradlew clean test --info
+        run: ./gradlew clean test --console=plain
 
       - name: Publish test results
         uses: EnricoMi/publish-unit-test-result-action@v2
