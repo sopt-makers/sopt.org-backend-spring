@@ -1,4 +1,4 @@
-name: Develop deploy workflow
+name: CI/CD Pipeline
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ on:
       - 'develop'
 
 jobs:
+  # CI: 테스트 실행
   test:
     runs-on: ubuntu-latest
 
@@ -45,9 +46,11 @@ jobs:
           SPRING_DATASOURCE_PASSWORD: test
         run: ./gradlew test
 
+  # CD: 빌드 및 ECR 업로드
   build:
     needs: test
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -85,19 +88,20 @@ jobs:
             echo "No images to delete or repository is empty"
           fi
 
-      - name: Push Image to AWS ECR Public Repo
-        id: ecr-image-push
+      - name: Build and Push Image to AWS ECR Public Repo
         run: |
           aws ecr-public get-login-password --region ${{ secrets.AWS_PUBLIC_REPO_REGION }} | docker login --username AWS --password-stdin public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}
           docker build -t ${{ secrets.DEV_ECR_REPO }}:latest .
           docker tag ${{ secrets.DEV_ECR_REPO }}:latest public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
           docker push public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
 
+  # CD: EC2 배포
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-      - name: ssh command deploy
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
