@@ -7,7 +7,26 @@ on:
       - 'develop'
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run tests
+        run: ./gradlew test
+
   build:
+    needs: test  # test job이 성공해야 build 실행
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -20,7 +39,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # NEW: ECR Repository의 모든 이미지 삭제
       - name: Delete all ECR images
         env:
           ECR_REPOSITORY: ${{ secrets.DEV_ECR_REPO }}
@@ -29,14 +47,12 @@ jobs:
         run: |
           echo "Deleting all images from ECR repository: $ECR_REPOSITORY"
           
-          # ECR Public에서 이미지 목록 조회
           IMAGE_IDS=$(aws ecr-public describe-images \
             --region $AWS_PUBLIC_REPO_REGION \
             --repository-name $ECR_REPOSITORY \
             --query 'imageDetails[*].{imageDigest:imageDigest}' \
             --output json 2>/dev/null || echo "[]")
           
-          # 이미지가 있는 경우에만 삭제 실행
           if [ "$IMAGE_IDS" != "[]" ] && [ "$IMAGE_IDS" != "" ]; then
             echo "Found images to delete..."
             aws ecr-public batch-delete-image \
@@ -57,7 +73,6 @@ jobs:
           docker tag ${{ secrets.DEV_ECR_REPO }}:latest public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
           docker push public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
 
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -74,4 +89,3 @@ jobs:
             sudo docker image prune -a -f
             sudo docker pull public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
             sudo docker run --name spring-dev-server --env-file /home/ec2-user/official/.env -d -p 8086:8080 -t public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
-          
