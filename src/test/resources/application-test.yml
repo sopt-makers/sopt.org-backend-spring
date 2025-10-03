@@ -3,35 +3,76 @@ spring:
     activate:
       on-profile: test
 
-
-  # TestContainer에서 DB 설정은 자동 주입되므로 생략 가능
+  # 데이터소스 설정
   datasource:
-    # CI 환경에서는 환경변수로, 로컬에서는 Testcontainers로
+    # CI 환경: 환경변수 사용 (GitHub Actions)
+    # 로컬 환경: Testcontainers 사용
     url: ${SPRING_DATASOURCE_URL:jdbc:tc:postgresql:14.17-alpine:///testdb}
     username: ${SPRING_DATASOURCE_USERNAME:test}
     password: ${SPRING_DATASOURCE_PASSWORD:test}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      pool-name: TestHikariPool
 
+  # JPA 설정
   jpa:
     hibernate:
       ddl-auto: create-drop
-      naming: # DB 컬럼명: "authorName" (그대로)
+      naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
     properties:
       hibernate:
-        use_sql_comments: true # SQL에 JPQL 주석 추가
-        format_sql: true # 로그에 찍히는 SQL을 예쁘게(줄바꿈/들여쓰기) 포맷
-        highlight_sql: true # 색상까지
+        # SQL 로깅 설정
+        use_sql_comments: true
+        format_sql: true
+        highlight_sql: true
+        # 배치 설정
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        # 통계
+        generate_statistics: false
 
-logging.level:
-  org.hibernate.SQL: debug # SQL 본문
-  org.hibernate.orm.jdbc.bind: trace # 바인딩값
+    # 테스트 환경에서는 초기화하지 않음
+    defer-datasource-initialization: false
+    open-in-view: false
+    show-sql: false
 
+  # SQL 초기화 설정
+  sql:
+    init:
+      mode: never
 
+# 로깅 설정
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.springframework.test: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.stat: INFO
+    com.zaxxer.hikari: INFO
+    # 프로젝트 패키지 (실제 패키지명으로 변경)
+    com.yourproject: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# 서버 설정
 server:
   servlet:
     context-path: /v2
+  port: 0  # 랜덤 포트 (테스트 환경)
+  error:
+    include-message: always
+    include-binding-errors: always
 
 # AWS 설정 (테스트용 더미 값)
 aws:
@@ -49,7 +90,7 @@ internal:
     url: http://localhost:8081
     token: test-playground-token
   crew:
-    url: http://localhost:8082  # 이 값이 중요!
+    url: http://localhost:8082
     token: test-crew-token
   auth:
     url: http://localhost:8083
@@ -60,8 +101,14 @@ internal:
 official:
   apikey: test-official-api-key
 
+# JWT 설정 (테스트용)
 jwt:
   access: GbdlzvZ1iE5e13etDEBaZOM12hGehXXBET0mee+tt12=
   refresh: JffNneL6pP2k6reteRoyE2k92cHdaUYHRGIloe+835M=
   admin: GbdlzvZ1iE5e13etDEBaZOM12hGehXXBET0mee+tt12=
 
+
+# 액추에이터 비활성화 (테스트 환경)
+management:
+  endpoints:
+    enabled-by-default: false
