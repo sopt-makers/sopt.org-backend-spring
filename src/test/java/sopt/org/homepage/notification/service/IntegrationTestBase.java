@@ -1,6 +1,7 @@
 package sopt.org.homepage.notification.service;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -16,13 +17,15 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest
 @Testcontainers
 @ActiveProfiles("test")
+@DirtiesContext
 public abstract class IntegrationTestBase {
 
     @Container
     static PostgreSQLContainer<?> postgres =     new PostgreSQLContainer<>("postgres:14.17-alpine")
             .withDatabaseName("testdb")
             .withUsername("test")
-            .withPassword("test");
+            .withPassword("test")
+            .withReuse(true);
 
 
     @DynamicPropertySource
