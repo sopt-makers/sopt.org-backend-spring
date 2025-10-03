@@ -7,24 +7,8 @@ on:
       - 'develop'
 
 jobs:
-  # CI: 테스트 실행
   test:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:14.17-alpine
-        env:
-          POSTGRES_DB: testdb
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
       - name: Checkout
@@ -40,29 +24,7 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          echo "Waiting for PostgreSQL to be ready..."
-          for i in {1..30}; do
-            if pg_isready -h localhost -p 5432 -U test > /dev/null 2>&1; then
-              echo "PostgreSQL is ready!"
-              exit 0
-            fi
-            echo "Attempt $i/30: PostgreSQL is not ready yet..."
-            sleep 2
-          done
-          echo "PostgreSQL failed to become ready in time"
-          exit 1
-        env:
-          PGPASSWORD: test
-
-      - name: Verify PostgreSQL connection
-        run: |
-          psql -h localhost -U test -d testdb -c "SELECT version();"
-        env:
-          PGPASSWORD: test
-
-      - name: Run tests with coverage
+      - name: Run tests
         env:
           SPRING_PROFILES_ACTIVE: test
         run: ./gradlew clean test --console=plain
