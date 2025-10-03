@@ -4,10 +4,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.notification.domain.Notification;
-import sopt.org.homepage.notification.domain.vo.Email;
-import sopt.org.homepage.notification.domain.vo.Generation;
 import sopt.org.homepage.notification.repository.command.NotificationCommandRepository;
 import sopt.org.homepage.notification.service.IntegrationTestBase;
 import sopt.org.homepage.notification.service.command.dto.NotificationResult;
@@ -21,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
  * - 트랜잭션 롤백으로 테스트 격리
  */
 @DisplayName("NotificationCommandService 통합 테스트")
+@ActiveProfiles("test")
 class NotificationCommandServiceTest extends IntegrationTestBase {
 
     @Autowired
@@ -71,7 +71,7 @@ class NotificationCommandServiceTest extends IntegrationTestBase {
         // when & then
         assertThatThrownBy(() -> commandService.register(command))
                 .isInstanceOf(ClientBadRequestException.class)
-                .hasMessageContaining("이미 등록된 이메일입니다");
+                .hasMessageContaining("이미 등록된 알림입니다");
     }
 
     @Test
