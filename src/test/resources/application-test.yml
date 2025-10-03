@@ -6,6 +6,10 @@ spring:
 
   # TestContainer에서 DB 설정은 자동 주입되므로 생략 가능
   datasource:
+    # CI 환경에서는 환경변수로, 로컬에서는 Testcontainers로
+    url: ${SPRING_DATASOURCE_URL:jdbc:tc:postgresql:14.17-alpine:///testdb}
+    username: ${SPRING_DATASOURCE_USERNAME:test}
+    password: ${SPRING_DATASOURCE_PASSWORD:test}
     driver-class-name: org.postgresql.Driver
 
   jpa:
