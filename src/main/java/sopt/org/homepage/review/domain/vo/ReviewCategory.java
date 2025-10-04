@@ -81,9 +81,9 @@ public class ReviewCategory {
     }
 
     /**
-     * Enum 값 반환 (내부 사용)
+     * Enum 값 반환
      */
-    CategoryType getType() {
+    public CategoryType getType() {
         return type;
     }
 }

@@ -11,6 +11,7 @@ import sopt.org.homepage.review.domain.vo.*;
 import sopt.org.homepage.review.exception.DuplicateReviewUrlException;
 
 import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * 리뷰 도메인 엔티티
@@ -162,12 +163,30 @@ public class Review {
     public String getCategoryValue() {
         return category.getValue();
     }
+    /**
+     * 카테고리 타입 조회
+     */
+    public CategoryType getCategoryType() {
+        return category.getType();
+    }
 
-    public java.util.List<String> getSubjectValues() {
+    /**
+     * 카테고리 표시명 조회
+     */
+    public String getCategoryDisplayName() {
+        return category.getType().getDisplayName();
+    }
+
+
+    public List<String> getSubjectValues() {
         return subjects.getValues();
     }
 
     public String getUrlValue() {
         return url.getValue();
     }
+
+
+
+
 }
