@@ -80,10 +80,10 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     }
 
     // === 동적 쿼리 조건 메서드 ===
-
     private BooleanExpression categoryEq(String category) {
-        CategoryType categoryType = CategoryType.from(category);
-        return review.category.type.eq(categoryType);
+        return CategoryType.fromSafely(category)
+                .map(type -> review.category.type.eq(type))
+                .orElse(null);
     }
 
     private BooleanExpression partEq(Part part) {
@@ -99,13 +99,15 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
      * JSON 배열에서 특정 값 검색
      */
     private BooleanExpression activityContains(String category, String activity) {
-        // "전체 활동"이 아니거나 activity가 없으면 조건 무시
-        if (!CategoryType.ACTIVITY.getDisplayName().equals(category)
-                || activity == null
-                || activity.equals("전체")) {
+        // activity가 없거나 "전체"면 조건 무시
+        if (activity == null || activity.isBlank() || activity.equals("전체")) {
             return null;
         }
 
+        // category가 "전체 활동"이 아니면 조건 무시
+        if (category == null || !CategoryType.ACTIVITY.getDisplayName().equals(category)) {
+            return null;
+        }
 
         String searchTerm = "\"" + activity + "\"";
         return Expressions.booleanTemplate(

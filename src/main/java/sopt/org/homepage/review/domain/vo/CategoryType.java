@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import sopt.org.homepage.review.exception.InvalidReviewCategoryException;
 
+import java.util.Optional;
+
 /**
  * 리뷰 카테고리 타입
  *
@@ -54,5 +56,20 @@ public enum CategoryType {
      */
     public boolean requiresSubject() {
         return requiresSubActivities || isRecruiting;
+    }
+
+    // CategoryType.java에 추가
+    public static Optional<CategoryType> fromSafely(String displayName) {
+        if (displayName == null || displayName.isBlank()) {
+            return Optional.empty();
+        }
+
+        for (CategoryType type : values()) {
+            if (type.displayName.equals(displayName)) {
+                return Optional.of(type);
+            }
+        }
+
+        return Optional.empty();
     }
 }
