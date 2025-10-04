@@ -1,0 +1,111 @@
+package sopt.org.homepage.review.infrastructure.repository.query;
+
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.review.domain.QReview;
+import sopt.org.homepage.review.domain.Review;
+import sopt.org.homepage.review.repository.query.ReviewQueryRepository;
+import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
+
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * 리뷰 Query Repository 구현체 (QueryDSL)
+ */
+@Repository
+@RequiredArgsConstructor
+public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
+
+    private final JPAQueryFactory queryFactory;
+    private final QReview review = QReview.review;
+
+    @Override
+    public List<Review> findAllWithFilters(ReviewSearchCond cond, long offset, int limit) {
+        return queryFactory
+                .selectFrom(review)
+                .where(
+                        categoryEq(cond.category()),
+                        activityContains(cond.category(), cond.activity()),
+                        partEq(cond.part()),
+                        generationEq(cond.generation())
+                )
+                .orderBy(
+                        review.generation.desc(),
+                        review.author.name.asc(),
+                        review.id.asc()
+                )
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
+
+    @Override
+    public long countWithFilters(ReviewSearchCond cond) {
+        Long count = queryFactory
+                .select(review.count())
+                .from(review)
+                .where(
+                        categoryEq(cond.category()),
+                        activityContains(cond.category(), cond.activity()),
+                        partEq(cond.part()),
+                        generationEq(cond.generation())
+                )
+                .fetchOne();
+
+        return count != null ? count : 0L;
+    }
+
+    @Override
+    public Review findRandomReviewByPart(Part part) {
+        return queryFactory
+                .selectFrom(review)
+                .where(review.part.eq(part))
+                .orderBy(Expressions.numberTemplate(Double.class, "RANDOM()").asc())
+                .limit(1)
+                .fetchFirst();
+    }
+
+    @Override
+    public List<Review> findAllByAuthorName(String authorName) {
+        return queryFactory
+                .selectFrom(review)
+                .where(review.author.name.eq(authorName))
+                .fetch();
+    }
+
+    // === 동적 쿼리 조건 메서드 ===
+
+    private BooleanExpression categoryEq(String category) {
+        return category != null ? review.category.value.eq(category) : null;
+    }
+
+    private BooleanExpression partEq(Part part) {
+        return part != null ? review.part.eq(part) : null;
+    }
+
+    private BooleanExpression generationEq(Integer generation) {
+        return generation != null ? review.generation.eq(generation) : null;
+    }
+
+    /**
+     * "전체 활동" 카테고리일 때 특정 활동 필터링
+     * JSON 배열에서 특정 값 검색
+     */
+    private BooleanExpression activityContains(String category, String activity) {
+        if (!Objects.equals(category, "전체 활동") || activity == null || activity.equals("전체")) {
+            return null;
+        }
+
+        String searchTerm = "\"" + activity + "\"";
+        return Expressions.booleanTemplate(
+                "CAST({0} AS string) LIKE {1}",
+                review.subjects.values,
+                "%" + searchTerm + "%"
+        );
+    }
+}
