@@ -2,6 +2,7 @@ package sopt.org.homepage.review.service.command.dto;
 
 import sopt.org.homepage.common.type.Part;
 import sopt.org.homepage.review.controller.dto.CreateReviewReq;
+import sopt.org.homepage.review.domain.vo.CategoryType;
 import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
 
 import java.util.ArrayList;
@@ -57,24 +58,23 @@ public record CreateReviewCommand(
     /**
      * 요청으로부터 세부 주제 추출
      *
-     * 비즈니스 규칙:
+     * 비즈니스 규칙: CategoryType Enum을 활용하여 타입 안전하게 처리
      * - "전체 활동" 카테고리: subActivities 목록 사용
      * - "서류/면접" 카테고리: subRecruiting 단일 값 사용
      * - 기타 카테고리: 빈 리스트
      */
     private static List<String> extractSubjects(CreateReviewReq request) {
         List<String> subjects = new ArrayList<>();
-
-        if ("전체 활동".equals(request.mainCategory())) {
+        CategoryType categoryType = CategoryType.from(request.mainCategory());
+        if (categoryType == CategoryType.ACTIVITY) {
             if (request.subActivities() != null) {
                 subjects.addAll(request.subActivities());
             }
-        } else if ("서류/면접".equals(request.mainCategory())) {
+        } else if (categoryType == CategoryType.RECRUITING) {
             if (request.subRecruiting() != null) {
                 subjects.add(request.subRecruiting());
             }
         }
-
         return subjects;
     }
 }
