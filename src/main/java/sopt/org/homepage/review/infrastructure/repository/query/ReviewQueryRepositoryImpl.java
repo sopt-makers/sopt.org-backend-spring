@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import sopt.org.homepage.common.type.Part;
 import sopt.org.homepage.review.domain.QReview;
 import sopt.org.homepage.review.domain.Review;
+import sopt.org.homepage.review.domain.vo.CategoryType;
 import sopt.org.homepage.review.repository.query.ReviewQueryRepository;
 import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
 
@@ -81,7 +82,8 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     // === 동적 쿼리 조건 메서드 ===
 
     private BooleanExpression categoryEq(String category) {
-        return category != null ? review.category.value.eq(category) : null;
+        CategoryType categoryType = CategoryType.from(category);
+        return review.category.type.eq(categoryType);
     }
 
     private BooleanExpression partEq(Part part) {
@@ -97,9 +99,13 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
      * JSON 배열에서 특정 값 검색
      */
     private BooleanExpression activityContains(String category, String activity) {
-        if (!Objects.equals(category, "전체 활동") || activity == null || activity.equals("전체")) {
+        // "전체 활동"이 아니거나 activity가 없으면 조건 무시
+        if (!CategoryType.ACTIVITY.getDisplayName().equals(category)
+                || activity == null
+                || activity.equals("전체")) {
             return null;
         }
+
 
         String searchTerm = "\"" + activity + "\"";
         return Expressions.booleanTemplate(
