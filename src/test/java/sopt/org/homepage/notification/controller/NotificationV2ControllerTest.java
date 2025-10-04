@@ -13,7 +13,7 @@ import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.domain.vo.Email;
 import sopt.org.homepage.notification.domain.vo.Generation;
 import sopt.org.homepage.notification.repository.command.NotificationCommandRepository;
-import sopt.org.homepage.notification.service.IntegrationTestBase;
+import sopt.org.homepage.common.IntegrationTestBase;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
