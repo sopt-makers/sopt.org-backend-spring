@@ -4,11 +4,10 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ActiveProfiles;
 import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.repository.command.NotificationCommandRepository;
-import sopt.org.homepage.notification.service.IntegrationTestBase;
+import sopt.org.homepage.common.IntegrationTestBase;
 import sopt.org.homepage.notification.service.command.dto.NotificationResult;
 import sopt.org.homepage.notification.service.command.dto.RegisterNotificationCommand;
 

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum Part {
-    iOS("iOS"),
+    IOS("IOS"),
     PLAN("PLAN"),
     DESIGN("DESIGN"),
     SERVER("SERVER"),
