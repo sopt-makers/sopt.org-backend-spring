@@ -52,7 +52,7 @@ public class SoptStoryLike {
      */
     public static SoptStoryLike create(SoptStory soptStory, IpAddress ipAddress) {
         validateSoptStory(soptStory);
-        // IpAddress는 VO 생성 시점에 이미 검증됨
+        validateIpAddress(ipAddress);
 
         return new SoptStoryLike(soptStory, ipAddress);
     }
@@ -63,6 +63,12 @@ public class SoptStoryLike {
     private SoptStoryLike(SoptStory soptStory, IpAddress ipAddress) {
         this.soptStory = soptStory;
         this.ipAddress = ipAddress;
+    }
+
+    private static void validateIpAddress(IpAddress ipAddress) {
+        if (ipAddress == null) {
+            throw new IllegalArgumentException("IP 주소는 필수입니다.");
+        }
     }
 
     private static void validateSoptStory(SoptStory soptStory) {
