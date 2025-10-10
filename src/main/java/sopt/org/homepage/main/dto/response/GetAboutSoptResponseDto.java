@@ -1,8 +1,7 @@
-package sopt.org.homepage.aboutsopt.dto;
+package sopt.org.homepage.main.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import lombok.Getter;
 
 @Schema(description = "AboutSopt 응답")
 public record GetAboutSoptResponseDto(

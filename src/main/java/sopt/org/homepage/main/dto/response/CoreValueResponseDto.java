@@ -1,9 +1,8 @@
-package sopt.org.homepage.aboutsopt.dto;
+package sopt.org.homepage.main.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import lombok.Builder;
-import lombok.Getter;
 
 @Schema(description = "Core Value 응답")
 public record CoreValueResponseDto(
