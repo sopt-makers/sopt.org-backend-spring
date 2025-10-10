@@ -16,17 +16,10 @@ import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 import sopt.org.homepage.project.dto.type.LinkType;
 import sopt.org.homepage.review.dto.response.ReviewsResponseDto;
 import sopt.org.homepage.review.entity.ReviewEntity;
-import sopt.org.homepage.semester.dto.SemesterDao;
-import sopt.org.homepage.semester.dto.SemestersListResponse;
+
 
 @Component
 public class ResponseMapper {
-
-	public SemestersListResponse.SemestersResponse toSemestersResponse(SemesterDao semester) {
-		return new SemestersListResponse.SemestersResponse(
-			semester.id(), semester.color(), semester.logo(), semester.background(), semester.name(), semester.year()
-		);
-	}
 
     public ProjectsResponseDto toProjectResponse(PlaygroundProjectResponseDto project) {
         List<Link> links = project.links() != null ?
