@@ -3,9 +3,8 @@ package sopt.org.homepage.review.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.domain.vo.*;
 import sopt.org.homepage.review.exception.DuplicateReviewUrlException;
 import sopt.org.homepage.review.exception.InvalidReviewSubjectException;
@@ -39,13 +38,13 @@ class ReviewTest {
         );
         ReviewAuthor author = new ReviewAuthor("홍길동", "https://example.com/profile.jpg");
         Integer generation = 34;
-        Part part = Part.SERVER;
+        PartType partType = PartType.SERVER;
         ReviewCategory category = new ReviewCategory(CategoryType.ACTIVITY);
         ReviewSubjects subjects = new ReviewSubjects(List.of("세미나", "프로젝트"));
         ReviewUrl url = new ReviewUrl("https://medium.com/@sopt/review");
 
         // when
-        Review review = Review.create(content, author, generation, part, category, subjects, url);
+        Review review = Review.create(content, author, generation, partType, category, subjects, url);
 
         // then
         assertThat(review).isNotNull();
@@ -53,7 +52,7 @@ class ReviewTest {
         assertThat(review.getDescription()).isEqualTo("정말 유익한 활동이었습니다.");
         assertThat(review.getAuthorName()).isEqualTo("홍길동");
         assertThat(review.getGeneration()).isEqualTo(34);
-        assertThat(review.getPart()).isEqualTo(Part.SERVER);
+        assertThat(review.getPartType()).isEqualTo(PartType.SERVER);
         assertThat(review.getCategoryValue()).isEqualTo("전체 활동");
         assertThat(review.getSubjectValues()).containsExactly("세미나", "프로젝트");
         assertThat(review.getUrlValue()).isEqualTo("https://medium.com/@sopt/review");
@@ -70,7 +69,7 @@ class ReviewTest {
         ReviewUrl url = createValidUrl();
 
         // when
-        Review review = Review.create(content, author, 34, Part.SERVER, category, subjects, url);
+        Review review = Review.create(content, author, 34, PartType.SERVER, category, subjects, url);
 
         // then
         assertThat(review).isNotNull();
@@ -89,7 +88,7 @@ class ReviewTest {
         ReviewUrl url = createValidUrl();
 
         // when
-        Review review = Review.create(content, author, 34, Part.SERVER, category, subjects, url);
+        Review review = Review.create(content, author, 34, PartType.SERVER, category, subjects, url);
 
         // then
         assertThat(review).isNotNull();
@@ -108,7 +107,7 @@ class ReviewTest {
         ReviewUrl url = createValidUrl();
 
         // when
-        Review review = Review.create(content, author, 34, Part.SERVER, category, subjects, url);
+        Review review = Review.create(content, author, 34, PartType.SERVER, category, subjects, url);
 
         // then
         assertThat(review).isNotNull();
@@ -130,7 +129,7 @@ class ReviewTest {
 
         // when & then
         assertThatThrownBy(() ->
-                Review.create(content, author, 34, Part.SERVER, category, emptySubjects, url)
+                Review.create(content, author, 34, PartType.SERVER, category, emptySubjects, url)
         )
                 .isInstanceOf(InvalidReviewSubjectException.class)
                 .hasMessageContaining("전체활동 카테고리는 세부 활동이 필수입니다");
@@ -148,7 +147,7 @@ class ReviewTest {
 
         // when & then
         assertThatThrownBy(() ->
-                Review.create(content, author, 34, Part.SERVER, category, emptySubjects, url)
+                Review.create(content, author, 34, PartType.SERVER, category, emptySubjects, url)
         )
                 .isInstanceOf(InvalidReviewSubjectException.class)
                 .hasMessageContaining("서류/면접 카테고리는 세부 유형이 필수입니다");
@@ -169,7 +168,7 @@ class ReviewTest {
 
         // when & then
         assertThatThrownBy(() ->
-                Review.create(content, author, nullGeneration, Part.SERVER, category, subjects, url)
+                Review.create(content, author, nullGeneration, PartType.SERVER, category, subjects, url)
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("기수는 1 이상이어야 합니다.");
@@ -188,7 +187,7 @@ class ReviewTest {
 
         // when & then
         assertThatThrownBy(() ->
-                Review.create(content, author, invalidGeneration, Part.SERVER, category, subjects, url)
+                Review.create(content, author, invalidGeneration, PartType.SERVER, category, subjects, url)
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("기수는 1 이상이어야 합니다.");
@@ -206,7 +205,7 @@ class ReviewTest {
         ReviewUrl url = createValidUrl();
 
         // when
-        Review review = Review.create(content, author, validGeneration, Part.SERVER, category, subjects, url);
+        Review review = Review.create(content, author, validGeneration, PartType.SERVER, category, subjects, url);
 
         // then
         assertThat(review).isNotNull();
@@ -224,11 +223,11 @@ class ReviewTest {
         ReviewCategory category = new ReviewCategory(CategoryType.SEMINAR);
         ReviewSubjects subjects = new ReviewSubjects(List.of());
         ReviewUrl url = createValidUrl();
-        Part nullPart = null;
+        PartType nullPartType = null;
 
         // when & then
         assertThatThrownBy(() ->
-                Review.create(content, author, 34, nullPart, category, subjects, url)
+                Review.create(content, author, 34, nullPartType, category, subjects, url)
         )
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("파트는 필수입니다.");
@@ -245,9 +244,9 @@ class ReviewTest {
         ReviewUrl url = createValidUrl();
 
         // when & then
-        for (Part part : Part.values()) {
-            Review review = Review.create(content, author, 34, part, category, subjects, url);
-            assertThat(review.getPart()).isEqualTo(part);
+        for (PartType partType : PartType.values()) {
+            Review review = Review.create(content, author, 34, partType, category, subjects, url);
+            assertThat(review.getPartType()).isEqualTo(partType);
         }
     }
 
@@ -295,7 +294,7 @@ class ReviewTest {
         ReviewSubjects subjects = new ReviewSubjects(List.of("세미나", "프로젝트"));
         ReviewUrl url = new ReviewUrl("https://example.com/review");
 
-        Review review = Review.create(content, author, 34, Part.SERVER, category, subjects, url);
+        Review review = Review.create(content, author, 34, PartType.SERVER, category, subjects, url);
 
         // when & then
         assertThat(review.getTitle()).isEqualTo("제목");
@@ -308,7 +307,7 @@ class ReviewTest {
         assertThat(review.getSubjectValues()).containsExactly("세미나", "프로젝트");
         assertThat(review.getUrlValue()).isEqualTo("https://example.com/review");
         assertThat(review.getGeneration()).isEqualTo(34);
-        assertThat(review.getPart()).isEqualTo(Part.SERVER);
+        assertThat(review.getPartType()).isEqualTo(PartType.SERVER);
     }
 
     @Test
@@ -325,7 +324,7 @@ class ReviewTest {
                 content,
                 createValidAuthor(),
                 34,
-                Part.SERVER,
+                PartType.SERVER,
                 new ReviewCategory(CategoryType.SEMINAR),
                 new ReviewSubjects(List.of()),
                 createValidUrl()
@@ -344,7 +343,7 @@ class ReviewTest {
                 createValidContent(),
                 author,
                 34,
-                Part.SERVER,
+                PartType.SERVER,
                 new ReviewCategory(CategoryType.SEMINAR),
                 new ReviewSubjects(List.of()),
                 createValidUrl()
@@ -378,7 +377,7 @@ class ReviewTest {
                 createValidContent(),
                 createValidAuthor(),
                 34,
-                Part.SERVER,
+                PartType.SERVER,
                 new ReviewCategory(CategoryType.SEMINAR),
                 new ReviewSubjects(List.of()),
                 createValidUrl()

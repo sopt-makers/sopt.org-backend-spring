@@ -9,7 +9,7 @@ import sopt.org.homepage.main.entity.sub.IntroductionEntity;
 @Schema(description = "소개글 정보")
 @Getter
 @NoArgsConstructor
-class AddAdminIntroductionRequestDto {
+public class AddAdminIntroductionRequestDto {
     @Schema(description = "내용", example = "Android 앱 개발", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "내용은 필수입니다")
     private String content;

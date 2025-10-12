@@ -2,6 +2,7 @@ package sopt.org.homepage.project.dto.request;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.common.dto.PaginateRequest;
@@ -19,7 +20,7 @@ public class GetProjectsRequestDto extends PaginateRequest {
     @Parameter(description = "웹/앱 필터링")
     private final ServiceType platform;
 
-
+    @Builder
     public GetProjectsRequestDto(Integer pageNo, Integer limit, ProjectType filter, ServiceType platform) {
         super(pageNo, limit);
         this.filter = filter;

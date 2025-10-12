@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 
 @Entity
 @Getter
@@ -46,8 +46,8 @@ public class ReviewEntity {
 	private int generation;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "\"part\"", nullable = false, length = 10)
-	private Part part;
+	@Column(name = "\"partType\"", nullable = false, length = 10)
+	private PartType partType;
 
 	@Basic
 	@Column(name = "\"category\"", nullable = false, length = 20)
@@ -86,13 +86,13 @@ public class ReviewEntity {
 	private LocalDateTime updatedAt;
 
 	@Builder
-	public ReviewEntity(String title, String author, int generation, Part part, String category,
-		List<String> subject, String thumbnailUrl, String platform,
-		String url, String description, String authorProfileImageUrl) {
+	public ReviewEntity(String title, String author, int generation, PartType partType, String category,
+                        List<String> subject, String thumbnailUrl, String platform,
+                        String url, String description, String authorProfileImageUrl) {
 		this.title = title;
 		this.author = author;
 		this.generation = generation;
-		this.part = part;
+		this.partType = partType;
 		this.category = category;
 		this.subject = subject;
 		this.thumbnailUrl = thumbnailUrl;

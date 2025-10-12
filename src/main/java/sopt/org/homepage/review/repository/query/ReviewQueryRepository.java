@@ -1,6 +1,6 @@
 package sopt.org.homepage.review.repository.query;
 
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.domain.Review;
 import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
 
@@ -37,10 +37,10 @@ public interface ReviewQueryRepository {
     /**
      * 파트별 랜덤 리뷰 조회
      *
-     * @param part 파트
+     * @param partType 파트
      * @return 랜덤 리뷰 (없으면 null)
      */
-    Review findRandomReviewByPart(Part part);
+    Review findRandomReviewByPart(PartType partType);
 
     /**
      * 작성자명으로 리뷰 목록 조회

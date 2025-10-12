@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.common.IntegrationTestBase;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.domain.Review;
 import sopt.org.homepage.review.domain.vo.CategoryType;
 import sopt.org.homepage.review.exception.DuplicateReviewUrlException;
@@ -65,7 +65,7 @@ class ReviewCommandServiceTest extends IntegrationTestBase {
         assertThat(saved.getTitle()).isEqualTo("SOPT 34기 활동 후기");
         assertThat(saved.getDescription()).isEqualTo("정말 유익한 경험이었습니다.");
         assertThat(saved.getGeneration()).isEqualTo(34);
-        assertThat(saved.getPart()).isEqualTo(Part.SERVER);
+        assertThat(saved.getPartType()).isEqualTo(PartType.SERVER);
         assertThat(saved.getCategoryType()).isEqualTo(CategoryType.ACTIVITY);
         assertThat(saved.getSubjectValues())
                 .containsExactly("세미나", "프로젝트");
@@ -184,7 +184,7 @@ class ReviewCommandServiceTest extends IntegrationTestBase {
                 "홍길동",
                 "https://example.com/profile.jpg",
                 34,
-                Part.SERVER
+                PartType.SERVER
         );
     }
 }

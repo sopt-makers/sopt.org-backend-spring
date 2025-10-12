@@ -5,7 +5,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 
 @Schema(description = "리뷰 응답")
 @Getter
@@ -30,7 +30,7 @@ public class ReviewsResponseDto {
 	private final String description;
 
 	@Schema(description = "파트(활동 기수)")
-	private final Part part;
+	private final PartType partType;
 
 	@Schema(description = "카테고리")
 	private final String category;
@@ -49,8 +49,8 @@ public class ReviewsResponseDto {
 
 	@Builder
 	private ReviewsResponseDto(Long id, String title, String category, String author, String authorProfileImageUrl,
-		Integer generation, String description, Part part, List<String> subject,
-		String thumbnailUrl, String platform, String url) {
+                               Integer generation, String description, PartType partType, List<String> subject,
+                               String thumbnailUrl, String platform, String url) {
 		this.id = id;
 		this.title = title;
 		this.category = category;
@@ -58,7 +58,7 @@ public class ReviewsResponseDto {
 		this.authorProfileImageUrl = authorProfileImageUrl;
 		this.generation = generation;
 		this.description = description;
-		this.part = part;
+		this.partType = partType;
 		this.subject = subject;
 		this.thumbnailUrl = thumbnailUrl;
 		this.platform = platform;

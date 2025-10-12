@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import sopt.org.homepage.common.dto.PaginateResponseDto;
 import sopt.org.homepage.common.mapper.ResponseMapper;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.exception.BusinessLogicException;
 import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.review.dto.request.AddReviewMainCategory;
@@ -64,7 +64,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 	@Override
 	public List<ReviewsResponseDto> getRandomReviewByPart() {
-		return Arrays.stream(Part.values())
+		return Arrays.stream(PartType.values())
 			.map(reviewQueryRepository::findRandomReviewByPart)
 			.filter(Objects::nonNull)
 			.map(responseMapper::toReviewResponseDto)
@@ -91,7 +91,7 @@ public class ReviewServiceImpl implements ReviewService {
 			.category(dto.getMainCategory().getValue())
 			.subject(subjects)
 			.author(dto.getAuthor())
-			.part(dto.getPart())
+			.partType(dto.getPartType())
 			.authorProfileImageUrl(dto.getAuthorProfileImageUrl())
 			.generation(dto.getGeneration())
 			.build();

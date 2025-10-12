@@ -96,7 +96,7 @@ public class ResponseMapper {
 			.authorProfileImageUrl(entity.getAuthorProfileImageUrl())
 			.generation(entity.getGeneration())
 			.description(entity.getDescription())
-			.part(entity.getPart())
+			.partType(entity.getPartType())
 			.subject(entity.getSubject())
 			.thumbnailUrl(entity.getThumbnailUrl())
 			.platform(entity.getPlatform())

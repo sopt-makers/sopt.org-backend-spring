@@ -10,7 +10,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.dto.request.ReviewsRequestDto;
 import sopt.org.homepage.review.entity.QReviewEntity;
 import sopt.org.homepage.review.entity.ReviewEntity;
@@ -42,8 +42,8 @@ public class ReviewQueryRepository {
 
 		}
 
-		if (requestDto.getPart() != null) {
-			query.where(review.part.eq(requestDto.getPart()));
+		if (requestDto.getPartType() != null) {
+			query.where(review.partType.eq(requestDto.getPartType()));
 		}
 
 		if (requestDto.getGeneration() != null) {
@@ -78,8 +78,8 @@ public class ReviewQueryRepository {
 			query.where(subjectContains);
 		}
 
-		if (requestDto.getPart() != null) {
-			query.where(review.part.eq(requestDto.getPart()));
+		if (requestDto.getPartType() != null) {
+			query.where(review.partType.eq(requestDto.getPartType()));
 		}
 
 		if (requestDto.getGeneration() != null) {
@@ -89,10 +89,10 @@ public class ReviewQueryRepository {
 		return query.fetchOne();
 	}
 
-	public ReviewEntity findRandomReviewByPart(Part part) {
+	public ReviewEntity findRandomReviewByPart(PartType partType) {
 		return queryFactory
 			.selectFrom(review)
-			.where(review.part.eq(part))
+			.where(review.partType.eq(partType))
 			.orderBy(Expressions.numberTemplate(Double.class, "RANDOM()").asc())
 			.limit(1)
 			.fetchFirst();

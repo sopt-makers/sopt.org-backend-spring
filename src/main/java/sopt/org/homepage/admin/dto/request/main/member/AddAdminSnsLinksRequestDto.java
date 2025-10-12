@@ -10,7 +10,7 @@ import sopt.org.homepage.main.entity.sub.SnsLinksEntity;
 @Schema(description = "SNS 링크 정보")
 @Getter
 @NoArgsConstructor
-class AddAdminSnsLinksRequestDto {
+public class AddAdminSnsLinksRequestDto {
     @Schema(description = "이메일", example = "example@sopt.org")
     @Email(message = "올바른 이메일 형식을 입력해주세요")
     private String email;

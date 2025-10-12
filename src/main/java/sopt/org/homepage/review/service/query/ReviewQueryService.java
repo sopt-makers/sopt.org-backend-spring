@@ -3,7 +3,7 @@ package sopt.org.homepage.review.service.query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.domain.Review;
 import sopt.org.homepage.review.repository.query.ReviewQueryRepository;
 import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
@@ -51,7 +51,7 @@ public class ReviewQueryService {
      * 파트별 랜덤 리뷰 조회
      */
     public List<ReviewSummaryView> getRandomReviewsByPart() {
-        return Arrays.stream(Part.values())
+        return Arrays.stream(PartType.values())
                 .map(reviewQueryRepository::findRandomReviewByPart)
                 .filter(Objects::nonNull)
                 .map(ReviewSummaryView::from)
