@@ -13,6 +13,7 @@ import sopt.org.homepage.generation.service.query.dto.GenerationDetailView;
 import sopt.org.homepage.homepage.controller.dto.AboutPageResponse;
 import sopt.org.homepage.homepage.controller.dto.MainPageResponse;
 import sopt.org.homepage.homepage.controller.dto.RecruitPageResponse;
+import sopt.org.homepage.internal.auth.AuthService;
 import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
 import sopt.org.homepage.main.entity.MainNewsEntity;
@@ -59,6 +60,7 @@ public class HomepageQueryService {
     private final MainNewsRepository mainNewsRepository;
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
+    private final AuthService authService;
 
     /**
      * Main 페이지 데이터 조회
@@ -275,6 +277,10 @@ public class HomepageQueryService {
     private AboutPageResponse.ActivitiesRecords getActivitiesRecords(Integer generationId) {
         try {
 
+            // 1. 활동 회원 수 조회 (Generation별 Member 수)
+            long activitiesMemberCount = authService.getUserCountByGeneration(generationId);
+
+
 
             var allProjects = playgroundService.getAllProjects(
                     new GetProjectsRequestDto(1, Integer.MAX_VALUE, null, null)
@@ -290,17 +296,20 @@ public class HomepageQueryService {
             int studyCount = crewService.getStudyCount(generationId);
 
             return AboutPageResponse.ActivitiesRecords.builder()
-                    .projectCount(projectCount)
-                    .studyCount(studyCount)
+                    .activitiesMemberCount((int) activitiesMemberCount)  // 추가!
+                    .projectCounts(projectCount)  // 's' 추가!
+                    .studyCounts(studyCount)      // 's' 추가!
                     .build();
+
         } catch (Exception e) {
             log.warn("Failed to get activities records for generation {}: {}",
                     generationId, e.getMessage());
 
             // 실패 시 기본값 반환
             return AboutPageResponse.ActivitiesRecords.builder()
-                    .projectCount(0)
-                    .studyCount(0)
+                    .activitiesMemberCount(0)
+                    .projectCounts(0)
+                    .studyCounts(0)
                     .build();
         }
     }

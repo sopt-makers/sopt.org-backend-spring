@@ -73,8 +73,9 @@ public record AboutPageResponse(
 
     @Builder
     public record ActivitiesRecords(
-            int projectCount,
-            int studyCount
+            int activitiesMemberCount,  // 추가!
+            int projectCounts,          // 's' 추가!
+            int studyCounts             // 's' 추가!
     ) {
     }
 }
