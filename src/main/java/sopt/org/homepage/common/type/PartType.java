@@ -6,13 +6,14 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Part {
+public enum PartType {
     IOS("IOS"),
-    PLAN("PLAN"),
-    DESIGN("DESIGN"),
-    SERVER("SERVER"),
-    ANDROID("ANDROID"),
-    WEB("WEB");
+    PLAN("기획"),
+    DESIGN("디자인"),
+    SERVER("서버"),
+    ANDROID("안드로이드"),
+    WEB("웹"),
+    COMMON("공통");
 
     private final String value;
 
@@ -23,18 +24,18 @@ public enum Part {
     }
 
 
-    public static Part fromValue(String value) {
-        for (Part part : values()) {
-            if (part.getValue().equalsIgnoreCase(value)) {
-                return part;
+    public static PartType fromValue(String value) {
+        for (PartType partType : values()) {
+            if (partType.getValue().equalsIgnoreCase(value)) {
+                return partType;
             }
         }
-        throw new IllegalArgumentException("Unknown Part value: " + value);
+        throw new IllegalArgumentException("Unknown PartType value: " + value);
     }
 
-    public static Part fromString(String partName) {
+    public static PartType fromString(String partName) {
         if (partName == null || partName.isBlank()) {
-            throw new IllegalArgumentException("Part name must not be blank");
+            throw new IllegalArgumentException("PartType name must not be blank");
         }
 
         return switch (partName.trim()) {
@@ -44,7 +45,7 @@ public enum Part {
             case "서버", "Server", "SERVER" -> SERVER;
             case "기획", "Plan", "PLAN" -> PLAN;
             case "디자인", "Design", "DESIGN" -> DESIGN;
-            default -> throw new IllegalArgumentException("Unknown part: " + partName);
+            default -> throw new IllegalArgumentException("Unknown partType: " + partName);
         };
     }
 
