@@ -41,7 +41,7 @@ public class Review {
     private Integer generation;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"partType\"", nullable = false, length = 10)
+    @Column(name = "\"part\"", nullable = false, length = 10)
     private PartType partType;
 
     @Embedded

@@ -46,7 +46,7 @@ public class ReviewEntity {
 	private int generation;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "\"partType\"", nullable = false, length = 10)
+	@Column(name = "\"part\"", nullable = false, length = 10)
 	private PartType partType;
 
 	@Basic
