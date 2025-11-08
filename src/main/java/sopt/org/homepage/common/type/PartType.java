@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PartType {
-    IOS("IOS"),
+    IOS("iOS"),
     PLAN("기획"),
     DESIGN("디자인"),
     SERVER("서버"),
