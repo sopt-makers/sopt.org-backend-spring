@@ -51,7 +51,7 @@ public class SnsLinks {
      */
     private String validateAndNormalize(String url) {
         if (url == null || url.isBlank()) {
-            return null;
+            return "";  // ⭐ null → 빈 문자열
         }
         return url.trim();
     }
