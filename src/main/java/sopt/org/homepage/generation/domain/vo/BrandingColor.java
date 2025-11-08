@@ -50,7 +50,7 @@ public class BrandingColor {
      * Hex 컬러 코드 검증
      */
     private void validateHexColor(String color, String fieldName) {
-        if (color == null || !color.matches("^#[0-9A-Fa-f]{6}$")) {
+        if (color == null || !color.matches("^[0-9A-Fa-f]{6}$")) {
             throw new IllegalArgumentException(
                     String.format("%s must be a valid hex color code (e.g., #FF0000)", fieldName)
             );
