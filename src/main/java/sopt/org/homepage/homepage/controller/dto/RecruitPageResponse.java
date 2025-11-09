@@ -69,7 +69,7 @@ public record RecruitPageResponse(
     @Builder
     public record RecruitQuestion(
             String part,
-            List<Question> question
+            List<Question> questions
     ) {
         @Builder
         public record Question(

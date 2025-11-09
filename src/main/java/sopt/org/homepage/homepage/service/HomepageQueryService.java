@@ -260,7 +260,7 @@ public class HomepageQueryService {
                 .recruitQuestion(faqs.stream()
                         .map(faq -> RecruitPageResponse.RecruitQuestion.builder()
                                 .part(faq.part())
-                                .question(faq.questions().stream()
+                                .questions(faq.questions().stream()
                                         .map(q -> RecruitPageResponse.RecruitQuestion.Question.builder()
                                                 .question(q.question())
                                                 .answer(q.answer())
