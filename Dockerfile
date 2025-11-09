@@ -1,4 +1,4 @@
-FROM openjdk:17-jdk-slim AS build
+FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 COPY . /app
 RUN apt-get update && apt-get install -y curl unzip
