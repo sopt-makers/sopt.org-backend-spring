@@ -39,7 +39,7 @@ public class ReviewQueryController {
         ReviewSearchCond cond = new ReviewSearchCond(
                 request.category(),
                 request.activity(),
-                request.part(),
+                request.partType(),
                 request.generation()
         );
 

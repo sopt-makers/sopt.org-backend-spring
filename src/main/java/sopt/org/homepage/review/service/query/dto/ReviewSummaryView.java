@@ -1,6 +1,6 @@
 package sopt.org.homepage.review.service.query.dto;
 
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.domain.Review;
 
 import java.util.List;
@@ -15,7 +15,7 @@ public record ReviewSummaryView(
         String authorProfileImageUrl,
         Integer generation,
         String description,
-        Part part,
+        PartType partType,
         String category,
         List<String> subject,
         String thumbnailUrl,
@@ -33,7 +33,7 @@ public record ReviewSummaryView(
                 review.getAuthorProfileImageUrl(),
                 review.getGeneration(),
                 review.getDescription(),
-                review.getPart(),
+                review.getPartType(),
                 review.getCategoryValue(),
                 review.getSubjectValues(),
                 review.getThumbnailUrl(),

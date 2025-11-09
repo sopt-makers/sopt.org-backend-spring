@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import sopt.org.homepage.common.dto.PaginateRequest;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 
 @Validated
 @Getter
@@ -21,17 +21,17 @@ public class ReviewsRequestDto extends PaginateRequest {
 	private final String activity;
 
 	@Parameter(description = "파트 => 전체를 불러올땐 아무값도 안넣으면 됩니다.", required = false)
-	private final Part part;
+	private final PartType partType;
 
 	@Parameter(description = "활동기수 => 전체를 불러올땐 아무값도 안넣으면 됩니다.", required = false)
 	private final Integer generation;
 
 	public ReviewsRequestDto(Integer pageNo, Integer limit, String category, String activity,
-		Part part, Integer generation) {
+                             PartType partType, Integer generation) {
 		super(pageNo, limit);
 		this.category = category;
 		this.activity = activity;
-		this.part = part;
+		this.partType = partType;
 		this.generation = generation;
 	}
 }

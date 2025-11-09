@@ -1,7 +1,7 @@
 package sopt.org.homepage.review.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 
 /**
  * 리뷰 검색 요청 DTO
@@ -18,7 +18,7 @@ public record ReviewSearchReq(
         String activity,
 
         @Schema(description = "파트", example = "SERVER")
-        Part part,
+        PartType partType,
 
         @Schema(description = "기수", example = "34")
         Integer generation,

@@ -1,0 +1,81 @@
+package sopt.org.homepage.homepage.controller.dto;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
+
+import java.util.List;
+
+/**
+ * AboutPageResponse
+ *
+ * GET /homepage/about 응답 DTO
+ */
+@Schema(description = "About 페이지 데이터")
+@Builder
+public record AboutPageResponse(
+        @Schema(description = "기수", example = "35")
+        int generation,
+
+        @Schema(description = "기수명", example = "35기")
+        String name,
+
+        @Schema(description = "헤더 이미지 URL")
+        String headerImage,
+
+        BrandingColor brandingColor,
+        List<CoreValue> coreValue,
+        List<PartCurriculum> partCurriculum,
+        List<Member> member,
+        ActivitiesRecords activitiesRecords
+) {
+    @Builder
+    public record BrandingColor(
+            String main,
+            String high,
+            String low,
+            String point
+    ) {
+    }
+
+    @Builder
+    public record CoreValue(
+            String value,
+            String description,
+            String image
+    ) {
+    }
+
+    @Builder
+    public record PartCurriculum(
+            String part,
+            List<String> curriculums
+    ) {
+    }
+
+    @Builder
+    public record Member(
+            String role,
+            String name,
+            String affiliation,
+            String introduction,
+            String profileImage,
+            SnsLinks sns
+    ) {
+        @Builder
+        public record SnsLinks(
+                String email,
+                String linkedin,
+                String github,
+                String behance
+        ) {
+        }
+    }
+
+    @Builder
+    public record ActivitiesRecords(
+            int activitiesMemberCount,  // 추가!
+            int projectCounts,          // 's' 추가!
+            int studyCounts             // 's' 추가!
+    ) {
+    }
+}

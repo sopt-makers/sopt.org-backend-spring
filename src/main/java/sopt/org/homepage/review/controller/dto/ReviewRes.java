@@ -1,7 +1,7 @@
 package sopt.org.homepage.review.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.service.query.dto.ReviewSummaryView;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public record ReviewRes(
         String description,
 
         @Schema(description = "파트")
-        Part part,
+        PartType partType,
 
         @Schema(description = "카테고리")
         String category,
@@ -59,7 +59,7 @@ public record ReviewRes(
                 view.authorProfileImageUrl(),
                 view.generation(),
                 view.description(),
-                view.part(),
+                view.partType(),
                 view.category(),
                 view.subject(),
                 view.thumbnailUrl(),

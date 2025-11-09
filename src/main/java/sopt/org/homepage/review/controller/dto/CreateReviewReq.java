@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public record CreateReviewReq(
 
         @Schema(description = "파트", example = "SERVER")
         @NotNull(message = "파트는 필수입니다.")
-        Part part,
+        PartType partType,
 
         @Schema(description = "메인 카테고리", example = "전체 활동")
         @NotBlank(message = "카테고리는 필수입니다.")

@@ -1,6 +1,6 @@
 package sopt.org.homepage.review.service.command.dto;
 
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.controller.dto.CreateReviewReq;
 import sopt.org.homepage.review.domain.vo.CategoryType;
 import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
@@ -27,7 +27,7 @@ public record CreateReviewCommand(
         String authorName,
         String authorProfileImageUrl,
         Integer generation,
-        Part part
+        PartType partType
 ) {
     /**
      * Request와 스크래핑 결과로부터 Command 생성
@@ -51,7 +51,7 @@ public record CreateReviewCommand(
                 request.author(),
                 request.authorProfileImageUrl(),
                 request.generation(),
-                request.part()
+                request.partType()
         );
     }
 

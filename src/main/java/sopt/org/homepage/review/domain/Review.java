@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.domain.vo.*;
 import sopt.org.homepage.review.exception.DuplicateReviewUrlException;
 
@@ -42,7 +42,7 @@ public class Review {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "\"part\"", nullable = false, length = 10)
-    private Part part;
+    private PartType partType;
 
     @Embedded
     private ReviewCategory category;
@@ -74,7 +74,7 @@ public class Review {
             ReviewContent content,
             ReviewAuthor author,
             Integer generation,
-            Part part,
+            PartType partType,
             ReviewCategory category,
             ReviewSubjects subjects,
             ReviewUrl url
@@ -85,7 +85,7 @@ public class Review {
         subjects.validateForCategory(category);
 
         // 3. 엔티티 생성
-        return new Review(content, author, generation, part, category, subjects, url);
+        return new Review(content, author, generation, partType, category, subjects, url);
     }
 
     /**
@@ -95,18 +95,18 @@ public class Review {
             ReviewContent content,
             ReviewAuthor author,
             Integer generation,
-            Part part,
+            PartType partType,
             ReviewCategory category,
             ReviewSubjects subjects,
             ReviewUrl url
     ) {
         validateGeneration(generation);
-        validatePart(part);
+        validatePart(partType);
 
         this.content = content;
         this.author = author;
         this.generation = generation;
-        this.part = part;
+        this.partType = partType;
         this.category = category;
         this.subjects = subjects;
         this.url = url;
@@ -118,8 +118,8 @@ public class Review {
         }
     }
 
-    private void validatePart(Part part) {
-        if (part == null) {
+    private void validatePart(PartType partType) {
+        if (partType == null) {
             throw new IllegalArgumentException("파트는 필수입니다.");
         }
     }

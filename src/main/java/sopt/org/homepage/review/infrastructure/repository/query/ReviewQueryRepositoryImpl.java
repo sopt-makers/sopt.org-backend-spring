@@ -5,7 +5,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.domain.QReview;
 import sopt.org.homepage.review.domain.Review;
 import sopt.org.homepage.review.domain.vo.CategoryType;
@@ -13,7 +13,6 @@ import sopt.org.homepage.review.repository.query.ReviewQueryRepository;
 import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 리뷰 Query Repository 구현체 (QueryDSL)
@@ -32,7 +31,7 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
                 .where(
                         categoryEq(cond.category()),
                         activityContains(cond.category(), cond.activity()),
-                        partEq(cond.part()),
+                        partEq(cond.partType()),
                         generationEq(cond.generation())
                 )
                 .orderBy(
@@ -53,7 +52,7 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
                 .where(
                         categoryEq(cond.category()),
                         activityContains(cond.category(), cond.activity()),
-                        partEq(cond.part()),
+                        partEq(cond.partType()),
                         generationEq(cond.generation())
                 )
                 .fetchOne();
@@ -62,10 +61,10 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     }
 
     @Override
-    public Review findRandomReviewByPart(Part part) {
+    public Review findRandomReviewByPart(PartType partType) {
         return queryFactory
                 .selectFrom(review)
-                .where(review.part.eq(part))
+                .where(review.partType.eq(partType))
                 .orderBy(Expressions.numberTemplate(Double.class, "RANDOM()").asc())
                 .limit(1)
                 .fetchFirst();
@@ -86,8 +85,8 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
                 .orElse(null);
     }
 
-    private BooleanExpression partEq(Part part) {
-        return part != null ? review.part.eq(part) : null;
+    private BooleanExpression partEq(PartType partType) {
+        return partType != null ? review.partType.eq(partType) : null;
     }
 
     private BooleanExpression generationEq(Integer generation) {

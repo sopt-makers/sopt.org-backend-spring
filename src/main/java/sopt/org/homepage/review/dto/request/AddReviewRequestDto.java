@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.common.type.Part;
+import sopt.org.homepage.common.type.PartType;
 
 @Getter
 @NoArgsConstructor
@@ -21,7 +21,7 @@ public class AddReviewRequestDto {
 
 	@Schema(description = "파트", requiredMode = Schema.RequiredMode.REQUIRED)
 	@NotEmpty(message = "파트 정보는 필수입니다")
-	private Part part;
+	private PartType partType;
 
 	@Schema(description = "메인 유형", requiredMode = Schema.RequiredMode.REQUIRED, example = "전체 활동")
 	@NotEmpty(message = "메인 유형는 필수입니다")

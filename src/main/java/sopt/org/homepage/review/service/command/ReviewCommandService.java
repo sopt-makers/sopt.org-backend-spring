@@ -70,7 +70,7 @@ public class ReviewCommandService {
                 content,
                 author,
                 command.generation(),
-                command.part(),
+                command.partType(),
                 category,
                 subjects,
                 url
