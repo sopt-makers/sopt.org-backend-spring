@@ -4,7 +4,7 @@ COPY . /app
 RUN apt-get update && apt-get install -y curl unzip
 RUN ./gradlew bootJar -x test
 
-FROM openjdk:17-jdk-slim AS production
+FROM eclipse-temurin:17-jdk-jammy AS production
 RUN apt-get update && apt-get install -y \
    chromium \
    chromium-driver \
