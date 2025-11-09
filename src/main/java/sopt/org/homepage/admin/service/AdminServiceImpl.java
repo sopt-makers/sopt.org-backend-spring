@@ -13,8 +13,22 @@ import sopt.org.homepage.admin.dto.request.news.GetAdminNewsRequestDto;
 import sopt.org.homepage.admin.dto.response.main.AddAdminConfirmResponseDto;
 import sopt.org.homepage.admin.dto.response.main.AddAdminResponseDto;
 import sopt.org.homepage.admin.dto.response.main.GetAdminResponseDto;
+import sopt.org.homepage.admin.dto.response.main.branding.GetAdminBrandingColorResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.core.GetAdminCoreValueResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.curriculum.GetAdminPartCurriculumResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.introduction.GetAdminPartIntroductionResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.main.member.AddAdminMemberResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.member.GetAdminMemberResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.member.GetAdminSnsLinksResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.news.GetAdminLatestNewsResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.curriculum.GetAdminIntroductionResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.curriculum.GetAdminRecruitPartCurriculumResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.question.GetAdminQuestionResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.question.GetAdminRecruitQuestionResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
+import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminScheduleResponseRecordDto;
 import sopt.org.homepage.admin.dto.response.news.AddAdminNewsResponseDto;
 import sopt.org.homepage.admin.dto.response.news.DeleteAdminNewsResponseDto;
 import sopt.org.homepage.admin.dto.response.news.GetAdminNewsResponseDto;
@@ -437,7 +451,7 @@ public class AdminServiceImpl implements AdminService {
 
         Integer generationId = request.getGeneration();
 
-        // 각 도메인에서 데이터 조회
+        // 1. 각 도메인에서 데이터 조회
         GenerationDetailView generation = generationQueryService.getGenerationDetail(generationId);
         List<CoreValueView> coreValues = coreValueQueryService.getCoreValuesByGeneration(generationId);
         List<MemberDetailView> members = memberQueryService.getMembersByGeneration(generationId);
@@ -448,11 +462,123 @@ public class AdminServiceImpl implements AdminService {
         List<FAQView> faqs = faqQueryService.getAllFAQs();
         List<MainNewsEntity> mainNewsEntities = mainNewsRepository.findAll();
 
-        // Response 조합 (기존 구조 유지)
+        // 2. Response 조합
         return GetAdminResponseDto.builder()
                 .generation(generation.id())
                 .name(generation.name())
-                // ... (기존 GetAdminResponseDto 구조에 맞춰 변환)
+
+                // Recruitment Schedule
+                .recruitSchedule(recruitments.stream()
+                        .map(r -> GetAdminRecruitScheduleResponseRecordDto.builder()
+                                .type(r.type())
+                                .schedule(GetAdminScheduleResponseRecordDto.builder()
+                                        .applicationStartTime(r.schedule().applicationStartTime())
+                                        .applicationEndTime(r.schedule().applicationEndTime())
+                                        .applicationResultTime(r.schedule().applicationResultTime())
+                                        .interviewStartTime(r.schedule().interviewStartTime())
+                                        .interviewEndTime(r.schedule().interviewEndTime())
+                                        .finalResultTime(r.schedule().finalResultTime())
+                                        .build())
+                                .build())
+                        .toList())
+
+                // Branding Color
+                .brandingColor(GetAdminBrandingColorResponseRecordDto.builder()
+                        .main(generation.brandingColor().main())
+                        .low(generation.brandingColor().sub())
+                        .high(generation.brandingColor().point())
+                        .point(generation.brandingColor().background())
+                        .build())
+
+                // Main Button
+                .mainButton(GetAdminMainButtonResponseRecordDto.builder()
+                        .text(generation.mainButton().text())
+                        .keyColor(generation.mainButton().keyColor())
+                        .subColor(generation.mainButton().subColor())
+                        .build())
+
+                // Part Introduction ✅ 수정: description 필드 사용
+                .partIntroduction(parts.stream()
+                        .filter(p -> p.description() != null)
+                        .map(p -> GetAdminPartIntroductionResponseRecordDto.builder()
+                                .part(p.part())
+                                .description(p.description())  // ✅ introduction() → description()
+                                .build())
+                        .toList())
+
+                // Latest News
+                .latestNews(mainNewsEntities.stream()
+                        .map(news -> GetAdminLatestNewsResponseRecordDto.builder()
+                                .id(news.getId())
+                                .title(news.getTitle())
+                                .build())
+                        .toList())
+
+                // Header Image
+                .headerImage(generation.headerImage())
+
+                // Core Value
+                .coreValue(coreValues.stream()
+                        .map(cv -> GetAdminCoreValueResponseRecordDto.builder()
+                                .value(cv.value())
+                                .description(cv.description())
+                                .image(cv.imageUrl())
+                                .build())
+                        .toList())
+
+                // Part Curriculum
+                .partCurriculum(parts.stream()
+                        .filter(p -> p.curriculums() != null && !p.curriculums().isEmpty())
+                        .map(p -> GetAdminPartCurriculumResponseRecordDto.builder()
+                                .part(p.part())
+                                .curriculums(p.curriculums())
+                                .build())
+                        .toList())
+
+                // Member ✅ 수정: GetAdminSnsLinksResponseRecordDto 사용
+                .member(members.stream()
+                        .map(m -> GetAdminMemberResponseRecordDto.builder()
+                                .role(m.role())
+                                .name(m.name())
+                                .affiliation(m.affiliation())
+                                .introduction(m.introduction())
+                                .profileImage(m.profileImageUrl())
+                                .sns(GetAdminSnsLinksResponseRecordDto.builder()  // ✅ Sns → GetAdminSnsLinksResponseRecordDto
+                                        .email(m.snsLinks().email())
+                                        .linkedin(m.snsLinks().linkedin())
+                                        .github(m.snsLinks().github())
+                                        .behance(m.snsLinks().behance())
+                                        .build())
+                                .build())
+                        .toList())
+
+                // Recruit Header Image
+                .recruitHeaderImage(generation.recruitHeaderImage())
+
+                // Recruit Part Curriculum ✅ 수정: GetAdminIntroductionResponseRecordDto 사용
+                .recruitPartCurriculum(recruitPartIntros.stream()
+                        .map(rpi -> GetAdminRecruitPartCurriculumResponseRecordDto.builder()
+                                .part(rpi.part())
+                                .introduction(GetAdminIntroductionResponseRecordDto.builder()  // ✅ Introduction → GetAdminIntroductionResponseRecordDto
+                                        .content(rpi.introduction().content())
+                                        .preference(rpi.introduction().preference())
+                                        .build())
+                                .build())
+                        .toList())
+
+                // Recruit Question (FAQ) ✅ 수정: GetAdminQuestionResponseRecordDto 사용
+                .recruitQuestion(faqs.stream()
+                        .map(faq -> GetAdminRecruitQuestionResponseRecordDto.builder()
+                                .part(faq.part())
+                                .questions(faq.questions().stream()  // ✅ question → questions
+                                        .map(q -> GetAdminQuestionResponseRecordDto.builder()  // ✅ Question → GetAdminQuestionResponseRecordDto
+                                                .question(q.question())
+                                                .answer(q.answer())
+                                                .build())
+                                        .toList())
+                                .build())
+                        .toList())
+
                 .build();
     }
 
