@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.aboutsopt.dto.GetAboutSoptResponseDto;
-import sopt.org.homepage.aboutsopt.service.AboutSoptService;
+import sopt.org.homepage.main.dto.response.GetAboutSoptResponseDto;
 import sopt.org.homepage.admin.dto.request.main.AddAdminConfirmRequestDto;
 import sopt.org.homepage.admin.dto.request.main.AddAdminRequestDto;
 import sopt.org.homepage.admin.dto.request.main.GetAdminRequestDto;
@@ -88,7 +87,6 @@ public class MainServiceImpl implements MainService {
     private final S3Service s3Service;
     private final CacheService cacheService;
 
-    private final AboutSoptService aboutSoptService;
 
     public AddAdminResponseDto adminAddMainData(AddAdminRequestDto addAdminRequestDto) {
         String baseDir = addAdminRequestDto.getGeneration() + "/";

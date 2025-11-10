@@ -37,6 +37,13 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
+    // TestContainer
+    testImplementation 'org.testcontainers:testcontainers:1.19.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+    testImplementation 'org.testcontainers:postgresql:1.19.3'
+
+
+
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
 
@@ -71,6 +78,12 @@ dependencies {
     implementation 'org.seleniumhq.selenium:selenium-java:4.17.0'
     implementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.17.0'
     implementation 'io.github.bonigarcia:webdrivermanager:5.6.3'
+
+
+
+
+
+
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'

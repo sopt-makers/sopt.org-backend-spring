@@ -1,23 +1,21 @@
-FROM openjdk:17-jdk-slim AS build
+FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /app
 COPY . /app
 RUN apt-get update && apt-get install -y curl unzip
-RUN ./gradlew build
+RUN ./gradlew bootJar -x test
 
-FROM openjdk:17-jdk-slim AS production
-WORKDIR /app
-
-# Install Chrome and dependencies
+FROM eclipse-temurin:17-jdk-jammy AS production
 RUN apt-get update && apt-get install -y \
-   chromium \
-   chromium-driver \
+   chromium-browser \
+   chromium-chromedriver \
    xvfb \
    && rm -rf /var/lib/apt/lists/*
 
-# Set Chrome environment variables
-ENV CHROME_BIN=/usr/bin/chromium
-ENV CHROMEDRIVER_BIN=/usr/bin/chromedriver
+WORKDIR /app
 
+# Set Chrome environment variables
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV CHROMEDRIVER_BIN=/usr/bin/chromedriver
 ENV IS_DOCKER_BUILD=true
 
 COPY --from=build /app/build/libs/*.jar app.jar

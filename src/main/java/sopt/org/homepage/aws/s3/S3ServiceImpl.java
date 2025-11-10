@@ -40,7 +40,13 @@ public class S3ServiceImpl implements S3Service {
 	private String baseDir;
 
 	public String generatePresignedUrl(String fileName, String path) {
-		try {
+
+        if (isCompleteS3Url(fileName)) {
+            log.debug("Input is already a complete S3 URL, returning as-is: {}", fileName);
+            return fileName;
+        }
+
+        try {
 			String contentType = getContentTypeFromFileName(fileName);
 			String key = baseDir + path + fileName;
 
@@ -65,6 +71,12 @@ public class S3ServiceImpl implements S3Service {
 
 	public String getOriginalUrl(String presignedUrl) {
 		try {
+            // 1. 이미 완전한 S3 URL인지 확인 (쿼리 파라미터 없음)
+            if (isCompleteS3Url(presignedUrl) && !presignedUrl.contains("?")) {
+                log.debug("URL is already a complete S3 URL: {}", presignedUrl);
+                return presignedUrl;
+            }
+
 			URL url = new URL(presignedUrl);
 			System.out.println(url);
 			String key = url.getPath().substring(1);
@@ -121,6 +133,24 @@ public class S3ServiceImpl implements S3Service {
 			throw new RuntimeException("Failed to delete file", e);
 		}
 	}
+
+    /**
+     * 완전한 S3 URL인지 확인
+     *
+     * @param url 확인할 URL
+     * @return S3 URL이면 true
+     */
+    private boolean isCompleteS3Url(String url) {
+        if (url == null || url.isBlank()) {
+            return false;
+        }
+
+        // S3 URL 패턴 확인
+        // 1. https://s3.{region}.amazonaws.com/{bucket}/{key}
+        // 2. https://{bucket}.s3.{region}.amazonaws.com/{key}
+        return url.startsWith("https://s3.") && url.contains(".amazonaws.com/") ||
+                url.startsWith("https://" + bucket + ".s3.");
+    }
 
 	private String extractKeyFromUrl(String fileUrl) {
 		try {

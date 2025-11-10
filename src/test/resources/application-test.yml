@@ -1,0 +1,115 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  # 데이터소스 설정
+  datasource:
+    # CI 환경: 환경변수 사용 (GitHub Actions)
+    # 로컬 환경: Testcontainers 사용
+    url: ${SPRING_DATASOURCE_URL:jdbc:tc:postgresql:14.17-alpine:///testdb}
+    username: ${SPRING_DATASOURCE_USERNAME:test}
+    password: ${SPRING_DATASOURCE_PASSWORD:test}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 2
+      connection-timeout: 5000      # 10초로 줄임
+      validation-timeout: 5000       # 추가
+      max-lifetime: 300000           # 10분
+      leak-detection-threshold: 60000  # 추가: 커넥션 누수 감지
+      pool-name: TestHikariPool
+
+  # JPA 설정
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+
+    properties:
+      hibernate:
+        # SQL 로깅 설정
+        use_sql_comments: true
+        format_sql: true
+        highlight_sql: true
+        # 배치 설정
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+        # 통계
+        generate_statistics: false
+
+    # 테스트 환경에서는 초기화하지 않음
+    defer-datasource-initialization: false
+    open-in-view: false
+    show-sql: false
+
+  # SQL 초기화 설정
+  sql:
+    init:
+      mode: never
+
+# 로깅 설정
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.springframework.test: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE
+    org.hibernate.stat: INFO
+    com.zaxxer.hikari: INFO
+    # 프로젝트 패키지 (실제 패키지명으로 변경)
+    com.yourproject: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# 서버 설정
+server:
+  servlet:
+    context-path: /v2
+  port: 0  # 랜덤 포트 (테스트 환경)
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# AWS 설정 (테스트용 더미 값)
+aws:
+  region: ap-northeast-2
+  credentials:
+    access-key: test-access-key
+    secret-key: test-secret-key
+  bucket:
+    image: test-bucket
+    dir: test/
+
+# Internal API 설정 (테스트용 더미 값)
+internal:
+  playground:
+    url: http://localhost:8081
+    token: test-playground-token
+  crew:
+    url: http://localhost:8082
+    token: test-crew-token
+  auth:
+    url: http://localhost:8083
+    api-key: test-auth-key
+    service-name: test-service
+
+# Official API Key (테스트용 더미 값)
+official:
+  apikey: test-official-api-key
+
+# JWT 설정 (테스트용)
+jwt:
+  access: GbdlzvZ1iE5e13etDEBaZOM12hGehXXBET0mee+tt12=
+  refresh: JffNneL6pP2k6reteRoyE2k92cHdaUYHRGIloe+835M=
+  admin: GbdlzvZ1iE5e13etDEBaZOM12hGehXXBET0mee+tt12=
+
+
+# 액추에이터 비활성화 (테스트 환경)
+management:
+  endpoints:
+    enabled-by-default: false
