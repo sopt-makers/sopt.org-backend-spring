@@ -25,21 +25,5 @@ public class AddAdminCoreValueRequestDto {
     @NotBlank(message = "핵심 가치 이미지 파일명을 입력해주세요")
     private String imageFileName;
 
-    public CoreValueEntity toEntity(String image) {
-        return CoreValueEntity.builder()
-                .value(this.value)
-                .description(this.description)
-                .image(image)
-                .build();
-    }
 
-    public static List<CoreValueEntity> toEntityList(List<AddAdminCoreValueRequestDto> dtos, List<String> images) {
-        if (dtos.size() != images.size()) {
-            throw new IllegalArgumentException("DTOs and images lists must have the same size");
-        }
-
-        return IntStream.range(0, dtos.size())
-                .mapToObj(i -> dtos.get(i).toEntity(images.get(i)))
-                .toList();
-    }
 }

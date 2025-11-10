@@ -20,16 +20,4 @@ public class AddAdminQuestionRequestDto {
     @NotBlank(message = "답변을 입력해주세요")
     private String answer;
 
-    public QuestionEntity toEntity() {
-        return QuestionEntity.builder()
-                .question(this.question)
-                .answer(this.answer)
-                .build();
-    }
-
-    public static List<QuestionEntity> toEntityList(List<AddAdminQuestionRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminQuestionRequestDto::toEntity)
-                .toList();
-    }
 }

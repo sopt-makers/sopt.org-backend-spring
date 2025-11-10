@@ -18,10 +18,4 @@ public class AddAdminIntroductionRequestDto {
     @NotBlank(message = "우대사항은 필수입니다")
     private String preference;
 
-    public IntroductionEntity toEntity() {
-        return IntroductionEntity.builder()
-                .content(this.content)
-                .preference(this.preference)
-                .build();
-    }
 }

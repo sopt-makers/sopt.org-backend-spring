@@ -27,12 +27,4 @@ public class AddAdminSnsLinksRequestDto {
     @Pattern(regexp = "^https?://.*", message = "올바른 URL을 입력해주세요")
     private String behance;
 
-    public SnsLinksEntity toEntity() {
-        return SnsLinksEntity.builder()
-                .email(this.email)
-                .linkedin(this.linkedin)
-                .github(this.github)
-                .behance(this.behance)
-                .build();
-    }
 }

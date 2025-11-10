@@ -23,11 +23,4 @@ public class AddAdminMainButtonRequestDto {
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
     private String subColor;
 
-    public MainButtonEntity toEntity() {
-        return MainButtonEntity.builder()
-                .text(this.text)
-                .keyColor(this.keyColor)
-                .subColor(this.subColor)
-                .build();
-    }
 }

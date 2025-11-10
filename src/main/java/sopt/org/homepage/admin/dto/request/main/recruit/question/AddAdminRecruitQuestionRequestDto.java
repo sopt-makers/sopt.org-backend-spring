@@ -23,17 +23,5 @@ public class AddAdminRecruitQuestionRequestDto {
     @Valid
     private List<AddAdminQuestionRequestDto> questions;
 
-    public RecruitQuestionEntity toEntity() {
-        return RecruitQuestionEntity.builder()
-                .part(this.part)
-                .questions(AddAdminQuestionRequestDto.toEntityList(this.questions))
-                .build();
-    }
-
-    public static List<RecruitQuestionEntity> toEntityList(List<AddAdminRecruitQuestionRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminRecruitQuestionRequestDto::toEntity)
-                .toList();
-    }
 }
 

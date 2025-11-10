@@ -38,25 +38,5 @@ public class AddAdminMemberRequestDto {
     @NotBlank(message = "프로필 이미지 파일명을 입력해주세요")
     private String profileImageFileName;
 
-    public MemberEntity toEntity(String profileImage) {
-        return MemberEntity.builder()
-                .role(this.role)
-                .name(this.name)
-                .affiliation(this.affiliation)
-                .introduction(this.introduction)
-                .sns(this.sns.toEntity())
-                .profileImage(profileImage)
-                .build();
-    }
-
-    public static List<MemberEntity> toEntityList(List<AddAdminMemberRequestDto> dtos, List<String> images) {
-        if (dtos.size() != images.size()) {
-            throw new IllegalArgumentException("DTOs and images lists must have the same size");
-        }
-
-        return IntStream.range(0, dtos.size())
-                .mapToObj(i -> dtos.get(i).toEntity(images.get(i)))
-                .toList();
-    }
 }
 

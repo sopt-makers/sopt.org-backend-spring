@@ -20,16 +20,4 @@ public class AddAdminPartIntroductionRequestDto {
     @NotBlank(message = "파트 설명을 입력해주세요")
     private String description;
 
-    public PartIntroductionEntity toEntity() {
-        return PartIntroductionEntity.builder()
-                .part(this.part)
-                .description(this.description)
-                .build();
-    }
-
-    public static List<PartIntroductionEntity> toEntityList(List<AddAdminPartIntroductionRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminPartIntroductionRequestDto::toEntity)
-                .toList();
-    }
 }

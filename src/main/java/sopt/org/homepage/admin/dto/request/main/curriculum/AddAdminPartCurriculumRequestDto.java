@@ -21,16 +21,4 @@ public class AddAdminPartCurriculumRequestDto {
     @NotEmpty(message = "커리큘럼을 입력해주세요")
     private List<String> curriculums;
 
-    public PartCurriculumEntity toEntity() {
-        return PartCurriculumEntity.builder()
-                .part(this.part)
-                .curriculums(this.curriculums)
-                .build();
-    }
-
-    public static List<PartCurriculumEntity> toEntityList(List<AddAdminPartCurriculumRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminPartCurriculumRequestDto::toEntity)
-                .toList();
-    }
 }

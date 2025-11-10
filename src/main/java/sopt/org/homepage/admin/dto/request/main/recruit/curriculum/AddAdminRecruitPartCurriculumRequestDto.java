@@ -23,17 +23,6 @@ public class AddAdminRecruitPartCurriculumRequestDto {
     @Valid
     private AddAdminIntroductionRequestDto introduction;
 
-    public RecruitPartCurriculumEntity toEntity() {
-        return RecruitPartCurriculumEntity.builder()
-                .part(this.part)
-                .introduction(this.introduction.toEntity())
-                .build();
-    }
 
-    public static List<RecruitPartCurriculumEntity> toEntityList(List<AddAdminRecruitPartCurriculumRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminRecruitPartCurriculumRequestDto::toEntity)
-                .toList();
-    }
 }
 

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import sopt.org.homepage.admin.dto.request.main.AddAdminConfirmRequestDto;
 import sopt.org.homepage.admin.dto.request.main.AddAdminRequestDto;
 import sopt.org.homepage.admin.dto.request.main.GetAdminRequestDto;
@@ -35,11 +36,11 @@ import sopt.org.homepage.admin.dto.response.news.GetAdminNewsResponseDto;
 import sopt.org.homepage.aws.s3.S3Service;
 import sopt.org.homepage.cache.CacheService;
 import sopt.org.homepage.common.constants.CacheType;
-import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.corevalue.service.command.CoreValueCommandService;
 import sopt.org.homepage.corevalue.service.command.dto.BulkCreateCoreValuesCommand;
 import sopt.org.homepage.corevalue.service.query.CoreValueQueryService;
 import sopt.org.homepage.corevalue.service.query.dto.CoreValueView;
+import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.faq.service.command.FAQCommandService;
 import sopt.org.homepage.faq.service.command.dto.BulkCreateFAQsCommand;
 import sopt.org.homepage.faq.service.query.FAQQueryService;
@@ -68,7 +69,6 @@ import sopt.org.homepage.recruitment.service.query.dto.RecruitPartIntroductionVi
 import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -78,13 +78,14 @@ import java.util.List;
  * - Admin API 처리
  * - 여러 도메인의 Command Service 조합
  * - S3 Presigned URL 생성 및 캐시 관리
+ * - 레거시 의존성 제거 완료
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AdminServiceImpl implements AdminService {
 
-    // Domain Command Services
+    // ===== Domain Command Services =====
     private final GenerationCommandService generationCommandService;
     private final CoreValueCommandService coreValueCommandService;
     private final MemberCommandService memberCommandService;
@@ -93,7 +94,7 @@ public class AdminServiceImpl implements AdminService {
     private final RecruitPartIntroductionCommandService recruitPartIntroductionCommandService;
     private final FAQCommandService faqCommandService;
 
-    // Domain Query Services
+    // ===== Domain Query Services =====
     private final GenerationQueryService generationQueryService;
     private final CoreValueQueryService coreValueQueryService;
     private final MemberQueryService memberQueryService;
@@ -102,15 +103,15 @@ public class AdminServiceImpl implements AdminService {
     private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
     private final FAQQueryService faqQueryService;
 
-    // Infrastructure Services
+    // ===== Infrastructure Services =====
     private final S3Service s3Service;
     private final CacheService cacheService;
     private final MainNewsRepository mainNewsRepository;
 
     /**
-     * Admin 메인 데이터 배포
+     * Admin 메인 데이터 배포 (1단계)
      *
-     * 1단계: Presigned URL 생성 및 캐시 저장
+     * Presigned URL 생성 및 캐시 저장
      */
     @Override
     @Transactional
@@ -120,7 +121,7 @@ public class AdminServiceImpl implements AdminService {
         Integer generationId = request.getGeneration();
         String baseDir = generationId + "/";
 
-        // 1. Generation 데이터 준비 (캐시에만 저장)
+        // ===== 1. Generation 데이터 준비 =====
         CachedAdminData cachedData = new CachedAdminData();
         cachedData.setGenerationId(generationId);
         cachedData.setName(request.getName());
@@ -135,21 +136,19 @@ public class AdminServiceImpl implements AdminService {
         cachedData.setRecruitHeaderImageUrl(recruitHeaderImageUrl);
 
         // BrandingColor
-        cachedData.setBrandingColor(CachedAdminData.BrandingColorData.builder()
-                .main(request.getBrandingColor().getMain())
-                .low(request.getBrandingColor().getLow())
-                .high(request.getBrandingColor().getHigh())
-                .point(request.getBrandingColor().getPoint())
-                .build());
+        var brandingColorDto = request.getBrandingColor();
+        cachedData.setBrandingColorMain(brandingColorDto.getMain());
+        cachedData.setBrandingColorLow(brandingColorDto.getLow());
+        cachedData.setBrandingColorHigh(brandingColorDto.getHigh());
+        cachedData.setBrandingColorPoint(brandingColorDto.getPoint());
 
         // MainButton
-        cachedData.setMainButton(CachedAdminData.MainButtonData.builder()
-                .text(request.getMainButton().getText())
-                .keyColor(request.getMainButton().getKeyColor())
-                .subColor(request.getMainButton().getSubColor())
-                .build());
+        var mainButtonDto = request.getMainButton();
+        cachedData.setMainButtonText(mainButtonDto.getText());
+        cachedData.setMainButtonKeyColor(mainButtonDto.getKeyColor());
+        cachedData.setMainButtonSubColor(mainButtonDto.getSubColor());
 
-        // 2. CoreValue Presigned URLs
+        // ===== 2. CoreValue Presigned URLs =====
         List<CachedAdminData.CoreValueData> coreValueDataList = new ArrayList<>();
         for (var cv : request.getCoreValue()) {
             String imageUrl = s3Service.generatePresignedUrl(
@@ -163,7 +162,7 @@ public class AdminServiceImpl implements AdminService {
         }
         cachedData.setCoreValues(coreValueDataList);
 
-        // 3. Member Presigned URLs
+        // ===== 3. Member Presigned URLs =====
         List<CachedAdminData.MemberData> memberDataList = new ArrayList<>();
         for (var member : request.getMember()) {
             String profileImageUrl = s3Service.generatePresignedUrl(
@@ -175,73 +174,27 @@ public class AdminServiceImpl implements AdminService {
                     .affiliation(member.getAffiliation())
                     .introduction(member.getIntroduction())
                     .profileImageUrl(profileImageUrl)
-                    .sns(member.getSns() != null ? CachedAdminData.SnsLinksData.builder()
-                            .email(member.getSns().getEmail())
-                            .linkedin(member.getSns().getLinkedin())
-                            .github(member.getSns().getGithub())
-                            .behance(member.getSns().getBehance())
-                            .build() : null)
+                    .snsEmail(member.getSns() != null ? member.getSns().getEmail() : null)
+                    .snsLinkedin(member.getSns() != null ? member.getSns().getLinkedin() : null)
+                    .snsGithub(member.getSns() != null ? member.getSns().getGithub() : null)
+                    .snsBehance(member.getSns() != null ? member.getSns().getBehance() : null)
                     .build());
         }
         cachedData.setMembers(memberDataList);
 
-        // 4. 나머지 데이터 저장
-        cachedData.setPartIntroductions(request.getPartIntroduction().stream()
-                .map(pi -> CachedAdminData.PartIntroductionData.builder()
-                        .part(pi.getPart())
-                        .description(pi.getDescription())
-                        .build())
-                .toList());
+        // ===== 4. 나머지 데이터 저장 (DTO 그대로 저장) =====
+        cachedData.setPartIntroductions(new ArrayList<>(request.getPartIntroduction()));
+        cachedData.setPartCurriculums(new ArrayList<>(request.getPartCurriculum()));
+        cachedData.setRecruitSchedules(new ArrayList<>(request.getRecruitSchedule()));
+        cachedData.setRecruitPartCurriculums(new ArrayList<>(request.getRecruitPartCurriculum()));
+        cachedData.setRecruitQuestions(new ArrayList<>(request.getRecruitQuestion()));
 
-        cachedData.setPartCurriculums(request.getPartCurriculum().stream()
-                .map(pc -> CachedAdminData.PartCurriculumData.builder()
-                        .part(pc.getPart())
-                        .curriculums(pc.getCurriculums())
-                        .build())
-                .toList());
-
-        cachedData.setRecruitSchedules(request.getRecruitSchedule().stream()
-                .map(rs -> CachedAdminData.RecruitScheduleData.builder()
-                        .type(rs.getType())
-                        .schedule(CachedAdminData.ScheduleData.builder()
-                                .applicationStartTime(rs.getSchedule().getApplicationStartTime())
-                                .applicationEndTime(rs.getSchedule().getApplicationEndTime())
-                                .applicationResultTime(rs.getSchedule().getApplicationResultTime())
-                                .interviewStartTime(rs.getSchedule().getInterviewStartTime())
-                                .interviewEndTime(rs.getSchedule().getInterviewEndTime())
-                                .finalResultTime(rs.getSchedule().getFinalResultTime())
-                                .build())
-                        .build())
-                .toList());
-
-        cachedData.setRecruitPartCurriculums(request.getRecruitPartCurriculum().stream()
-                .map(rpc -> CachedAdminData.RecruitPartCurriculumData.builder()
-                        .part(rpc.getPart())
-                        .introduction(CachedAdminData.IntroductionData.builder()
-                                .content(rpc.getIntroduction().getContent())
-                                .preference(rpc.getIntroduction().getPreference())
-                                .build())
-                        .build())
-                .toList());
-
-        cachedData.setRecruitQuestions(request.getRecruitQuestion().stream()
-                .map(rq -> CachedAdminData.RecruitQuestionData.builder()
-                        .part(rq.getPart())
-                        .question(rq.getQuestions().stream()
-                                .map(q -> CachedAdminData.QuestionData.builder()
-                                        .question(q.getQuestion())
-                                        .answer(q.getAnswer())
-                                        .build())
-                                .toList())
-                        .build())
-                .toList());
-
-        // 5. 캐시에 저장
+        // ===== 5. 캐시에 저장 =====
         cacheService.put(CacheType.ADMIN_MAIN_DATA, String.valueOf(generationId), cachedData);
 
         log.info("Admin main data cached for generation: {}", generationId);
 
-        // 6. Response 생성 (Presigned URL 반환)
+        // ===== 6. Response 생성 =====
         return AddAdminResponseDto.builder()
                 .generation(generationId)
                 .headerImage(headerImageUrl)
@@ -263,9 +216,9 @@ public class AdminServiceImpl implements AdminService {
     }
 
     /**
-     * Admin 메인 데이터 배포 확인
+     * Admin 메인 데이터 배포 확인 (2단계)
      *
-     * 2단계: 캐시에서 데이터 읽어서 실제 DB에 저장
+     * 캐시에서 데이터를 읽어 실제 DB에 저장
      */
     @Override
     @Transactional
@@ -274,16 +227,18 @@ public class AdminServiceImpl implements AdminService {
 
         Integer generationId = request.getGeneration();
 
-        // 1. 캐시에서 데이터 조회
+        // ===== 1. 캐시에서 데이터 조회 =====
         CachedAdminData cachedData = cacheService.get(
-                CacheType.ADMIN_MAIN_DATA, String.valueOf(generationId), CachedAdminData.class);
+                CacheType.ADMIN_MAIN_DATA,
+                String.valueOf(generationId),
+                CachedAdminData.class);
 
         if (cachedData == null) {
-            throw new IllegalArgumentException(
+            throw new ClientBadRequestException(
                     "Cached admin data not found for generation: " + generationId);
         }
 
-        // 2. Presigned URL → S3 Original URL 변환
+        // ===== 2. Presigned URL → S3 Original URL 변환 =====
         String headerImageUrl = s3Service.getOriginalUrl(cachedData.getHeaderImageUrl());
         String recruitHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getRecruitHeaderImageUrl());
 
@@ -295,7 +250,7 @@ public class AdminServiceImpl implements AdminService {
                 .map(m -> s3Service.getOriginalUrl(m.getProfileImageUrl()))
                 .toList();
 
-        // 3. Generation 생성
+        // ===== 3. Generation 생성 =====
         generationCommandService.createGeneration(
                 CreateGenerationCommand.builder()
                         .id(generationId)
@@ -303,20 +258,20 @@ public class AdminServiceImpl implements AdminService {
                         .headerImage(headerImageUrl)
                         .recruitHeaderImage(recruitHeaderImageUrl)
                         .brandingColor(CreateGenerationCommand.BrandingColorCommand.builder()
-                                .main(cachedData.getBrandingColor().getMain())
-                                .sub(cachedData.getBrandingColor().getLow())
-                                .point(cachedData.getBrandingColor().getHigh())
-                                .background(cachedData.getBrandingColor().getPoint())
+                                .main(cachedData.getBrandingColorMain())
+                                .sub(cachedData.getBrandingColorLow())
+                                .point(cachedData.getBrandingColorHigh())
+                                .background(cachedData.getBrandingColorPoint())
                                 .build())
                         .mainButton(CreateGenerationCommand.MainButtonCommand.builder()
-                                .text(cachedData.getMainButton().getText())
-                                .keyColor(cachedData.getMainButton().getKeyColor())
-                                .subColor(cachedData.getMainButton().getSubColor())
+                                .text(cachedData.getMainButtonText())
+                                .keyColor(cachedData.getMainButtonKeyColor())
+                                .subColor(cachedData.getMainButtonSubColor())
                                 .build())
                         .build()
         );
 
-        // 4. CoreValue 일괄 생성
+        // ===== 4. CoreValue 일괄 생성 =====
         List<BulkCreateCoreValuesCommand.CoreValueData> coreValueDataList = new ArrayList<>();
         for (int i = 0; i < cachedData.getCoreValues().size(); i++) {
             var cv = cachedData.getCoreValues().get(i);
@@ -334,7 +289,7 @@ public class AdminServiceImpl implements AdminService {
                         .build()
         );
 
-        // 5. Member 일괄 생성
+        // ===== 5. Member 일괄 생성 =====
         List<BulkCreateMembersCommand.MemberData> memberDataList = new ArrayList<>();
         for (int i = 0; i < cachedData.getMembers().size(); i++) {
             var m = cachedData.getMembers().get(i);
@@ -345,10 +300,10 @@ public class AdminServiceImpl implements AdminService {
                     .introduction(m.getIntroduction())
                     .profileImageUrl(memberProfileImageUrls.get(i))
                     .snsLinks(BulkCreateMembersCommand.SnsLinksData.builder()
-                            .email(m.getSns() != null ? m.getSns().getEmail() : null)
-                            .linkedin(m.getSns() != null ? m.getSns().getLinkedin() : null)
-                            .github(m.getSns() != null ? m.getSns().getGithub() : null)
-                            .behance(m.getSns() != null ? m.getSns().getBehance() : null)
+                            .email(m.getSnsEmail())
+                            .linkedin(m.getSnsLinkedin())
+                            .github(m.getSnsGithub())
+                            .behance(m.getSnsBehance())
                             .build())
                     .build());
         }
@@ -359,7 +314,7 @@ public class AdminServiceImpl implements AdminService {
                         .build()
         );
 
-        // 6. Part 일괄 생성
+        // ===== 6. Part 일괄 생성 =====
         partCommandService.bulkCreateParts(
                 BulkCreatePartsCommand.builder()
                         .generationId(generationId)
@@ -378,7 +333,7 @@ public class AdminServiceImpl implements AdminService {
                         .build()
         );
 
-        // 7. Recruitment 일괄 생성
+        // ===== 7. Recruitment 일괄 생성 =====
         recruitmentCommandService.bulkCreateRecruitments(
                 BulkCreateRecruitmentsCommand.builder()
                         .generationId(generationId)
@@ -398,7 +353,7 @@ public class AdminServiceImpl implements AdminService {
                         .build()
         );
 
-        // 8. RecruitPartIntroduction 일괄 생성
+        // ===== 8. RecruitPartIntroduction 일괄 생성 =====
         recruitPartIntroductionCommandService.bulkCreateRecruitPartIntroductions(
                 BulkCreateRecruitPartIntroductionsCommand.builder()
                         .generationId(generationId)
@@ -414,13 +369,13 @@ public class AdminServiceImpl implements AdminService {
                         .build()
         );
 
-        // 9. FAQ 일괄 생성
+        // ===== 9. FAQ 일괄 생성 =====
         faqCommandService.bulkCreateFAQs(
                 BulkCreateFAQsCommand.builder()
                         .faqs(cachedData.getRecruitQuestions().stream()
                                 .map(rq -> BulkCreateFAQsCommand.FAQData.builder()
                                         .part(rq.getPart())
-                                        .question(rq.getQuestion().stream()
+                                        .question(rq.getQuestions().stream()  // ✅ getQuestions() 복수형!
                                                 .map(q -> BulkCreateFAQsCommand.QuestionData.builder()
                                                         .question(q.getQuestion())
                                                         .answer(q.getAnswer())
@@ -431,7 +386,7 @@ public class AdminServiceImpl implements AdminService {
                         .build()
         );
 
-        // 10. 캐시 삭제
+        // ===== 10. 캐시 삭제 =====
         cacheService.evict(CacheType.ADMIN_MAIN_DATA, String.valueOf(generationId));
 
         log.info("Admin main data confirmed for generation: {}", generationId);
@@ -451,7 +406,7 @@ public class AdminServiceImpl implements AdminService {
 
         Integer generationId = request.getGeneration();
 
-        // 1. 각 도메인에서 데이터 조회
+        // ===== 각 도메인에서 데이터 조회 =====
         GenerationDetailView generation = generationQueryService.getGenerationDetail(generationId);
         List<CoreValueView> coreValues = coreValueQueryService.getCoreValuesByGeneration(generationId);
         List<MemberDetailView> members = memberQueryService.getMembersByGeneration(generationId);
@@ -462,12 +417,10 @@ public class AdminServiceImpl implements AdminService {
         List<FAQView> faqs = faqQueryService.getAllFAQs();
         List<MainNewsEntity> mainNewsEntities = mainNewsRepository.findAll();
 
-        // 2. Response 조합
+        // ===== Response 조합 =====
         return GetAdminResponseDto.builder()
                 .generation(generation.id())
                 .name(generation.name())
-
-                // Recruitment Schedule
                 .recruitSchedule(recruitments.stream()
                         .map(r -> GetAdminRecruitScheduleResponseRecordDto.builder()
                                 .type(r.type())
@@ -481,43 +434,30 @@ public class AdminServiceImpl implements AdminService {
                                         .build())
                                 .build())
                         .toList())
-
-                // Branding Color
                 .brandingColor(GetAdminBrandingColorResponseRecordDto.builder()
                         .main(generation.brandingColor().main())
-                        .low(generation.brandingColor().sub())
-                        .high(generation.brandingColor().point())
+                        .high(generation.brandingColor().high())
+                        .low(generation.brandingColor().low())
                         .point(generation.brandingColor().background())
                         .build())
-
-                // Main Button
                 .mainButton(GetAdminMainButtonResponseRecordDto.builder()
                         .text(generation.mainButton().text())
                         .keyColor(generation.mainButton().keyColor())
                         .subColor(generation.mainButton().subColor())
                         .build())
-
-                // Part Introduction ✅ 수정: description 필드 사용
                 .partIntroduction(parts.stream()
-                        .filter(p -> p.description() != null)
                         .map(p -> GetAdminPartIntroductionResponseRecordDto.builder()
                                 .part(p.part())
-                                .description(p.description())  // ✅ introduction() → description()
+                                .description(p.description())
                                 .build())
                         .toList())
-
-                // Latest News
                 .latestNews(mainNewsEntities.stream()
                         .map(news -> GetAdminLatestNewsResponseRecordDto.builder()
                                 .id(news.getId())
                                 .title(news.getTitle())
                                 .build())
                         .toList())
-
-                // Header Image
                 .headerImage(generation.headerImage())
-
-                // Core Value
                 .coreValue(coreValues.stream()
                         .map(cv -> GetAdminCoreValueResponseRecordDto.builder()
                                 .value(cv.value())
@@ -525,17 +465,12 @@ public class AdminServiceImpl implements AdminService {
                                 .image(cv.imageUrl())
                                 .build())
                         .toList())
-
-                // Part Curriculum
                 .partCurriculum(parts.stream()
-                        .filter(p -> p.curriculums() != null && !p.curriculums().isEmpty())
                         .map(p -> GetAdminPartCurriculumResponseRecordDto.builder()
                                 .part(p.part())
                                 .curriculums(p.curriculums())
                                 .build())
                         .toList())
-
-                // Member ✅ 수정: GetAdminSnsLinksResponseRecordDto 사용
                 .member(members.stream()
                         .map(m -> GetAdminMemberResponseRecordDto.builder()
                                 .role(m.role())
@@ -543,7 +478,7 @@ public class AdminServiceImpl implements AdminService {
                                 .affiliation(m.affiliation())
                                 .introduction(m.introduction())
                                 .profileImage(m.profileImageUrl())
-                                .sns(GetAdminSnsLinksResponseRecordDto.builder()  // ✅ Sns → GetAdminSnsLinksResponseRecordDto
+                                .sns(GetAdminSnsLinksResponseRecordDto.builder()
                                         .email(m.snsLinks().email())
                                         .linkedin(m.snsLinks().linkedin())
                                         .github(m.snsLinks().github())
@@ -551,36 +486,31 @@ public class AdminServiceImpl implements AdminService {
                                         .build())
                                 .build())
                         .toList())
-
-                // Recruit Header Image
                 .recruitHeaderImage(generation.recruitHeaderImage())
-
-                // Recruit Part Curriculum ✅ 수정: GetAdminIntroductionResponseRecordDto 사용
                 .recruitPartCurriculum(recruitPartIntros.stream()
                         .map(rpi -> GetAdminRecruitPartCurriculumResponseRecordDto.builder()
                                 .part(rpi.part())
-                                .introduction(GetAdminIntroductionResponseRecordDto.builder()  // ✅ Introduction → GetAdminIntroductionResponseRecordDto
+                                .introduction(GetAdminIntroductionResponseRecordDto.builder()
                                         .content(rpi.introduction().content())
                                         .preference(rpi.introduction().preference())
                                         .build())
                                 .build())
                         .toList())
-
-                // Recruit Question (FAQ) ✅ 수정: GetAdminQuestionResponseRecordDto 사용
                 .recruitQuestion(faqs.stream()
                         .map(faq -> GetAdminRecruitQuestionResponseRecordDto.builder()
                                 .part(faq.part())
-                                .questions(faq.questions().stream()  // ✅ question → questions
-                                        .map(q -> GetAdminQuestionResponseRecordDto.builder()  // ✅ Question → GetAdminQuestionResponseRecordDto
+                                .questions(faq.questions().stream()  // ✅ questions() 복수형!
+                                        .map(q -> GetAdminQuestionResponseRecordDto.builder()
                                                 .question(q.question())
                                                 .answer(q.answer())
                                                 .build())
                                         .toList())
                                 .build())
                         .toList())
-
                 .build();
     }
+
+    // ===== MainNews 관련 메서드 (기존 유지) =====
 
     // MainNews 관련 메서드들은 기존 유지
     @Override
@@ -648,46 +578,47 @@ public class AdminServiceImpl implements AdminService {
                 .image(newsEntity.getImage())
                 .build();
     }
+    // ===== 캐시용 데이터 클래스 =====
 
-    /**
-     * 캐시용 데이터 클래스
-     */
     @lombok.Data
-    public static class CachedAdminData {
+    public static class CachedAdminData implements java.io.Serializable {
+        // Generation
         private Integer generationId;
         private String name;
         private String headerImageUrl;
         private String recruitHeaderImageUrl;
-        private BrandingColorData brandingColor;
-        private MainButtonData mainButton;
+
+        // BrandingColor
+        private String brandingColorMain;
+        private String brandingColorLow;
+        private String brandingColorHigh;
+        private String brandingColorPoint;
+
+        // MainButton
+        private String mainButtonText;
+        private String mainButtonKeyColor;
+        private String mainButtonSubColor;
+
+        // CoreValue
         private List<CoreValueData> coreValues;
+
+        // Member
         private List<MemberData> members;
-        private List<PartIntroductionData> partIntroductions;
-        private List<PartCurriculumData> partCurriculums;
-        private List<RecruitScheduleData> recruitSchedules;
-        private List<RecruitPartCurriculumData> recruitPartCurriculums;
-        private List<RecruitQuestionData> recruitQuestions;
+
+        // Part - ✅ 구체적인 타입 사용
+        private List<sopt.org.homepage.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto> partIntroductions;
+        private List<sopt.org.homepage.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto> partCurriculums;
+
+        // Recruitment - ✅ 구체적인 타입 사용
+        private List<sopt.org.homepage.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto> recruitSchedules;
+        private List<sopt.org.homepage.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto> recruitPartCurriculums;
+
+        // FAQ - ✅ 구체적인 타입 사용
+        private List<sopt.org.homepage.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto> recruitQuestions;
 
         @lombok.Builder
         @lombok.Data
-        public static class BrandingColorData {
-            private String main;
-            private String low;
-            private String high;
-            private String point;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class MainButtonData {
-            private String text;
-            private String keyColor;
-            private String subColor;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class CoreValueData {
+        public static class CoreValueData implements java.io.Serializable {
             private String value;
             private String description;
             private String imageUrl;
@@ -695,82 +626,17 @@ public class AdminServiceImpl implements AdminService {
 
         @lombok.Builder
         @lombok.Data
-        public static class MemberData {
+        public static class MemberData implements java.io.Serializable {
             private String role;
             private String name;
             private String affiliation;
             private String introduction;
             private String profileImageUrl;
-            private SnsLinksData sns;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class SnsLinksData {
-            private String email;
-            private String linkedin;
-            private String github;
-            private String behance;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class PartIntroductionData {
-            private String part;
-            private String description;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class PartCurriculumData {
-            private String part;
-            private List<String> curriculums;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class RecruitScheduleData {
-            private String type;
-            private ScheduleData schedule;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class ScheduleData {
-            private String applicationStartTime;
-            private String applicationEndTime;
-            private String applicationResultTime;
-            private String interviewStartTime;
-            private String interviewEndTime;
-            private String finalResultTime;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class RecruitPartCurriculumData {
-            private String part;
-            private IntroductionData introduction;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class IntroductionData {
-            private String content;
-            private String preference;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class RecruitQuestionData {
-            private String part;
-            private List<QuestionData> question;
-        }
-
-        @lombok.Builder
-        @lombok.Data
-        public static class QuestionData {
-            private String question;
-            private String answer;
+            private String snsEmail;
+            private String snsLinkedin;
+            private String snsGithub;
+            private String snsBehance;
         }
     }
+
 }
