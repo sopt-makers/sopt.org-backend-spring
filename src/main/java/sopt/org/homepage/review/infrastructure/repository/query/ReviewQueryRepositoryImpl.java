@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import sopt.org.homepage.common.type.PartType;
 import sopt.org.homepage.review.domain.QReview;
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * 리뷰 Query Repository 구현체 (QueryDSL)
  */
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
@@ -26,22 +28,44 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
 
     @Override
     public List<Review> findAllWithFilters(ReviewSearchCond cond, long offset, int limit) {
-        return queryFactory
+        log.info("=== Query Debug ===");
+        log.info("Input: {}", cond);
+
+        // 먼저 조건 없이 전체 조회
+        long totalInDB = queryFactory
+                .select(review.count())
+                .from(review)
+                .fetchOne();
+        log.info("Total reviews in DB: {}", totalInDB);
+
+        // 각 조건별로 확인
+        BooleanExpression categoryCondition = categoryEq(cond.category());
+        log.info("Category condition: {}", categoryCondition);
+
+        if (categoryCondition != null) {
+            long categoryCount = queryFactory
+                    .select(review.count())
+                    .from(review)
+                    .where(categoryCondition)
+                    .fetchOne();
+            log.info("Matching category count: {}", categoryCount);
+        }
+
+        // 실제 쿼리 실행
+        List<Review> results = queryFactory
                 .selectFrom(review)
                 .where(
-                        categoryEq(cond.category()),
+                        categoryCondition,
                         activityContains(cond.category(), cond.activity()),
                         partEq(cond.partType()),
                         generationEq(cond.generation())
                 )
-                .orderBy(
-                        review.generation.desc(),
-                        review.author.name.asc(),
-                        review.id.asc()
-                )
                 .offset(offset)
                 .limit(limit)
                 .fetch();
+
+        log.info("Result count: {}", results.size());
+        return results;
     }
 
     @Override
