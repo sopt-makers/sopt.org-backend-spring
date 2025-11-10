@@ -23,7 +23,7 @@ import sopt.org.homepage.notification.service.query.dto.NotificationListView;
  */
 @Tag(name = "Notification", description = "모집 알림 API")
 @RestController
-@RequestMapping("notification/")
+@RequestMapping("notification")
 @RequiredArgsConstructor
 public class NotificationControllerV2 {
 

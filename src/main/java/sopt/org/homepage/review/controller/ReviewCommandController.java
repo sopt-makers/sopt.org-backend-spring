@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Tag(name = "Reviews - Command", description = "리뷰 쓰기 API")
 @RestController
-@RequestMapping("/reviews/")
+@RequestMapping("/reviews")
 @RequiredArgsConstructor
 public class ReviewCommandController {
 
