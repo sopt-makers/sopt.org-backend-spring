@@ -17,7 +17,4 @@ public interface AdminService {
     AddAdminResponseDto addMainData(AddAdminRequestDto addAdminRequestDto);
     AddAdminConfirmResponseDto addMainDataConfirm(AddAdminConfirmRequestDto addAdminConfirmRequestDto);
     GetAdminResponseDto getMain(GetAdminRequestDto getAdminRequestDto);
-    AddAdminNewsResponseDto addMainNews(AddAdminNewsRequestDto addAdminNewsRequestDto);
-    DeleteAdminNewsResponseDto deleteMainNews(DeleteAdminNewsRequestDto deleteAdminNewsRequestDto);
-    GetAdminNewsResponseDto getMainNews(GetAdminNewsRequestDto getAdminNewsRequestDto);
 }

@@ -59,35 +59,6 @@ public class AdminController {
         GetAdminResponseDto result = adminService.getMain(getAdminRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-
-    @Operation(summary = "최신소식 추가", description = "최신소식을 추가합니다")
-    @PostMapping(value = "/ll/news", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<AddAdminNewsResponseDto> addMainNews(
-            @ModelAttribute @Valid AddAdminNewsRequestDto addAdminNewsRequestDto
-    ) {
-        AddAdminNewsResponseDto result = adminService.addMainNews(addAdminNewsRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
-    }
-
-    @Operation(summary = "최신소식 삭제", description = "최신소식을 삭제합니다")
-    @PostMapping(value = "/d/news/delete")
-    public ResponseEntity<DeleteAdminNewsResponseDto> deleteMainNews(
-            @RequestBody @Valid DeleteAdminNewsRequestDto deleteAdminNewsRequestDto
-    ) {
-        DeleteAdminNewsResponseDto result = adminService.deleteMainNews(deleteAdminNewsRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    @Operation(summary = "최신소식 조회", description = "최신소식을 조회합니다")
-    @GetMapping(value = "/d/news")
-    public ResponseEntity<GetAdminNewsResponseDto> getMainNews(
-            @ParameterObject @ModelAttribute GetAdminNewsRequestDto getAdminNewsRequestDto
-    ) {
-        GetAdminNewsResponseDto result = adminService.getMainNews(getAdminNewsRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-
 }
 
 
