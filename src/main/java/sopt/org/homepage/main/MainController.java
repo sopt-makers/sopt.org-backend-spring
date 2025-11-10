@@ -15,7 +15,7 @@ import sopt.org.homepage.main.service.MainService;
 
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("homepage/")
+@RequestMapping("homepage/legacy")
 @Tag(name = "Homepage")
 public class MainController {
     private final MainService mainService;

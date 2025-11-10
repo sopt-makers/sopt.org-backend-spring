@@ -48,7 +48,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("POST /notification/v2/register - 유효한 요청으로 알림 신청 성공")
+    @DisplayName("POST /notification/register - 유효한 요청으로 알림 신청 성공")
     void register_WithValidRequest_Success() throws Exception {
         // given
         RegisterNotificationRequest request = new RegisterNotificationRequest(
@@ -57,7 +57,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
         );
 
         // when & then
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -69,7 +69,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("POST /notification/v2/register - 중복된 이메일+기수로 신청 시 400 에러")
+    @DisplayName("POST /notification/register - 중복된 이메일+기수로 신청 시 400 에러")
     void register_WithDuplicateEmailAndGeneration_BadRequest() throws Exception {
         // given: 이미 존재하는 데이터
         Notification existing = Notification.create(
@@ -84,7 +84,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
         );
 
         // when & then
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -103,7 +103,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
                 """;
 
         // when & then
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andDo(print())
@@ -111,7 +111,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("POST /notification/v2/register - 잘못된 이메일 형식으로 400 에러 (Validation)")
+    @DisplayName("POST /notification/register - 잘못된 이메일 형식으로 400 에러 (Validation)")
     void register_WithInvalidEmailFormat_ValidationError() throws Exception {
         // given
         RegisterNotificationRequest request = new RegisterNotificationRequest(
@@ -120,7 +120,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
         );
 
         // when & then
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -128,7 +128,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("POST /notification/v2/register - 기수가 음수인 경우 400 에러 (Validation)")
+    @DisplayName("POST /notification/register - 기수가 음수인 경우 400 에러 (Validation)")
     void register_WithNegativeGeneration_ValidationError() throws Exception {
         // given
         RegisterNotificationRequest request = new RegisterNotificationRequest(
@@ -137,7 +137,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
         );
 
         // when & then
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -145,7 +145,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("POST /notification/v2/register - 기수가 0인 경우 400 에러 (Validation)")
+    @DisplayName("POST /notification/register - 기수가 0인 경우 400 에러 (Validation)")
     void register_WithZeroGeneration_ValidationError() throws Exception {
         // given
         RegisterNotificationRequest request = new RegisterNotificationRequest(
@@ -154,7 +154,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
         );
 
         // when & then
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -162,7 +162,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("POST /notification/v2/register - 기수가 범위를 초과하는 경우 400 에러")
+    @DisplayName("POST /notification/register - 기수가 범위를 초과하는 경우 400 에러")
     void register_WithGenerationOverLimit_BadRequest() throws Exception {
         // given
         RegisterNotificationRequest request = new RegisterNotificationRequest(
@@ -171,7 +171,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
         );
 
         // when & then
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
@@ -180,7 +180,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("GET /notification/v2/list - 특정 기수의 알림 목록 조회 성공")
+    @DisplayName("GET /notification/list - 특정 기수의 알림 목록 조회 성공")
     void getNotificationList_WithValidGeneration_Success() throws Exception {
         // given: 35기 데이터 2개, 36기 데이터 1개 준비
         Notification notification1 = Notification.create(
@@ -200,7 +200,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
         commandRepository.save(notification3);
 
         // when & then: 35기만 조회
-        mockMvc.perform(get("/notification/v2/list")
+        mockMvc.perform(get("/notification/list")
                         .param("generation", "35"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -213,10 +213,10 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("GET /notification/v2/list - 알림이 없는 기수 조회 시 빈 배열 반환")
+    @DisplayName("GET /notification/list - 알림이 없는 기수 조회 시 빈 배열 반환")
     void getNotificationList_NoNotifications_EmptyList() throws Exception {
         // when & then: 데이터가 없는 기수 조회
-        mockMvc.perform(get("/notification/v2/list")
+        mockMvc.perform(get("/notification/list")
                         .param("generation", "99"))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -225,29 +225,29 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("GET /notification/v2/list - 기수 파라미터 누락 시 400 에러")
+    @DisplayName("GET /notification/list - 기수 파라미터 누락 시 400 에러")
     void getNotificationList_WithoutGenerationParam_BadRequest() throws Exception {
         // when & then: generation 파라미터 없이 요청
-        mockMvc.perform(get("/notification/v2/list"))
+        mockMvc.perform(get("/notification/list"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("GET /notification/v2/list - 음수 기수로 조회 시 400 에러")
+    @DisplayName("GET /notification/list - 음수 기수로 조회 시 400 에러")
     void getNotificationList_WithNegativeGeneration_BadRequest() throws Exception {
         // when & then
-        mockMvc.perform(get("/notification/v2/list")
+        mockMvc.perform(get("/notification/list")
                         .param("generation", "-1"))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @DisplayName("GET /notification/v2/list - 기수 범위 초과로 조회 시 400 에러")
+    @DisplayName("GET /notification/list - 기수 범위 초과로 조회 시 400 에러")
     void getNotificationList_WithGenerationOverLimit_BadRequest() throws Exception {
         // when & then
-        mockMvc.perform(get("/notification/v2/list")
+        mockMvc.perform(get("/notification/list")
                         .param("generation", "999"))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
@@ -262,7 +262,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
                 "test@sopt.org",
                 35
         );
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request1)))
                 .andExpect(status().isCreated());
@@ -272,7 +272,7 @@ class NotificationV2ControllerTest extends IntegrationTestBase {
                 "test@sopt.org",
                 36
         );
-        mockMvc.perform(post("/notification/v2/register")
+        mockMvc.perform(post("/notification/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request2)))
                 .andDo(print())
