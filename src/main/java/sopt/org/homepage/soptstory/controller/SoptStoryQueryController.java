@@ -25,7 +25,7 @@ import sopt.org.homepage.soptstory.service.query.dto.SoptStorySearchCond;
  */
 @Tag(name = "SoptStory Query", description = "SoptStory 조회 API")
 @RestController
-@RequestMapping("/soptstory/v2")
+@RequestMapping("/soptstory/")
 @RequiredArgsConstructor
 public class SoptStoryQueryController {
 

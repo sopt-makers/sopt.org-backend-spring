@@ -20,7 +20,7 @@ import sopt.org.homepage.notification.dto.RegisterNotificationResponseDto;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("notification")
+//@RequestMapping("notification")
 @Tag(name = "Notification")
 public class NotificationController {
 	private final NotificationService notificationService;
