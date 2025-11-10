@@ -3,7 +3,6 @@ package sopt.org.homepage.admin.dto.request.main.recruit.schedule;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.main.entity.sub.ScheduleEntity;
 
 @Schema(description = "상세 일정")
 @Getter

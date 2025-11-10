@@ -7,9 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 
-import java.util.List;
-import sopt.org.homepage.main.entity.sub.RecruitScheduleEntity;
-
 @Schema(description = "모집 일정")
 @Getter
 @NoArgsConstructor

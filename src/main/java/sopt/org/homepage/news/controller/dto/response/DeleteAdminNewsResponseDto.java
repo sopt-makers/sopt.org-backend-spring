@@ -1,21 +1,17 @@
-package sopt.org.homepage.admin.dto.response.main;
+package sopt.org.homepage.news.controller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import sopt.org.homepage.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.member.AddAdminMemberResponseRecordDto;
-
-import java.util.List;
 
 @Validated
-@Schema(description = "어드민 메인정보 파일 업로드 확인")
+@Schema(description = "최신소식 삭제")
 @Getter
 @Builder
 @RequiredArgsConstructor
-public class AddAdminConfirmResponseDto {
+public class DeleteAdminNewsResponseDto {
     @Schema(description = "성공 메세지", requiredMode = Schema.RequiredMode.REQUIRED, example = "success")
     private final String message;
 }

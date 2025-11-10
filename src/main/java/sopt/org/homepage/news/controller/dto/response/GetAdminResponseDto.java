@@ -1,4 +1,4 @@
-package sopt.org.homepage.admin.dto.response.main;
+package sopt.org.homepage.news.controller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
