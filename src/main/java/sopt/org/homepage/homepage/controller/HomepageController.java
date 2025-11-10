@@ -21,7 +21,7 @@ import sopt.org.homepage.homepage.service.HomepageQueryService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("homepage/")
+@RequestMapping("homepage")
 @Tag(name = "Homepage", description = "홈페이지 API")
 public class HomepageController {
 

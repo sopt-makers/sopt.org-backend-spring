@@ -29,7 +29,7 @@ import sopt.org.homepage.soptstory.service.command.dto.*;
  */
 @Tag(name = "SoptStory Command", description = "SoptStory 생성 및 좋아요 API")
 @RestController
-@RequestMapping("/soptstory/")
+@RequestMapping("/soptstory")
 @RequiredArgsConstructor
 public class SoptStoryCommandController {
 
