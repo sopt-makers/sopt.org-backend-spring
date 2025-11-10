@@ -28,7 +28,7 @@ import sopt.org.homepage.review.service.ReviewService;
 
 @Tag(name = "Reviews")
 @RestController
-@RequestMapping("reviews")
+//@RequestMapping("reviews")
 @RequiredArgsConstructor
 public class ReviewController {
 
