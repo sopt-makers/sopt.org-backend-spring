@@ -1,6 +1,7 @@
 package sopt.org.homepage.review.domain.vo;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -8,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import sopt.org.homepage.common.converter.CategoryTypeConverter;
 import sopt.org.homepage.review.exception.InvalidReviewCategoryException;
 
 /**
@@ -24,7 +26,7 @@ import sopt.org.homepage.review.exception.InvalidReviewCategoryException;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA 전용
 public class ReviewCategory {
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = CategoryTypeConverter.class)
     @Column(name = "\"category\"", nullable = false, length = 20)
     private CategoryType type;
 
