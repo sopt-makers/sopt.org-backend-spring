@@ -18,9 +18,10 @@ import sopt.org.homepage.notification.dto.GetNotificationListResponseDto;
 import sopt.org.homepage.notification.dto.RegisterNotificationRequestDto;
 import sopt.org.homepage.notification.dto.RegisterNotificationResponseDto;
 
+
 @RestController
 @RequiredArgsConstructor
-//@RequestMapping("notification")
+@RequestMapping("notification/legacy")
 @Tag(name = "Notification")
 public class NotificationController {
 	private final NotificationService notificationService;

@@ -30,7 +30,7 @@ import sopt.org.homepage.soptstory.service.SoptStoryService;
 
 @Tag(name = "SoptStory")
 @RestController
-//@RequestMapping("soptstory")// 외부 요청 확인
+@RequestMapping("soptstory/legacy")// 외부 요청 확인
 @RequiredArgsConstructor
 public class SoptStoryController {
 
