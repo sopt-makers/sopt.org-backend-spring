@@ -1,20 +1,20 @@
 package sopt.org.homepage.notification.service.query;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import sopt.org.homepage.common.IntegrationTestBase;
 import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.domain.vo.Email;
 import sopt.org.homepage.notification.domain.vo.Generation;
-import sopt.org.homepage.notification.repository.command.NotificationCommandRepository;
-import sopt.org.homepage.common.IntegrationTestBase;
-import sopt.org.homepage.notification.service.query.dto.NotificationListView;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
+import sopt.org.homepage.notification.repository.NotificationCommandRepository;
+import sopt.org.homepage.notification.service.NotificationQueryService;
 
 /**
  * NotificationQueryService 통합 테스트
@@ -56,26 +56,27 @@ class NotificationQueryServiceTest extends IntegrationTestBase {
     @DisplayName("특정 기수의 알림 목록 조회 성공")
     void getNotificationList_WithValidGeneration_Success() {
         // when
-        NotificationListView view = queryService.getNotificationList(35);
+        List<Notification> notifications = queryService.getNotificationList(35);
 
         // then
-        assertThat(view.generation()).isEqualTo(35);
-        assertThat(view.emailList()).hasSize(2);
-        assertThat(view.emailList()).containsExactlyInAnyOrder(
-                "test1@sopt.org",
-                "test2@sopt.org"
-        );
+        assertThat(notifications).hasSize(2);
+        assertThat(notifications)
+                .extracting(n -> n.getEmail().getValue())
+                .containsExactlyInAnyOrder("test1@sopt.org", "test2@sopt.org");
+
+        // 모두 같은 기수인지 확인
+        assertThat(notifications)
+                .allMatch(n -> n.getGeneration().getValue().equals(35));
     }
 
     @Test
     @DisplayName("알림이 없는 기수 조회 시 빈 리스트 반환")
     void getNotificationList_NoNotifications_ReturnsEmptyList() {
         // when
-        NotificationListView view = queryService.getNotificationList(99);
+        List<Notification> notifications = queryService.getNotificationList(99);
 
         // then
-        assertThat(view.generation()).isEqualTo(99);
-        assertThat(view.emailList()).isEmpty();
+        assertThat(notifications).isEmpty();
     }
 
     @Test
@@ -85,4 +86,21 @@ class NotificationQueryServiceTest extends IntegrationTestBase {
         assertThatThrownBy(() -> queryService.getNotificationList(999))
                 .hasMessageContaining("기수는 100기 이하여야 합니다");
     }
+
+    @Test
+    @DisplayName("기수가 0인 경우 예외 발생")
+    void getNotificationList_WithZeroGeneration_ThrowsException() {
+        // when & then
+        assertThatThrownBy(() -> queryService.getNotificationList(0))
+                .hasMessageContaining("기수");
+    }
+
+    @Test
+    @DisplayName("기수가 음수인 경우 예외 발생")
+    void getNotificationList_WithNegativeGeneration_ThrowsException() {
+        // when & then
+        assertThatThrownBy(() -> queryService.getNotificationList(-1))
+                .hasMessageContaining("기수");
+    }
 }
+

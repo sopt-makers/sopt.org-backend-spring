@@ -1,5 +1,8 @@
 package sopt.org.homepage.notification.service.command;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,15 +11,11 @@ import sopt.org.homepage.common.IntegrationTestBase;
 import sopt.org.homepage.notification.controller.dto.RegisterNotificationRequest;
 import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.exception.DuplicateNotificationException;
-import sopt.org.homepage.notification.repository.command.NotificationCommandRepository;
-
-import static org.assertj.core.api.Assertions.*;
+import sopt.org.homepage.notification.repository.NotificationCommandRepository;
+import sopt.org.homepage.notification.service.NotificationCommandService;
 
 /**
- * NotificationCommandService 통합 테스트
- * - 실제 DB 사용 (TestContainer)
- * - 트랜잭션 롤백으로 테스트 격리
- * - Request DTO를 직접 사용하여 Service 테스트
+ * NotificationCommandService 통합 테스트 - 실제 DB 사용 (TestContainer) - 트랜잭션 롤백으로 테스트 격리 - Request DTO를 직접 사용하여 Service 테스트
  */
 @DisplayName("NotificationCommandService 통합 테스트")
 class NotificationCommandServiceTest extends IntegrationTestBase {
