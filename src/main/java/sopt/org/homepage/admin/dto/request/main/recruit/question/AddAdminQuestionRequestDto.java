@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.main.entity.sub.QuestionEntity;
 
 import java.util.List;
 
@@ -20,16 +19,4 @@ public class AddAdminQuestionRequestDto {
     @NotBlank(message = "답변을 입력해주세요")
     private String answer;
 
-    public QuestionEntity toEntity() {
-        return QuestionEntity.builder()
-                .question(this.question)
-                .answer(this.answer)
-                .build();
-    }
-
-    public static List<QuestionEntity> toEntityList(List<AddAdminQuestionRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminQuestionRequestDto::toEntity)
-                .toList();
-    }
 }

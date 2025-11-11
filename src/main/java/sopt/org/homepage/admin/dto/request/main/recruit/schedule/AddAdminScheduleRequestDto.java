@@ -3,7 +3,6 @@ package sopt.org.homepage.admin.dto.request.main.recruit.schedule;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.main.entity.sub.ScheduleEntity;
 
 @Schema(description = "상세 일정")
 @Getter
@@ -27,14 +26,5 @@ public class AddAdminScheduleRequestDto {
     @Schema(description = "최종 결과 발표 시간", example = "2024-02-10 12:00:00", requiredMode = Schema.RequiredMode.REQUIRED)
     private String finalResultTime;
 
-    public ScheduleEntity toEntity() {
-        return ScheduleEntity.builder()
-                .applicationStartTime(this.applicationStartTime)
-                .applicationEndTime(this.applicationEndTime)
-                .applicationResultTime(this.applicationResultTime)
-                .interviewStartTime(this.interviewStartTime)
-                .interviewEndTime(this.interviewEndTime)
-                .finalResultTime(this.finalResultTime)
-                .build();
-    }
+
 }

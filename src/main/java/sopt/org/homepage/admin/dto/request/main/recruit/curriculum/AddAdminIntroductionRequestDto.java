@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.main.entity.sub.IntroductionEntity;
 
 @Schema(description = "소개글 정보")
 @Getter
@@ -18,10 +17,4 @@ public class AddAdminIntroductionRequestDto {
     @NotBlank(message = "우대사항은 필수입니다")
     private String preference;
 
-    public IntroductionEntity toEntity() {
-        return IntroductionEntity.builder()
-                .content(this.content)
-                .preference(this.preference)
-                .build();
-    }
 }

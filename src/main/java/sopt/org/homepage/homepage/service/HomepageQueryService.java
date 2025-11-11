@@ -16,22 +16,20 @@ import sopt.org.homepage.homepage.controller.dto.RecruitPageResponse;
 import sopt.org.homepage.internal.auth.AuthService;
 import sopt.org.homepage.internal.crew.CrewService;
 import sopt.org.homepage.internal.playground.PlaygroundService;
-import sopt.org.homepage.main.entity.MainNewsEntity;
-import sopt.org.homepage.main.repository.MainNewsRepository;
+import sopt.org.homepage.news.MainNewsEntity;
+import sopt.org.homepage.news.repository.MainNewsRepository;
 import sopt.org.homepage.member.service.query.MemberQueryService;
 import sopt.org.homepage.member.service.query.dto.MemberDetailView;
 import sopt.org.homepage.part.service.query.PartQueryService;
 import sopt.org.homepage.part.service.query.dto.PartCurriculumView;
 import sopt.org.homepage.part.service.query.dto.PartIntroductionView;
 import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
-import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 import sopt.org.homepage.recruitment.service.query.RecruitPartIntroductionQueryService;
 import sopt.org.homepage.recruitment.service.query.RecruitmentQueryService;
 import sopt.org.homepage.recruitment.service.query.dto.RecruitPartIntroductionView;
 import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * HomepageQueryService

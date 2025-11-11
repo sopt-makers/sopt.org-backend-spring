@@ -14,8 +14,7 @@ import sopt.org.homepage.project.dto.record.Member;
 import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
 import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 import sopt.org.homepage.project.dto.type.LinkType;
-import sopt.org.homepage.review.dto.response.ReviewsResponseDto;
-import sopt.org.homepage.review.entity.ReviewEntity;
+
 
 
 @Component
@@ -86,21 +85,4 @@ public class ResponseMapper {
 			.build();
 	}
 
-	public ReviewsResponseDto toReviewResponseDto(ReviewEntity entity) {
-		
-		return ReviewsResponseDto.builder()
-			.id(entity.getId())
-			.title(entity.getTitle())
-			.category(entity.getCategory())
-			.author(entity.getAuthor())
-			.authorProfileImageUrl(entity.getAuthorProfileImageUrl())
-			.generation(entity.getGeneration())
-			.description(entity.getDescription())
-			.partType(entity.getPartType())
-			.subject(entity.getSubject())
-			.thumbnailUrl(entity.getThumbnailUrl())
-			.platform(entity.getPlatform())
-			.url(entity.getUrl())
-			.build();
-	}
 }

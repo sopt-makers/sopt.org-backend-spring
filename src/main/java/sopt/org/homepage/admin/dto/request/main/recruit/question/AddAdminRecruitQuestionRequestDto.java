@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.main.entity.sub.RecruitQuestionEntity;
 
 import java.util.List;
 
@@ -23,17 +22,5 @@ public class AddAdminRecruitQuestionRequestDto {
     @Valid
     private List<AddAdminQuestionRequestDto> questions;
 
-    public RecruitQuestionEntity toEntity() {
-        return RecruitQuestionEntity.builder()
-                .part(this.part)
-                .questions(AddAdminQuestionRequestDto.toEntityList(this.questions))
-                .build();
-    }
-
-    public static List<RecruitQuestionEntity> toEntityList(List<AddAdminRecruitQuestionRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminRecruitQuestionRequestDto::toEntity)
-                .toList();
-    }
 }
 
