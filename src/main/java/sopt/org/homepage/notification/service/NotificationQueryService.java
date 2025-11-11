@@ -1,4 +1,4 @@
-package sopt.org.homepage.notification.service.query;
+package sopt.org.homepage.notification.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.domain.vo.Generation;
-import sopt.org.homepage.notification.repository.query.NotificationQueryRepository;
+import sopt.org.homepage.notification.repository.NotificationQueryRepository;
 
 
 /**

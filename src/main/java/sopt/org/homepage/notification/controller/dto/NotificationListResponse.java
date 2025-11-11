@@ -1,13 +1,9 @@
 package sopt.org.homepage.notification.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.notification.service.query.dto.NotificationListView;
-
 import java.util.List;
+import sopt.org.homepage.notification.domain.Notification;
 
-/**
- * 알림 목록 조회 응답
- */
 @Schema(description = "알림 목록 조회 응답")
 public record NotificationListResponse(
 
@@ -17,20 +13,21 @@ public record NotificationListResponse(
         @Schema(description = "이메일 목록")
         List<String> emailList
 ) {
-    /**
-     * Service View를 Response로 변환
-     */
-    public static NotificationListResponse from(NotificationListView view) {
-        return new NotificationListResponse(
-                view.generation(),
-                view.emailList()
-        );
+    public static NotificationListResponse from(List<Notification> notifications) {
+        if (notifications.isEmpty()) {
+            return new NotificationListResponse(null, List.of());
+        }
+
+        // 첫 번째 Notification의 generation 사용 (모두 같은 기수)
+        Integer generation = notifications.get(0).getGeneration().getValue();
+
+        // Email 목록 추출
+        List<String> emailList = notifications.stream()
+                .map(notification -> notification.getEmail().getValue())
+                .toList();
+
+        return new NotificationListResponse(generation, emailList);
     }
 
-    /**
-     * Compact Constructor: 불변 리스트 보장
-     */
-    public NotificationListResponse {
-        emailList = List.copyOf(emailList);
-    }
+
 }

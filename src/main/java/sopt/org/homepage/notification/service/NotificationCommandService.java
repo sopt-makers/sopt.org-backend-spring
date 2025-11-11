@@ -1,23 +1,18 @@
-package sopt.org.homepage.notification.service.command;
+package sopt.org.homepage.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.notification.controller.dto.RegisterNotificationRequest;
 import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.domain.vo.Email;
 import sopt.org.homepage.notification.domain.vo.Generation;
 import sopt.org.homepage.notification.exception.DuplicateNotificationException;
-import sopt.org.homepage.notification.repository.command.NotificationCommandRepository;
-import sopt.org.homepage.notification.service.command.dto.NotificationResult;
-import sopt.org.homepage.notification.service.command.dto.RegisterNotificationCommand;
+import sopt.org.homepage.notification.repository.NotificationCommandRepository;
 
 /**
- * Notification Command Service
- * - 쓰기 작업만 담당 (등록)
- * - 얇은 Service 계층: 도메인에 위임
+ * Notification Command Service - 쓰기 작업만 담당 (등록) - 얇은 Service 계층: 도메인에 위임
  */
 @Slf4j
 @Service
@@ -47,8 +42,7 @@ public class NotificationCommandService {
     }
 
     /**
-     * 중복 검사
-     * - exists 쿼리로 최적화
+     * 중복 검사 - exists 쿼리로 최적화
      */
     private void validateNotDuplicate(Email email, Generation generation) {
         if (notificationCommandRepository.existsByEmailAndGeneration(email, generation)) {
