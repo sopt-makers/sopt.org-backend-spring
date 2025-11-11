@@ -12,4 +12,4 @@ public class AlreadyLikedException extends RuntimeException {
                 ip
         ));
     }
-}git add .
+}
