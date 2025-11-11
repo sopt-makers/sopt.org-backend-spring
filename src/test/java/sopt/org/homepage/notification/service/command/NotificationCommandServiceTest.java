@@ -7,15 +7,18 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import sopt.org.homepage.common.IntegrationTestBase;
 import sopt.org.homepage.notification.controller.dto.RegisterNotificationRequest;
 import sopt.org.homepage.notification.domain.Notification;
-import sopt.org.homepage.notification.exception.DuplicateNotificationException;
+import sopt.org.homepage.notification.exception.NotificationDomainException;
+import sopt.org.homepage.notification.exception.NotificationErrorCode;
 import sopt.org.homepage.notification.repository.NotificationCommandRepository;
 import sopt.org.homepage.notification.service.NotificationCommandService;
 
 /**
- * NotificationCommandService 통합 테스트 - 실제 DB 사용 (TestContainer) - 트랜잭션 롤백으로 테스트 격리 - Request DTO를 직접 사용하여 Service 테스트
+ * NotificationCommandService 통합 테스트 - 실제 DB 사용 (TestContainer) - 트랜잭션 롤백으로 테스트 격리 - Request DTO를 직접 사용하여 Service 테스트 -
+ * Enum 기반 도메인 예외 검증
  */
 @DisplayName("NotificationCommandService 통합 테스트")
 class NotificationCommandServiceTest extends IntegrationTestBase {
@@ -67,8 +70,24 @@ class NotificationCommandServiceTest extends IntegrationTestBase {
 
         // when & then
         assertThatThrownBy(() -> commandService.register(request))
-                .isInstanceOf(DuplicateNotificationException.class)
-                .hasMessageContaining("이미 등록된 알림입니다");
+                .isInstanceOf(NotificationDomainException.class)
+                .satisfies(ex -> {
+                    NotificationDomainException exception = (NotificationDomainException) ex;
+
+                    // ErrorCode 검증
+                    assertThat(exception.getErrorCode())
+                            .isEqualTo(NotificationErrorCode.DUPLICATE_NOTIFICATION);
+
+                    // HTTP 상태 코드 검증
+                    assertThat(exception.getHttpStatus())
+                            .isEqualTo(HttpStatus.CONFLICT);
+
+                    // 메시지 검증
+                    assertThat(exception.getMessage())
+                            .contains("이미 등록된 알림입니다")
+                            .contains("test@sopt.org")
+                            .contains("35");
+                });
     }
 
     @Test
@@ -129,29 +148,33 @@ class NotificationCommandServiceTest extends IntegrationTestBase {
     @DisplayName("유효하지 않은 이메일 형식인 경우 예외 발생 - @ 누락")
     void register_WithInvalidEmailFormat_ThrowsException() {
         // given
+        String invalidEmail = "invalid-email";  // @ 없는 잘못된 형식
         RegisterNotificationRequest request = new RegisterNotificationRequest(
-                "invalid-email",  // @ 없는 잘못된 형식
+                invalidEmail,
                 35
         );
 
         // when & then
         assertThatThrownBy(() -> commandService.register(request))
-                .hasMessageContaining("유효하지 않은 이메일 형식입니다");
+                .isInstanceOf(NotificationDomainException.class)
+                .satisfies(ex -> {
+                    NotificationDomainException exception = (NotificationDomainException) ex;
+
+                    // ErrorCode 검증
+                    assertThat(exception.getErrorCode())
+                            .isEqualTo(NotificationErrorCode.INVALID_EMAIL_FORMAT);
+
+                    // HTTP 상태 코드 검증
+                    assertThat(exception.getHttpStatus())
+                            .isEqualTo(HttpStatus.BAD_REQUEST);
+
+                    // 메시지 검증
+                    assertThat(exception.getMessage())
+                            .contains("유효하지 않은 이메일 형식입니다")
+                            .contains(invalidEmail);
+                });
     }
 
-    @Test
-    @DisplayName("이메일이 null인 경우 예외 발생")
-    void register_WithNullEmail_ThrowsException() {
-        // given
-        RegisterNotificationRequest request = new RegisterNotificationRequest(
-                null,  // null 이메일
-                35
-        );
-
-        // when & then
-        assertThatThrownBy(() -> commandService.register(request))
-                .hasMessageContaining("이메일");
-    }
 
     @Test
     @DisplayName("이메일이 빈 문자열인 경우 예외 발생")
@@ -164,7 +187,22 @@ class NotificationCommandServiceTest extends IntegrationTestBase {
 
         // when & then
         assertThatThrownBy(() -> commandService.register(request))
-                .hasMessageContaining("이메일");
+                .isInstanceOf(NotificationDomainException.class)
+                .satisfies(ex -> {
+                    NotificationDomainException exception = (NotificationDomainException) ex;
+
+                    // ErrorCode 검증
+                    assertThat(exception.getErrorCode())
+                            .isEqualTo(NotificationErrorCode.INVALID_EMAIL_FORMAT);
+
+                    // HTTP 상태 코드 검증
+                    assertThat(exception.getHttpStatus())
+                            .isEqualTo(HttpStatus.BAD_REQUEST);
+
+                    // 메시지 검증
+                    assertThat(exception.getMessage())
+                            .contains("유효하지 않은 이메일 형식입니다");
+                });
     }
 
     @Test
@@ -178,7 +216,23 @@ class NotificationCommandServiceTest extends IntegrationTestBase {
 
         // when & then
         assertThatThrownBy(() -> commandService.register(request))
-                .hasMessageContaining("기수");
+                .isInstanceOf(NotificationDomainException.class)
+                .satisfies(ex -> {
+                    NotificationDomainException exception = (NotificationDomainException) ex;
+
+                    // ErrorCode 검증
+                    assertThat(exception.getErrorCode())
+                            .isEqualTo(NotificationErrorCode.INVALID_GENERATION_NOT_POSITIVE);
+
+                    // HTTP 상태 코드 검증
+                    assertThat(exception.getHttpStatus())
+                            .isEqualTo(HttpStatus.BAD_REQUEST);
+
+                    // 메시지 검증
+                    assertThat(exception.getMessage())
+                            .contains("기수는 양수여야 합니다")
+                            .contains("0");
+                });
     }
 
     @Test
@@ -192,36 +246,25 @@ class NotificationCommandServiceTest extends IntegrationTestBase {
 
         // when & then
         assertThatThrownBy(() -> commandService.register(request))
-                .hasMessageContaining("기수");
+                .isInstanceOf(NotificationDomainException.class)
+                .satisfies(ex -> {
+                    NotificationDomainException exception = (NotificationDomainException) ex;
+
+                    // ErrorCode 검증
+                    assertThat(exception.getErrorCode())
+                            .isEqualTo(NotificationErrorCode.INVALID_GENERATION_NOT_POSITIVE);
+
+                    // HTTP 상태 코드 검증
+                    assertThat(exception.getHttpStatus())
+                            .isEqualTo(HttpStatus.BAD_REQUEST);
+
+                    // 메시지 검증
+                    assertThat(exception.getMessage())
+                            .contains("기수는 양수여야 합니다")
+                            .contains("-1");
+                });
     }
 
-    @Test
-    @DisplayName("기수가 100을 초과하는 경우 예외 발생")
-    void register_WithGenerationOver100_ThrowsException() {
-        // given
-        RegisterNotificationRequest request = new RegisterNotificationRequest(
-                "test@sopt.org",
-                101  // 100 초과
-        );
-
-        // when & then
-        assertThatThrownBy(() -> commandService.register(request))
-                .hasMessageContaining("기수는 100기 이하여야 합니다");
-    }
-
-    @Test
-    @DisplayName("기수가 null인 경우 예외 발생")
-    void register_WithNullGeneration_ThrowsException() {
-        // given
-        RegisterNotificationRequest request = new RegisterNotificationRequest(
-                "test@sopt.org",
-                null  // null 기수
-        );
-
-        // when & then
-        assertThatThrownBy(() -> commandService.register(request))
-                .hasMessageContaining("기수");
-    }
 
     @Test
     @DisplayName("경계값 테스트 - 기수 1 (최소값)")

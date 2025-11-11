@@ -8,7 +8,7 @@ import sopt.org.homepage.notification.controller.dto.RegisterNotificationRequest
 import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.domain.vo.Email;
 import sopt.org.homepage.notification.domain.vo.Generation;
-import sopt.org.homepage.notification.exception.DuplicateNotificationException;
+import sopt.org.homepage.notification.exception.NotificationDomainException;
 import sopt.org.homepage.notification.repository.NotificationCommandRepository;
 
 /**
@@ -46,10 +46,7 @@ public class NotificationCommandService {
      */
     private void validateNotDuplicate(Email email, Generation generation) {
         if (notificationCommandRepository.existsByEmailAndGeneration(email, generation)) {
-            throw new DuplicateNotificationException(
-                    email.getValue(),
-                    generation.getValue()
-            );
+            throw NotificationDomainException.duplicateNotification(email.getValue(), generation.getValue());
         }
     }
 }

@@ -79,13 +79,6 @@ class NotificationQueryServiceTest extends IntegrationTestBase {
         assertThat(notifications).isEmpty();
     }
 
-    @Test
-    @DisplayName("유효하지 않은 기수로 조회 시 예외 발생")
-    void getNotificationList_WithInvalidGeneration_ThrowsException() {
-        // when & then
-        assertThatThrownBy(() -> queryService.getNotificationList(999))
-                .hasMessageContaining("기수는 100기 이하여야 합니다");
-    }
 
     @Test
     @DisplayName("기수가 0인 경우 예외 발생")

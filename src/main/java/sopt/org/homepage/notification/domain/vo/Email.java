@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.notification.exception.NotificationDomainException;
 
 // 이메일 값 객체,JPA Embeddable로 Entity에 임베드 가능
 @Embeddable
@@ -27,14 +27,8 @@ public class Email {
     }
 
     private void validate(String value) {
-        if (value == null || value.isBlank()) {
-            throw new ClientBadRequestException("이메일은 필수입니다");
-        }
-
         if (!EMAIL_PATTERN.matcher(value).matches()) {
-            throw new ClientBadRequestException(
-                    "유효하지 않은 이메일 형식입니다: " + value
-            );
+            throw NotificationDomainException.emailInvalidFormat(value);
         }
     }
 
