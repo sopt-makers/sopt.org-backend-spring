@@ -5,7 +5,7 @@ import sopt.org.homepage.common.type.PartType;
 
 /**
  * 리뷰 검색 요청 DTO
- *
+ * <p>
  * Note: @ModelAttribute 바인딩을 위해 record에서 getter 메서드 필요
  */
 @Schema(description = "리뷰 검색 요청")
@@ -18,7 +18,7 @@ public record ReviewSearchReq(
         String activity,
 
         @Schema(description = "파트", example = "SERVER")
-        PartType partType,
+        PartType part,
 
         @Schema(description = "기수", example = "34")
         Integer generation,
@@ -33,8 +33,12 @@ public record ReviewSearchReq(
      * 기본값을 설정하는 Compact Constructor
      */
     public ReviewSearchReq {
-        if (pageNo == null) pageNo = 1;
-        if (limit == null) limit = 10;
+        if (pageNo == null) {
+            pageNo = 1;
+        }
+        if (limit == null) {
+            limit = 10;
+        }
     }
 
     /**
@@ -42,5 +46,9 @@ public record ReviewSearchReq(
      */
     public long getOffset() {
         return (long) (pageNo - 1) * limit;
+    }
+
+    public PartType partType() {
+        return part;
     }
 }
