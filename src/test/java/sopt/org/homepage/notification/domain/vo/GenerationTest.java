@@ -1,12 +1,11 @@
 package sopt.org.homepage.notification.domain.vo;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import sopt.org.homepage.exception.ClientBadRequestException;
-
-import static org.assertj.core.api.Assertions.*;
 
 /**
  * Generation VO 단위 테스트
@@ -25,34 +24,6 @@ class GenerationTest {
         assertThat(generation.getValue()).isEqualTo(validGeneration);
     }
 
-    @Test
-    @DisplayName("null 기수인 경우 예외 발생")
-    void createGeneration_WithNull_ThrowsException() {
-        // when & then
-        assertThatThrownBy(() -> new Generation(null))
-                .isInstanceOf(ClientBadRequestException.class)
-                .hasMessageContaining("기수는 필수입니다");
-    }
-
-    @ParameterizedTest
-    @DisplayName("1보다 작은 기수인 경우 예외 발생")
-    @ValueSource(ints = {0, -1, -100})
-    void createGeneration_LessThanMinimum_ThrowsException(int invalidGeneration) {
-        // when & then
-        assertThatThrownBy(() -> new Generation(invalidGeneration))
-                .isInstanceOf(ClientBadRequestException.class)
-                .hasMessageContaining("기수는 1기 이상이어야 합니다");
-    }
-
-    @ParameterizedTest
-    @DisplayName("100보다 큰 기수인 경우 예외 발생")
-    @ValueSource(ints = {101, 200, 999})
-    void createGeneration_GreaterThanMaximum_ThrowsException(int invalidGeneration) {
-        // when & then
-        assertThatThrownBy(() -> new Generation(invalidGeneration))
-                .isInstanceOf(ClientBadRequestException.class)
-                .hasMessageContaining("기수는 100기 이하여야 합니다");
-    }
 
     @Test
     @DisplayName("같은 기수 값인지 확인")

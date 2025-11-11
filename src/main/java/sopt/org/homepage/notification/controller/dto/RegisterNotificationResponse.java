@@ -1,13 +1,9 @@
 package sopt.org.homepage.notification.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.notification.service.command.dto.NotificationResult;
-
 import java.time.LocalDateTime;
+import sopt.org.homepage.notification.domain.Notification;
 
-/**
- * 모집 알림 신청 응답
- */
 @Schema(description = "모집 알림 신청 응답")
 public record RegisterNotificationResponse(
 
@@ -23,15 +19,13 @@ public record RegisterNotificationResponse(
         @Schema(description = "등록 일시")
         LocalDateTime createdAt
 ) {
-    /**
-     * Service Result를 Response로 변환
-     */
-    public static RegisterNotificationResponse from(NotificationResult result) {
+    public static RegisterNotificationResponse from(Notification notification) {
         return new RegisterNotificationResponse(
-                result.id(),
-                result.email(),
-                result.generation(),
-                result.createdAt()
+                notification.getId(),
+                notification.getEmail().getValue(),
+                notification.getGeneration().getValue(),
+                notification.getCreatedAt()
+
         );
     }
 }
