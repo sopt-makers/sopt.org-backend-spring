@@ -5,9 +5,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-/**
- * 모집 알림 신청 요청
- */
 @Schema(description = "모집 알림 신청 요청")
 public record RegisterNotificationRequest(
 
@@ -21,5 +18,4 @@ public record RegisterNotificationRequest(
         @Positive(message = "기수는 양수여야 합니다")
         Integer generation
 ) {
-    // Record는 @Builder 불필요 (생성자가 이미 빌더 역할)
 }

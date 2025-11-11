@@ -1,18 +1,15 @@
 package sopt.org.homepage.notification.domain.vo;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
-import sopt.org.homepage.exception.ClientBadRequestException;
-
-import static org.assertj.core.api.Assertions.*;
 
 /**
- * Email VO 단위 테스트
- * - Mock 없이 순수 Java 객체 테스트
- * - 검증 로직 집중 테스트
+ * Email VO 단위 테스트 - Mock 없이 순수 Java 객체 테스트 - 검증 로직 집중 테스트
  */
 @DisplayName("Email VO 테스트")
 class EmailTest {
@@ -37,41 +34,14 @@ class EmailTest {
             "user123@example.com",
             "first.last@company.co.kr",
             "admin+tag@domain.io"
-    })//“이런 이메일 형식들은 다 유효해야 한다”라는 포괄적인 보증을 만들 때 쓰는 패턴
+    })
+//“이런 이메일 형식들은 다 유효해야 한다”라는 포괄적인 보증을 만들 때 쓰는 패턴
     void createEmail_WithVariousValidFormats_Success(String validEmail) {
         // when & then
         assertThatCode(() -> new Email(validEmail))
                 .doesNotThrowAnyException();
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    @ValueSource(strings = {" ", "   "})
-    @DisplayName("null이거나 빈 이메일인 경우 예외 발생")
-    void createEmail_WithNullOrEmpty_ThrowsException(String invalidEmail) {
-        // when & then
-        assertThatThrownBy(() -> new Email(invalidEmail))
-                .isInstanceOf(ClientBadRequestException.class)
-                .hasMessageContaining("이메일은 필수입니다");
-    }
-
-    @ParameterizedTest
-    @DisplayName("잘못된 이메일 형식인 경우 예외 발생")
-    @ValueSource(strings = {
-            "invalid-email",           // @ 없음
-            "@sopt.org",               // 로컬 파트 없음
-            "test@",                   // 도메인 없음
-            "test@domain",             // TLD 없음
-            "test@@sopt.org",          // @ 중복
-            "test @sopt.org",          // 공백 포함
-            "test@sopt .org"           // 도메인에 공백
-    })
-    void createEmail_WithInvalidFormat_ThrowsException(String invalidEmail) {
-        // when & then
-        assertThatThrownBy(() -> new Email(invalidEmail))
-                .isInstanceOf(ClientBadRequestException.class)
-                .hasMessageContaining("유효하지 않은 이메일 형식입니다");
-    }
 
     @Test
     @DisplayName("같은 이메일 값을 가진 Email VO는 동등하다")

@@ -4,9 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.main.entity.sub.PartIntroductionEntity;
 
-import java.util.List;
 
 @Schema(description = "파트 소개")
 @Getter
@@ -20,16 +18,4 @@ public class AddAdminPartIntroductionRequestDto {
     @NotBlank(message = "파트 설명을 입력해주세요")
     private String description;
 
-    public PartIntroductionEntity toEntity() {
-        return PartIntroductionEntity.builder()
-                .part(this.part)
-                .description(this.description)
-                .build();
-    }
-
-    public static List<PartIntroductionEntity> toEntityList(List<AddAdminPartIntroductionRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminPartIntroductionRequestDto::toEntity)
-                .toList();
-    }
 }

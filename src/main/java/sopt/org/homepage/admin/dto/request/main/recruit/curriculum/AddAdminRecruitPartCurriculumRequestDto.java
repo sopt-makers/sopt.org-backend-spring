@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sopt.org.homepage.main.entity.sub.RecruitPartCurriculumEntity;
 
 import java.util.List;
 
@@ -23,17 +22,6 @@ public class AddAdminRecruitPartCurriculumRequestDto {
     @Valid
     private AddAdminIntroductionRequestDto introduction;
 
-    public RecruitPartCurriculumEntity toEntity() {
-        return RecruitPartCurriculumEntity.builder()
-                .part(this.part)
-                .introduction(this.introduction.toEntity())
-                .build();
-    }
 
-    public static List<RecruitPartCurriculumEntity> toEntityList(List<AddAdminRecruitPartCurriculumRequestDto> dtos) {
-        return dtos.stream()
-                .map(AddAdminRecruitPartCurriculumRequestDto::toEntity)
-                .toList();
-    }
 }
 
