@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import sopt.org.homepage.notification.controller.dto.NotificationListResponse;
 import sopt.org.homepage.notification.controller.dto.RegisterNotificationRequest;
 import sopt.org.homepage.notification.controller.dto.RegisterNotificationResponse;
+import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.service.command.NotificationCommandService;
 import sopt.org.homepage.notification.service.command.dto.NotificationResult;
 import sopt.org.homepage.notification.service.command.dto.RegisterNotificationCommand;
@@ -25,7 +26,7 @@ import sopt.org.homepage.notification.service.query.dto.NotificationListView;
 @RestController
 @RequestMapping("notification")
 @RequiredArgsConstructor
-public class NotificationControllerV2 {
+public class NotificationController {
 
     private final NotificationCommandService notificationCommandService;
     private final NotificationQueryService notificationQueryService;
@@ -41,18 +42,11 @@ public class NotificationControllerV2 {
     public ResponseEntity<RegisterNotificationResponse> registerNotification(
             @Valid @RequestBody RegisterNotificationRequest request
     ) {
-        // 1. Request → Command 변환
-        RegisterNotificationCommand command = RegisterNotificationCommand.from(request);
-
-        // 2. Command 실행
-        NotificationResult result = notificationCommandService.register(command);
-
-        // 3. Result → Response 변환
-        RegisterNotificationResponse response = RegisterNotificationResponse.from(result);
+        Notification result = notificationCommandService.register(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(response);
+                .body(RegisterNotificationResponse.from(result));
     }
 
     /**

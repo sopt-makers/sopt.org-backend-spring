@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.notification.controller.dto.RegisterNotificationRequest;
 import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.domain.vo.Email;
 import sopt.org.homepage.notification.domain.vo.Generation;
@@ -26,22 +27,11 @@ public class NotificationCommandService {
 
     private final NotificationCommandRepository notificationCommandRepository;
 
-    /**
-     * 모집 알림 신청 등록
-     *
-     * @param command 등록 명령
-     * @return 등록된 알림 정보
-     * @throws ClientBadRequestException 이미 등록된 이메일인 경우
-     */
-    public NotificationResult register(RegisterNotificationCommand command) {
-
-        log.info("모집 알림 신청 시작 - email: {}, generation: {}",
-                command.email(), command.generation());
-
+    public Notification register(RegisterNotificationRequest request) {
 
         // 1. Command를 VO로 변환 (검증 포함)
-        Email email = command.toEmailVo();
-        Generation generation = command.toGenerationVo();
+        Email email = new Email(request.email());
+        Generation generation = new Generation(request.generation());
 
         // 2. 중복 검사
         validateNotDuplicate(email, generation);
@@ -52,13 +42,8 @@ public class NotificationCommandService {
         // 4. 저장
         Notification saved = notificationCommandRepository.save(notification);
 
-        log.info("모집 알림 신청 완료 - id: {}, email: {}, generation: {}",
-                saved.getId(), email.getValue(), generation.getValue());
-
-
-
         // 5. 결과 반환
-        return NotificationResult.from(saved);
+        return saved;
     }
 
     /**
