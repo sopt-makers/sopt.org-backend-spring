@@ -4,9 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import sopt.org.homepage.common.type.PartType;
-
 import java.util.List;
+import sopt.org.homepage.common.type.PartType;
 
 /**
  * 리뷰 생성 요청 DTO
@@ -20,7 +19,7 @@ public record CreateReviewReq(
 
         @Schema(description = "파트", example = "SERVER")
         @NotNull(message = "파트는 필수입니다.")
-        PartType partType,
+        PartType part,
 
         @Schema(description = "메인 카테고리", example = "전체 활동")
         @NotBlank(message = "카테고리는 필수입니다.")
