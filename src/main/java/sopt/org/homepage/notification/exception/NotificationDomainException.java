@@ -42,12 +42,24 @@ public class NotificationDomainException extends RuntimeException {
         );
     }
 
+    public static NotificationDomainException emailRequired() {
+        return new NotificationDomainException(
+                NotificationErrorCode.EMAIL_REQUIRED
+        );
+    }
+
 
     // Generation 관련
     public static NotificationDomainException generationNotPositive(Integer generation) {
         return new NotificationDomainException(
                 NotificationErrorCode.INVALID_GENERATION_NOT_POSITIVE,
                 generation
+        );
+    }
+
+    public static NotificationDomainException generationRequired() {
+        return new NotificationDomainException(
+                NotificationErrorCode.GENERATION_REQUIRED
         );
     }
 
@@ -60,6 +72,7 @@ public class NotificationDomainException extends RuntimeException {
                 generation
         );
     }
+
 
     /**
      * HTTP 상태 코드 반환
