@@ -77,10 +77,10 @@ official:
 
 sentry:
   dsn: ${PROD_SENTRY_DSN}
-  environment: dev
+  environment: prod
   traces-sample-rate: 1.0  # 개발환경 100% 샘플링
   send-default-pii: false
   enable-tracing: true
   logging:
-    minimum-event-level: warn
+    minimum-event-level: error
     minimum-breadcrumb-level: info
