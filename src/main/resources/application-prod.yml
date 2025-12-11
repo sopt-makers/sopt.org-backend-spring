@@ -82,5 +82,5 @@ sentry:
   send-default-pii: false
   enable-tracing: true
   logging:
-    minimum-event-level: warn
+    minimum-event-level: error
     minimum-breadcrumb-level: info
