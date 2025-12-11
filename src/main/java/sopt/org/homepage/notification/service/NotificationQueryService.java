@@ -25,10 +25,7 @@ public class NotificationQueryService {
         // 1. Integer를 Generation VO로 변환 (검증 포함)
         Generation generation = new Generation(generationValue);
 
-        // 2. 조회
-        List<Notification> notifications =
-                notificationQueryRepository.findByGeneration(generation);
-
-        return notifications;
+        // 2. 조회(없으면 빈 배열)
+        return notificationQueryRepository.findByGeneration(generation);
     }
 }

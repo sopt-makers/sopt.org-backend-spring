@@ -27,25 +27,20 @@ public class NotificationCommandService {
         // 1. Command를 VO로 변환 (검증 포함)
         Email email = new Email(request.email());
         Generation generation = new Generation(request.generation());
-
         // 2. 중복 검사
         validateNotDuplicate(email, generation);
 
         // 3. 도메인 생성 (팩토리 메서드 사용)
         Notification notification = Notification.create(email, generation);
 
-        // 4. 저장
-        Notification saved = notificationCommandRepository.save(notification);
-
-        // 5. 결과 반환
-        return saved;
+        // 4. 저장 후 결과 반환
+        return notificationCommandRepository.save(notification);
     }
 
-    /**
-     * 중복 검사 - exists 쿼리로 최적화
-     */
     private void validateNotDuplicate(Email email, Generation generation) {
         if (notificationCommandRepository.existsByEmailAndGeneration(email, generation)) {
+            log.warn("[Business] 중복 알림 시도 차단 - email={}, generation={}",
+                    email.getValue(), generation.getValue());
             throw NotificationDomainException.duplicateNotification(email.getValue(), generation.getValue());
         }
     }

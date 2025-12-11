@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,9 +21,7 @@ import sopt.org.homepage.notification.domain.Notification;
 import sopt.org.homepage.notification.service.NotificationCommandService;
 import sopt.org.homepage.notification.service.NotificationQueryService;
 
-/**
- * Notification Controller - Command/Query 분리 - 얇은 Controller: DTO 변환만 담당
- */
+@Slf4j
 @Tag(name = "Notification", description = "모집 알림 API")
 @RestController
 @RequestMapping("notification")
@@ -40,8 +39,10 @@ public class NotificationController {
     public ResponseEntity<RegisterNotificationResponse> registerNotification(
             @Valid @RequestBody RegisterNotificationRequest request
     ) {
+        log.info("[API] POST /notifications - email={}, generation={}",
+                request.email(), request.generation());
         Notification result = notificationCommandService.register(request);
-
+        log.info("[API] POST /notifications - SUCCESS id={}", result.getId());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(RegisterNotificationResponse.from(result));
