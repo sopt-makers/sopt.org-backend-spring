@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.3'
     id 'io.spring.dependency-management' version '1.1.4'
+    id "io.sentry.jvm.gradle" version "5.12.2"
 }
 
 group = 'sopt.org'
@@ -9,6 +10,17 @@ version = '0.0.1-SNAPSHOT'
 
 java {
     sourceCompatibility = '17'
+}
+
+// 🆕 Sentry 플러그인 설정
+sentry {
+    // Source Context 자동 업로드 (스택 트레이스에서 코드 보기)
+    includeSourceContext = true
+
+    // Sentry 조직 및 프로젝트 정보
+    org = "sopt-qt"
+    projectName = "java-spring-boot"
+    authToken = System.getenv("SENTRY_AUTH_TOKEN")
 }
 
 test {
@@ -42,6 +54,9 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
     testImplementation 'org.testcontainers:postgresql:1.19.3'
 
+    // 🆕 Sentry (명시적 버전 관리)
+    // 플러그인이 자동 설치하지만, 명시적으로 버전을 고정하기 위해 추가
+    implementation 'io.sentry:sentry-spring-boot-starter-jakarta:7.17.0'
 
 
     // swagger
@@ -78,11 +93,6 @@ dependencies {
     implementation 'org.seleniumhq.selenium:selenium-java:4.17.0'
     implementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.17.0'
     implementation 'io.github.bonigarcia:webdrivermanager:5.6.3'
-
-
-
-
-
 
 
     runtimeOnly 'com.h2database:h2'
