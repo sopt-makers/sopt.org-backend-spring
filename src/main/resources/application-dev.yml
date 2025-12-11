@@ -75,3 +75,14 @@ jwt:
 
 official:
   apikey: ${OFFICIAL_API_KEY}
+
+sentry:
+  dsn: ${DEV_SENTRY_DSN}
+  environment: dev
+  traces-sample-rate: 1.0  # 개발환경 100% 샘플링
+  send-default-pii: false
+  enable-tracing: true
+  logging:
+    minimum-event-level: warn
+    minimum-breadcrumb-level: info
+
