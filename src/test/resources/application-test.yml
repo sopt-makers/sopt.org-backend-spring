@@ -10,7 +10,6 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:tc:postgresql:14.17-alpine:///testdb}
     username: ${SPRING_DATASOURCE_USERNAME:test}
     password: ${SPRING_DATASOURCE_PASSWORD:test}
-    driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5
       minimum-idle: 2
@@ -29,6 +28,7 @@ spring:
 
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         # SQL 로깅 설정
         use_sql_comments: true
         format_sql: true
@@ -45,6 +45,8 @@ spring:
     defer-datasource-initialization: false
     open-in-view: false
     show-sql: false
+  flyway:
+    enabled: false
 
   # SQL 초기화 설정
   sql:

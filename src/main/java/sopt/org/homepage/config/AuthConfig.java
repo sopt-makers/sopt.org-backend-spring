@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Configuration
 public class AuthConfig {
-    @Value("${spring.profiles.active}")
-    private String activeProfile;
 
     @Value("${official.apikey}")
     private String apiKey;
@@ -24,7 +22,6 @@ public class AuthConfig {
 
     @Value("${internal.auth.service-name}")
     private String authServiceName;
-
 
 
 }
