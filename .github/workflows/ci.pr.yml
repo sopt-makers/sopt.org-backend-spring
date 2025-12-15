@@ -89,9 +89,8 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build application
-        env:
-          SENTRY_PROPERTIES: ""
-        run: ./gradlew build -x test --no-daemon --stacktrace -Dsentry.autoUpload=false
+        run: ./gradlew build -x test -x sentryBundleSourcesJava
+
 
       - name: Verify JAR file
         run: |
