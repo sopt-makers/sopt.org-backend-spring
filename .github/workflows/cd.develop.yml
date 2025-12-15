@@ -5,7 +5,7 @@ on:
   push:
     branches:
       - 'develop'
-
+jobs:
   # CD: 빌드 및 ECR 업로드
   build:
     runs-on: ubuntu-latest
