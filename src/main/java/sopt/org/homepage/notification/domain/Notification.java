@@ -7,7 +7,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,15 +20,7 @@ import sopt.org.homepage.notification.exception.NotificationDomainException;
  * 모집 알림 신청 도메인 엔티티 Rich Domain Model: 비즈니스 로직을 스스로 처리
  */
 @Entity
-@Table(
-        name = "\"Notification\"",
-        uniqueConstraints = {// 같은 이메일이 같은 기수에 대해 두 번 알림을 신청할 수 없게 됨.
-                @UniqueConstraint(
-                        name = "uk_notification_email_generation",
-                        columnNames = {"email", "generation"}
-                )
-        }
-)
+@Table(name = "\"Notification\"")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA + 도메인 캡슐화
 public class Notification {
