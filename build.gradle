@@ -95,8 +95,7 @@ dependencies {
     implementation 'io.github.bonigarcia:webdrivermanager:5.6.3'
 
     // Flyway
-    implementation 'org.flywaydb:flyway-core'
-    runtimeOnly 'org.flywaydb:flyway-database-postgresql'
+    implementation 'org.flywaydb:flyway-core:9.22.3'
 
 
     runtimeOnly 'com.h2database:h2'
