@@ -70,3 +70,4 @@ bin/
 ### Application Properties ###
 src/main/resources/application.yml
 
+lambda/.env

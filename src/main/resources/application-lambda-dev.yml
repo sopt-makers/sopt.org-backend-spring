@@ -81,8 +81,8 @@ server:
 aws:
   region: ap-northeast-2
   credentials:
-    access-key: ${AWS_ACCESS_KEY_ID}
-    secret-key: ${AWS_SECRET_ACCESS_KEY}
+    access-key: ${APP_AWS_ACCESS_KEY_ID}
+    secret-key: ${APP_AWS_SECRET_ACCESS_KEY}
   bucket:
     image: ${BUCKET_NAME}
     dir: develop/
