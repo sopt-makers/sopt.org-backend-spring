@@ -1,0 +1,132 @@
+name: Deploy Lambda Dev
+
+on:
+  workflow_dispatch:              # 수동 실행 (초기 테스트용)
+  # 안정화 후 아래 주석 해제하여 자동 배포 활성화
+  # push:
+  #   branches:
+  #     - develop
+
+jobs:
+  deploy:
+    name: Deploy to Lambda Dev
+    runs-on: ubuntu-latest
+
+    env:
+      S3_BUCKET: sopt-org-lambda-deploy
+      STACK_NAME: sopt-org-spring-dev
+      AWS_REGION: ap-northeast-2
+
+    steps:
+      # ============================================
+      # 1. 체크아웃
+      # ============================================
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ============================================
+      # 2. Java 17 설정
+      # ============================================
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+          cache: 'gradle'
+
+      # ============================================
+      # 3. AWS 자격 증명 설정
+      # ============================================
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      # ============================================
+      # 4. Gradle 실행 권한 부여
+      # ============================================
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # ============================================
+      # 5. Lambda JAR 빌드
+      # ============================================
+      - name: Build Lambda JAR
+        run: ./gradlew clean lambdaJar -x test -x sentryBundleSourcesJava
+
+      # ============================================
+      # 6. S3 업로드
+      # ============================================
+      - name: Upload JAR to S3
+        run: |
+          JAR_FILE=$(ls build/distributions/*-lambda.zip | head -1)
+          TIMESTAMP=$(date +"%Y%m%d-%H%M%S")
+          S3_KEY="lambda/${{ env.STACK_NAME }}-${TIMESTAMP}.zip"
+          
+          aws s3 cp "$JAR_FILE" "s3://${{ env.S3_BUCKET }}/${S3_KEY}"
+          
+          echo "S3_KEY=${S3_KEY}" >> $GITHUB_ENV
+          echo "✅ S3 업로드 완료: s3://${{ env.S3_BUCKET }}/${S3_KEY}"
+
+      # ============================================
+      # 7. SAM CLI 설치
+      # ============================================
+      - name: Install SAM CLI
+        uses: aws-actions/setup-sam@v2
+
+      # ============================================
+      # 8. SAM 배포
+      # ============================================
+      - name: Deploy with SAM
+        working-directory: ./lambda
+        run: |
+          sam deploy \
+            --template-file template-dev.yaml \
+            --stack-name ${{ env.STACK_NAME }} \
+            --region ${{ env.AWS_REGION }} \
+            --capabilities CAPABILITY_IAM \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides \
+              S3Bucket=${{ env.S3_BUCKET }} \
+              S3Key=${{ env.S3_KEY }} \
+              SpringProfile=lambda-dev \
+              DbHost=${{ secrets.DEV_DB_HOST }} \
+              DbPort=${{ secrets.DEV_DB_PORT }} \
+              DbDatabase=${{ secrets.DEV_DB_DATABASE }} \
+              DbUsername=${{ secrets.DEV_DB_USERNAME }} \
+              DbPassword=${{ secrets.DEV_DB_PASSWORD }} \
+              AwsAccessKeyId=${{ secrets.LAMBDA_AWS_ACCESS_KEY_ID }} \
+              AwsSecretAccessKey=${{ secrets.LAMBDA_AWS_SECRET_ACCESS_KEY }} \
+              BucketName=${{ secrets.S3_BUCKET_NAME }} \
+              PlaygroundApiUrl=${{ secrets.DEV_PLAYGROUND_API_URL }} \
+              PlaygroundApiToken=${{ secrets.DEV_PLAYGROUND_API_TOKEN }} \
+              CrewApiUrl=${{ secrets.DEV_CREW_API_URL }} \
+              CrewApiToken=${{ secrets.DEV_CREW_API_TOKEN }} \
+              AuthApiKey=${{ secrets.DEV_AUTH_API_KEY }} \
+              OurServiceName=${{ secrets.DEV_SERVICE_NAME }} \
+              AccessTokenSecret=${{ secrets.ACCESS_TOKEN_SECRET }} \
+              RefreshTokenSecret=${{ secrets.REFRESH_TOKEN_SECRET }} \
+              AdminTokenSecret=${{ secrets.ADMIN_TOKEN_SECRET }} \
+              OfficialApiKey=${{ secrets.OFFICIAL_API_KEY }} \
+              SentryDsn=${{ secrets.DEV_SENTRY_DSN }}
+
+      # ============================================
+      # 9. API Endpoint 출력
+      # ============================================
+      - name: Get API Endpoint
+        run: |
+          API_ENDPOINT=$(aws cloudformation describe-stacks \
+            --stack-name ${{ env.STACK_NAME }} \
+            --query "Stacks[0].Outputs[?OutputKey=='ApiEndpoint'].OutputValue" \
+            --output text \
+            --region ${{ env.AWS_REGION }})
+          
+          echo "============================================"
+          echo "🌐 API Endpoint: ${API_ENDPOINT}"
+          echo "============================================"
+          echo ""
+          echo "테스트 명령어:"
+          echo "  curl -X GET ${API_ENDPOINT}/v2/homepage"
+          echo "  curl -X GET ${API_ENDPOINT}/v2/projects"
