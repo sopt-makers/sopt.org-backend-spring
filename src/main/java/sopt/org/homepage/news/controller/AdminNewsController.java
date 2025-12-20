@@ -9,15 +9,20 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import sopt.org.homepage.common.constants.SecurityConstants;
 import sopt.org.homepage.news.controller.dto.request.AddAdminNewsRequestDto;
+import sopt.org.homepage.news.controller.dto.request.AddAdminNewsV2RequestDto;
 import sopt.org.homepage.news.controller.dto.request.DeleteAdminNewsRequestDto;
 import sopt.org.homepage.news.controller.dto.request.GetAdminNewsRequestDto;
 import sopt.org.homepage.news.controller.dto.response.AddAdminNewsResponseDto;
 import sopt.org.homepage.news.controller.dto.response.DeleteAdminNewsResponseDto;
 import sopt.org.homepage.news.controller.dto.response.GetAdminNewsResponseDto;
-import sopt.org.homepage.common.constants.SecurityConstants;
-
 import sopt.org.homepage.news.service.NewsService;
 
 @RestController
@@ -34,6 +39,25 @@ public class AdminNewsController {
             @ModelAttribute @Valid AddAdminNewsRequestDto addAdminNewsRequestDto
     ) {
         AddAdminNewsResponseDto result = newsService.addMainNews(addAdminNewsRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @Operation(
+            summary = "최신소식 추가 (Presigned URL)",
+            description = """
+                    **Lambda 환경용 API입니다.**
+                    
+                    **사용 흐름:**
+                    1. `POST /s3/presigned-url` 호출 → presignedUrl, fileUrl 수신
+                    2. presignedUrl로 PUT 요청하여 이미지 직접 업로드
+                    3. 이 API 호출 시 fileUrl을 imageUrl로 전달
+                    """
+    )
+    @PostMapping("/v2")
+    public ResponseEntity<AddAdminNewsResponseDto> addMainNewsV2(
+            @RequestBody @Valid AddAdminNewsV2RequestDto request
+    ) {
+        AddAdminNewsResponseDto result = newsService.addMainNewsV2(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
