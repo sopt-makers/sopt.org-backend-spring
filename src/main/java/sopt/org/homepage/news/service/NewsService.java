@@ -3,14 +3,15 @@ package sopt.org.homepage.news.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import sopt.org.homepage.aws.s3.S3Service;
+import sopt.org.homepage.news.MainNewsEntity;
 import sopt.org.homepage.news.controller.dto.request.AddAdminNewsRequestDto;
+import sopt.org.homepage.news.controller.dto.request.AddAdminNewsV2RequestDto;
 import sopt.org.homepage.news.controller.dto.request.DeleteAdminNewsRequestDto;
 import sopt.org.homepage.news.controller.dto.request.GetAdminNewsRequestDto;
 import sopt.org.homepage.news.controller.dto.response.AddAdminNewsResponseDto;
 import sopt.org.homepage.news.controller.dto.response.DeleteAdminNewsResponseDto;
 import sopt.org.homepage.news.controller.dto.response.GetAdminNewsResponseDto;
-import sopt.org.homepage.aws.s3.S3Service;
-import sopt.org.homepage.news.MainNewsEntity;
 import sopt.org.homepage.news.repository.MainNewsRepository;
 
 
@@ -42,6 +43,33 @@ public class NewsService {
                 .message("최신소식 추가 성공")
                 .build();
     }
+
+    /**
+     * 최신소식 추가 (Presigned URL 방식)
+     * <p>
+     * 클라이언트가 이미 S3에 업로드한 이미지의 URL을 받아서 DB에 저장합니다. Lambda 환경에서 10MB 페이로드 제한을 우회하기 위해 사용됩니다.
+     *
+     * @param request 이미지 URL, 제목, 링크
+     * @return 성공 메시지
+     */
+    public AddAdminNewsResponseDto addMainNewsV2(AddAdminNewsV2RequestDto request) {
+        log.info("Adding main news (Presigned URL): {}", request.getTitle());
+
+        // 이미지는 이미 S3에 업로드됨 → DB에만 저장
+        MainNewsEntity newsEntity = new MainNewsEntity();
+        newsEntity.setTitle(request.getTitle());
+        newsEntity.setLink(request.getLink());
+        newsEntity.setImage(request.getImageUrl());  // 이미 업로드된 URL 사용
+
+        mainNewsRepository.save(newsEntity);
+
+        log.info("Main news added successfully (Presigned URL): {}", newsEntity.getId());
+
+        return AddAdminNewsResponseDto.builder()
+                .message("최신소식 추가 성공")
+                .build();
+    }
+
 
     public DeleteAdminNewsResponseDto deleteMainNews(DeleteAdminNewsRequestDto request) {
         log.info("Deleting main news: {}", request.getId());
