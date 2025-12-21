@@ -5,26 +5,24 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import sopt.org.homepage.config.AuthConfig;
-import sopt.org.homepage.exception.BusinessLogicException;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import sopt.org.homepage.global.config.AuthConfig;
+import sopt.org.homepage.global.exception.BusinessLogicException;
 import sopt.org.homepage.review.controller.dto.CreateReviewReq;
 import sopt.org.homepage.review.service.command.ReviewCommandService;
 import sopt.org.homepage.review.service.command.dto.CreateReviewCommand;
-import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
-import sopt.org.homepage.scrap.dto.ScrapArticleDto;
-import sopt.org.homepage.scrap.service.ScraperService;
-
-import java.util.ArrayList;
-import java.util.List;
+import sopt.org.homepage.infrastructure.external.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.infrastructure.external.scrap.dto.ScrapArticleDto;
+import sopt.org.homepage.infrastructure.external.scrap.service.ScraperService;
 
 /**
  * 리뷰 Command Controller (쓰기 전용)
- *
- * 책임:
- * - 리뷰 생성 API
- * - API 키 검증
- * - 외부 스크래핑 서비스 호출
+ * <p>
+ * 책임: - 리뷰 생성 API - API 키 검증 - 외부 스크래핑 서비스 호출
  */
 @Tag(name = "Reviews - Command", description = "리뷰 쓰기 API")
 @RestController
@@ -55,7 +53,6 @@ public class ReviewCommandController {
 
         // 3. Command 생성 (변환 로직은 Command DTO가 담당)
         CreateReviewCommand command = CreateReviewCommand.from(request, scrapResult);
-
 
         // 4. 리뷰 생성
         reviewCommandService.createReview(command);

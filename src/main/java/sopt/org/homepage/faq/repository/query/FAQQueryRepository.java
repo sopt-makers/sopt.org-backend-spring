@@ -1,15 +1,13 @@
 package sopt.org.homepage.faq.repository.query;
 
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.faq.domain.FAQ;
-
 import java.util.List;
 import java.util.Optional;
+import sopt.org.homepage.faq.domain.FAQ;
+import sopt.org.homepage.global.common.type.PartType;
 
 /**
  * FAQQueryRepository
- *
+ * <p>
  * 책임: FAQ 조회 쿼리
  */
 public interface FAQQueryRepository {

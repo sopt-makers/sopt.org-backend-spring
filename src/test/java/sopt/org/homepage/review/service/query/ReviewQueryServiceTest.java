@@ -1,5 +1,8 @@
 package sopt.org.homepage.review.service.query;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -7,26 +10,23 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.common.IntegrationTestBase;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.review.domain.Review;
-import sopt.org.homepage.review.domain.vo.*;
+import sopt.org.homepage.review.domain.vo.CategoryType;
+import sopt.org.homepage.review.domain.vo.ReviewAuthor;
+import sopt.org.homepage.review.domain.vo.ReviewCategory;
+import sopt.org.homepage.review.domain.vo.ReviewContent;
+import sopt.org.homepage.review.domain.vo.ReviewSubjects;
+import sopt.org.homepage.review.domain.vo.ReviewUrl;
 import sopt.org.homepage.review.repository.command.ReviewCommandRepository;
 import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
 import sopt.org.homepage.review.service.query.dto.ReviewSummaryView;
 import sopt.org.homepage.review.service.query.dto.ReviewsByAuthorView;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-
 /**
  * ReviewQueryService 통합 테스트
- *
- * 테스트 전략:
- * - 실제 DB 사용 (TestContainer)
- * - @Transactional + @AfterEach로 테스트 격리
- * - Mock 없이 실제 동작 검증
- * - 다양한 검색 조건과 필터링 로직 검증
+ * <p>
+ * 테스트 전략: - 실제 DB 사용 (TestContainer) - @Transactional + @AfterEach로 테스트 격리 - Mock 없이 실제 동작 검증 - 다양한 검색 조건과 필터링 로직 검증
  */
 @DisplayName("ReviewQueryService 통합 테스트")
 @Transactional

@@ -3,7 +3,8 @@ package sopt.org.homepage.news.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import sopt.org.homepage.aws.s3.S3Service;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
+import sopt.org.homepage.infrastructure.aws.s3.S3Service;
 import sopt.org.homepage.news.MainNewsEntity;
 import sopt.org.homepage.news.controller.dto.request.AddAdminNewsRequestDto;
 import sopt.org.homepage.news.controller.dto.request.AddAdminNewsV2RequestDto;
@@ -77,7 +78,7 @@ public class NewsService {
         // 1. MainNews 조회
         MainNewsEntity newsEntity = mainNewsRepository.findById(request.getId());
         if (newsEntity == null) {
-            throw new sopt.org.homepage.exception.ClientBadRequestException(
+            throw new ClientBadRequestException(
                     "News not found with id: " + request.getId());
         }
 
@@ -100,7 +101,7 @@ public class NewsService {
         // 1. MainNews 조회
         MainNewsEntity newsEntity = mainNewsRepository.findById(request.getId());
         if (newsEntity == null) {
-            throw new sopt.org.homepage.exception.ClientBadRequestException(
+            throw new ClientBadRequestException(
                     "News not found with id: " + request.getId());
         }
 

@@ -1,10 +1,11 @@
 package sopt.org.homepage.member.service.command;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.member.domain.Member;
 import sopt.org.homepage.member.domain.vo.MemberRole;
 import sopt.org.homepage.member.domain.vo.SnsLinks;
@@ -14,11 +15,9 @@ import sopt.org.homepage.member.service.command.dto.BulkCreateMembersCommand;
 import sopt.org.homepage.member.service.command.dto.CreateMemberCommand;
 import sopt.org.homepage.member.service.command.dto.UpdateMemberCommand;
 
-import java.util.List;
-
 /**
  * MemberCommandService
- *
+ * <p>
  * 책임: Member 엔티티의 생성, 수정, 삭제 처리
  */
 @Service
@@ -44,8 +43,7 @@ public class MemberCommandService {
     }
 
     /**
-     * 운영진 일괄 생성 (기존 데이터 모두 삭제 후 재생성)
-     * Admin에서 기수별 운영진 전체 교체 시 사용
+     * 운영진 일괄 생성 (기존 데이터 모두 삭제 후 재생성) Admin에서 기수별 운영진 전체 교체 시 사용
      */
     public List<Long> bulkCreateMembers(BulkCreateMembersCommand command) {
         log.info("Bulk creating members for generation: {}", command.generationId());

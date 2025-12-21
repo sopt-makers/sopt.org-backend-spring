@@ -1,23 +1,22 @@
 package sopt.org.homepage.news.controller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import sopt.org.homepage.admin.dto.response.main.branding.GetAdminBrandingColorResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.core.GetAdminCoreValueResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.curriculum.GetAdminPartCurriculumResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.introduction.GetAdminPartIntroductionResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.member.GetAdminMemberResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.news.GetAdminLatestNewsResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.recruit.curriculum.GetAdminRecruitPartCurriculumResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.recruit.question.GetAdminRecruitQuestionResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
-
-import java.util.List;
+import sopt.org.homepage.application.admin.dto.response.main.branding.GetAdminBrandingColorResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.core.GetAdminCoreValueResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.curriculum.GetAdminPartCurriculumResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.introduction.GetAdminPartIntroductionResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.member.GetAdminMemberResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.news.GetAdminLatestNewsResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.recruit.curriculum.GetAdminRecruitPartCurriculumResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminRecruitQuestionResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
 
 @Validated
 @Schema(description = "어드민 데이터 조회하기")

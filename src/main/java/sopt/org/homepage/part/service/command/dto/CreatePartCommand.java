@@ -1,13 +1,12 @@
 package sopt.org.homepage.part.service.command.dto;
 
-import lombok.Builder;
-import sopt.org.homepage.common.type.PartType;
-
 import java.util.List;
+import lombok.Builder;
+import sopt.org.homepage.global.common.type.PartType;
 
 /**
  * CreatePartCommand
- *
+ * <p>
  * 파트 생성 커맨드
  */
 @Builder

@@ -1,24 +1,20 @@
 package sopt.org.homepage.generation.service.query;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.generation.domain.Generation;
 import sopt.org.homepage.generation.repository.query.GenerationQueryRepository;
 import sopt.org.homepage.generation.service.query.dto.GenerationDetailView;
 import sopt.org.homepage.generation.service.query.dto.GenerationListView;
-
-import java.util.List;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
  * GenerationQueryService
- *
- * 책임: Generation 조회 처리
- * - Query 작업만 담당
- * - 읽기 전용 트랜잭션
- * - 캐시 활용 가능
+ * <p>
+ * 책임: Generation 조회 처리 - Query 작업만 담당 - 읽기 전용 트랜잭션 - 캐시 활용 가능
  */
 @Service
 @RequiredArgsConstructor
@@ -91,7 +87,7 @@ public class GenerationQueryService {
      * 특정 범위의 기수 목록 조회
      *
      * @param startId 시작 기수
-     * @param endId 종료 기수
+     * @param endId   종료 기수
      * @return 기수 목록
      */
     public List<GenerationListView> getGenerationsByRange(Integer startId, Integer endId) {

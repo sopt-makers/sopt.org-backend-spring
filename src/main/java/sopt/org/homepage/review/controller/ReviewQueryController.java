@@ -3,20 +3,26 @@ package sopt.org.homepage.review.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import sopt.org.homepage.common.dto.PaginateResponseDto;
-import sopt.org.homepage.config.AuthConfig;
-import sopt.org.homepage.exception.BusinessLogicException;
-import sopt.org.homepage.review.controller.dto.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import sopt.org.homepage.global.common.dto.PaginateResponseDto;
+import sopt.org.homepage.global.config.AuthConfig;
+import sopt.org.homepage.global.exception.BusinessLogicException;
+import sopt.org.homepage.review.controller.dto.ReviewRes;
+import sopt.org.homepage.review.controller.dto.ReviewSearchReq;
+import sopt.org.homepage.review.controller.dto.ReviewsByAuthorReq;
+import sopt.org.homepage.review.controller.dto.ReviewsByAuthorRes;
 import sopt.org.homepage.review.service.query.ReviewQueryService;
 import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
 import sopt.org.homepage.review.service.query.dto.ReviewSummaryView;
 import sopt.org.homepage.review.service.query.dto.ReviewsByAuthorView;
-
-import java.util.List;
 
 /**
  * 리뷰 Query Controller (읽기 전용)

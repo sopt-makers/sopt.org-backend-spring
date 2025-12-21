@@ -1,20 +1,19 @@
 package sopt.org.homepage.recruitment.infrastructure.repository.query;
 
+import static sopt.org.homepage.recruitment.domain.QRecruitPartIntroduction.recruitPartIntroduction;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.recruitment.domain.RecruitPartIntroduction;
 import sopt.org.homepage.recruitment.repository.query.RecruitPartIntroductionQueryRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-import static sopt.org.homepage.recruitment.domain.QRecruitPartIntroduction.recruitPartIntroduction;
-
 /**
  * RecruitPartIntroductionQueryRepositoryImpl
- *
+ * <p>
  * QueryDSL을 사용한 RecruitPartIntroduction 조회 구현체
  */
 @Repository

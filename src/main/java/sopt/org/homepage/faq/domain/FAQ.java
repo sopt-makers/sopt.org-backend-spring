@@ -1,6 +1,16 @@
 package sopt.org.homepage.faq.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,19 +19,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
-import sopt.org.homepage.common.type.PartType;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import sopt.org.homepage.global.common.type.PartType;
 
 /**
  * FAQ 애그리거트 루트
- *
- * 책임:
- * - 파트별 FAQ 관리
- * - 질문과 답변 관리
- * - Generation과 독립적으로 관리
+ * <p>
+ * 책임: - 파트별 FAQ 관리 - 질문과 답변 관리 - Generation과 독립적으로 관리
  */
 @Entity
 @Table(name = "\"FAQ\"")

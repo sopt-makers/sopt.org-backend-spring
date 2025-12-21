@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sopt.org.homepage.common.constants.SecurityConstants;
+import sopt.org.homepage.global.common.constants.SecurityConstants;
 import sopt.org.homepage.news.controller.dto.request.AddAdminNewsRequestDto;
 import sopt.org.homepage.news.controller.dto.request.AddAdminNewsV2RequestDto;
 import sopt.org.homepage.news.controller.dto.request.DeleteAdminNewsRequestDto;

@@ -1,23 +1,28 @@
 package sopt.org.homepage.recruitment.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.recruitment.domain.vo.PartIntroduction;
-
-import java.time.LocalDateTime;
 
 /**
  * RecruitPartIntroduction 애그리거트 루트
- *
- * 책임:
- * - 모집 시 파트별 소개 관리
- * - 파트별 선호 사항 관리
+ * <p>
+ * 책임: - 모집 시 파트별 소개 관리 - 파트별 선호 사항 관리
  */
 @Entity
 @Table(name = "\"RecruitPartIntroduction\"")

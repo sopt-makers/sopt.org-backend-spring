@@ -1,9 +1,8 @@
 package sopt.org.homepage.review.service.query.dto;
 
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.review.domain.Review;
-
 import java.util.List;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.review.domain.Review;
 
 /**
  * 리뷰 요약 뷰 (목록 조회용)

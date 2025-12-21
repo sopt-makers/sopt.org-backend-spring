@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.validation.annotation.Validated;
-import sopt.org.homepage.common.dto.PaginateRequest;
+import sopt.org.homepage.global.common.dto.PaginateRequest;
 import sopt.org.homepage.project.dto.type.ProjectType;
 import sopt.org.homepage.project.dto.type.ServiceType;
 

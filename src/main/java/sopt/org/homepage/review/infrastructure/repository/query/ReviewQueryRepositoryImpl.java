@@ -3,17 +3,16 @@ package sopt.org.homepage.review.infrastructure.repository.query;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.review.domain.QReview;
 import sopt.org.homepage.review.domain.Review;
 import sopt.org.homepage.review.domain.vo.CategoryType;
 import sopt.org.homepage.review.repository.query.ReviewQueryRepository;
 import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
-
-import java.util.List;
 
 /**
  * 리뷰 Query Repository 구현체 (QueryDSL)
@@ -118,8 +117,7 @@ public class ReviewQueryRepositoryImpl implements ReviewQueryRepository {
     }
 
     /**
-     * "전체 활동" 카테고리일 때 특정 활동 필터링
-     * JSON 배열에서 특정 값 검색
+     * "전체 활동" 카테고리일 때 특정 활동 필터링 JSON 배열에서 특정 값 검색
      */
     private BooleanExpression activityContains(String category, String activity) {
         // activity가 없거나 "전체"면 조건 무시

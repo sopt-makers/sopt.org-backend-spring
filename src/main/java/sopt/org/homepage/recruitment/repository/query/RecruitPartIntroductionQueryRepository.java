@@ -1,14 +1,13 @@
 package sopt.org.homepage.recruitment.repository.query;
 
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.recruitment.domain.RecruitPartIntroduction;
-
 import java.util.List;
 import java.util.Optional;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.recruitment.domain.RecruitPartIntroduction;
 
 /**
  * RecruitPartIntroductionQueryRepository
- *
+ * <p>
  * 책임: RecruitPartIntroduction 조회 쿼리
  */
 public interface RecruitPartIntroductionQueryRepository {

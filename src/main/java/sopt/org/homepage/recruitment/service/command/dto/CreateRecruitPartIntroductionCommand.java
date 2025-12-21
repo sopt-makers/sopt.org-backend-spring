@@ -1,13 +1,13 @@
 package sopt.org.homepage.recruitment.service.command.dto;
 
 import lombok.Builder;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.recruitment.domain.RecruitPartIntroduction;
 import sopt.org.homepage.recruitment.domain.vo.PartIntroduction;
 
 /**
  * CreateRecruitPartIntroductionCommand
- *
+ * <p>
  * 파트 소개 생성 커맨드
  */
 @Builder

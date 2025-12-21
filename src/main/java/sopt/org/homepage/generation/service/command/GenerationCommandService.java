@@ -4,20 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.generation.domain.Generation;
 import sopt.org.homepage.generation.repository.command.GenerationCommandRepository;
 import sopt.org.homepage.generation.repository.query.GenerationQueryRepository;
 import sopt.org.homepage.generation.service.command.dto.CreateGenerationCommand;
 import sopt.org.homepage.generation.service.command.dto.UpdateGenerationCommand;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
  * GenerationCommandService
- *
- * 책임: Generation 엔티티의 생성, 수정, 삭제 처리
- * - Command 작업만 담당
- * - 트랜잭션 관리
- * - 비즈니스 검증
+ * <p>
+ * 책임: Generation 엔티티의 생성, 수정, 삭제 처리 - Command 작업만 담당 - 트랜잭션 관리 - 비즈니스 검증
  */
 @Service
 @RequiredArgsConstructor

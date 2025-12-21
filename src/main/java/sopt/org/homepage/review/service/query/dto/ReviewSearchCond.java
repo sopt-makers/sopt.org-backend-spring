@@ -1,6 +1,6 @@
 package sopt.org.homepage.review.service.query.dto;
 
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 
 /**
  * 리뷰 검색 조건

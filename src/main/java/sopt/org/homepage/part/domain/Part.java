@@ -1,6 +1,16 @@
 package sopt.org.homepage.part.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,19 +19,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
-import sopt.org.homepage.common.type.PartType;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import sopt.org.homepage.global.common.type.PartType;
 
 /**
  * PartType 애그리거트 루트
- *
- * 책임:
- * - SOPT 파트 정보 관리
- * - 파트별 소개글 관리
- * - 파트별 커리큘럼 관리
+ * <p>
+ * 책임: - SOPT 파트 정보 관리 - 파트별 소개글 관리 - 파트별 커리큘럼 관리
  */
 @Entity
 @Table(name = "\"PartType\"")

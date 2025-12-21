@@ -7,9 +7,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import sopt.org.homepage.common.util.IpAddressUtil;
-import sopt.org.homepage.exception.BusinessLogicException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import sopt.org.homepage.global.common.util.IpAddressUtil;
+import sopt.org.homepage.global.exception.BusinessLogicException;
 import sopt.org.homepage.soptstory.controller.dto.GetSoptStoryListRequest;
 import sopt.org.homepage.soptstory.controller.dto.PaginatedSoptStoryResponse;
 import sopt.org.homepage.soptstory.service.query.SoptStoryQueryService;
@@ -18,10 +21,8 @@ import sopt.org.homepage.soptstory.service.query.dto.SoptStorySearchCond;
 
 /**
  * SoptStory Query Controller
- *
- * 책임:
- * - SoptStory 목록 조회 API
- * - Request/Response 변환
+ * <p>
+ * 책임: - SoptStory 목록 조회 API - Request/Response 변환
  */
 @Tag(name = "SoptStory Query", description = "SoptStory 조회 API")
 @RestController
@@ -33,14 +34,10 @@ public class SoptStoryQueryController {
 
     /**
      * SoptStory 목록 조회
+     * <p>
+     * 프로세스: 1. IP 주소 추출 및 검증 2. 검색 조건 생성 3. Service 호출 4. Response 변환
      *
-     * 프로세스:
-     * 1. IP 주소 추출 및 검증
-     * 2. 검색 조건 생성
-     * 3. Service 호출
-     * 4. Response 변환
-     *
-     * @param request 조회 요청 (sort, pageNo, limit)
+     * @param request     조회 요청 (sort, pageNo, limit)
      * @param httpRequest HTTP 요청 (IP 추출용)
      * @return 페이지네이션된 SoptStory 목록
      */

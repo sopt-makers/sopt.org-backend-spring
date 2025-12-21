@@ -1,10 +1,11 @@
 package sopt.org.homepage.recruitment.service.command;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.recruitment.domain.Recruitment;
 import sopt.org.homepage.recruitment.domain.vo.RecruitType;
 import sopt.org.homepage.recruitment.domain.vo.Schedule;
@@ -14,11 +15,9 @@ import sopt.org.homepage.recruitment.service.command.dto.BulkCreateRecruitmentsC
 import sopt.org.homepage.recruitment.service.command.dto.CreateRecruitmentCommand;
 import sopt.org.homepage.recruitment.service.command.dto.UpdateRecruitmentCommand;
 
-import java.util.List;
-
 /**
  * RecruitmentCommandService
- *
+ * <p>
  * 책임: Recruitment 엔티티의 생성, 수정, 삭제 처리
  */
 @Service

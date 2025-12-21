@@ -1,10 +1,9 @@
 package sopt.org.homepage.review.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.review.service.query.dto.ReviewSummaryView;
-
 import java.util.List;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.review.service.query.dto.ReviewSummaryView;
 
 /**
  * 리뷰 응답 DTO

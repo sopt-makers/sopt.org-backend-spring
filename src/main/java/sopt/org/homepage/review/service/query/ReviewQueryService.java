@@ -1,26 +1,22 @@
 package sopt.org.homepage.review.service.query;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.review.domain.Review;
 import sopt.org.homepage.review.repository.query.ReviewQueryRepository;
 import sopt.org.homepage.review.service.query.dto.ReviewSearchCond;
 import sopt.org.homepage.review.service.query.dto.ReviewSummaryView;
 import sopt.org.homepage.review.service.query.dto.ReviewsByAuthorView;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
 /**
  * 리뷰 Query Service (읽기 전용)
- *
- * 책임:
- * - 리뷰 목록 조회
- * - 리뷰 검색
- * - 통계 조회
+ * <p>
+ * 책임: - 리뷰 목록 조회 - 리뷰 검색 - 통계 조회
  */
 @Service
 @RequiredArgsConstructor

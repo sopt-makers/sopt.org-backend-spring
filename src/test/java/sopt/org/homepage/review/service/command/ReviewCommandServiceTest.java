@@ -1,32 +1,28 @@
 package sopt.org.homepage.review.service.command;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.common.IntegrationTestBase;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.review.domain.Review;
 import sopt.org.homepage.review.domain.vo.CategoryType;
 import sopt.org.homepage.review.exception.DuplicateReviewUrlException;
 import sopt.org.homepage.review.exception.InvalidReviewSubjectException;
 import sopt.org.homepage.review.repository.command.ReviewCommandRepository;
-
 import sopt.org.homepage.review.service.command.dto.CreateReviewCommand;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
 
 /**
  * ReviewCommandService 통합 테스트
- *
- * 테스트 전략:
- * - 실제 DB 사용 (TestContainer)
- * - @Transactional + @AfterEach로 테스트 격리
- * - Mock 없이 실제 동작 검증
- * - 비즈니스 규칙이 도메인에서 작동하는지 확인
+ * <p>
+ * 테스트 전략: - 실제 DB 사용 (TestContainer) - @Transactional + @AfterEach로 테스트 격리 - Mock 없이 실제 동작 검증 - 비즈니스 규칙이 도메인에서 작동하는지
+ * 확인
  */
 @DisplayName("ReviewCommandService 통합 테스트")
 @Transactional

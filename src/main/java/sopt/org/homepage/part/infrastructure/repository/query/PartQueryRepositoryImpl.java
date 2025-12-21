@@ -1,20 +1,19 @@
 package sopt.org.homepage.part.infrastructure.repository.query;
 
+import static sopt.org.homepage.part.domain.QPart.part;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.part.domain.Part;
 import sopt.org.homepage.part.repository.query.PartQueryRepository;
 
-import java.util.List;
-import java.util.Optional;
-
-import static sopt.org.homepage.part.domain.QPart.part;
-
 /**
  * PartQueryRepositoryImpl
- *
+ * <p>
  * QueryDSL을 사용한 PartType 조회 구현체
  */
 @Repository

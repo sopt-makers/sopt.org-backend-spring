@@ -1,20 +1,19 @@
 package sopt.org.homepage.faq.infrastructure.repository.query;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.faq.domain.FAQ;
-import sopt.org.homepage.faq.repository.query.FAQQueryRepository;
+import static sopt.org.homepage.faq.domain.QFAQ.fAQ;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
-
-import static sopt.org.homepage.faq.domain.QFAQ.fAQ;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import sopt.org.homepage.faq.domain.FAQ;
+import sopt.org.homepage.faq.repository.query.FAQQueryRepository;
+import sopt.org.homepage.global.common.type.PartType;
 
 /**
  * FAQQueryRepositoryImpl
- *
+ * <p>
  * QueryDSL을 사용한 FAQ 조회 구현체
  */
 @Repository
