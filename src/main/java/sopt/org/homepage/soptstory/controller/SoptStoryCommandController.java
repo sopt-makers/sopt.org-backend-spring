@@ -6,26 +6,31 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import sopt.org.homepage.common.util.IpAddressUtil;
-import sopt.org.homepage.config.AuthConfig;
-import sopt.org.homepage.exception.BusinessLogicException;
-import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
-import sopt.org.homepage.scrap.dto.ScrapArticleDto;
-import sopt.org.homepage.scrap.service.ScraperService;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import sopt.org.homepage.global.common.util.IpAddressUtil;
+import sopt.org.homepage.global.config.AuthConfig;
+import sopt.org.homepage.global.exception.BusinessLogicException;
+import sopt.org.homepage.infrastructure.external.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.infrastructure.external.scrap.dto.ScrapArticleDto;
+import sopt.org.homepage.infrastructure.external.scrap.service.ScraperService;
 import sopt.org.homepage.soptstory.controller.dto.CreateSoptStoryRequest;
 import sopt.org.homepage.soptstory.controller.dto.CreateSoptStoryResponse;
 import sopt.org.homepage.soptstory.controller.dto.LikeSoptStoryResponse;
 import sopt.org.homepage.soptstory.service.command.SoptStoryCommandService;
-import sopt.org.homepage.soptstory.service.command.dto.*;
+import sopt.org.homepage.soptstory.service.command.dto.CreateSoptStoryCommand;
+import sopt.org.homepage.soptstory.service.command.dto.LikeSoptStoryCommand;
+import sopt.org.homepage.soptstory.service.command.dto.SoptStoryLikeId;
+import sopt.org.homepage.soptstory.service.command.dto.UnlikeSoptStoryCommand;
 
 /**
  * SoptStory Command Controller
- *
- * 책임:
- * - SoptStory 생성 API
- * - 좋아요 추가/취소 API
- * - Request/Response 변환
+ * <p>
+ * 책임: - SoptStory 생성 API - 좋아요 추가/취소 API - Request/Response 변환
  */
 @Tag(name = "SoptStory Command", description = "SoptStory 생성 및 좋아요 API")
 @RestController
@@ -39,14 +44,11 @@ public class SoptStoryCommandController {
 
     /**
      * SoptStory 생성
-     *
-     * 프로세스:
-     * 1. API Key 검증
-     * 2. URL 스크래핑 (외부 서비스)
-     * 3. Command 생성 및 Service 호출
+     * <p>
+     * 프로세스: 1. API Key 검증 2. URL 스크래핑 (외부 서비스) 3. Command 생성 및 Service 호출
      *
      * @param request 생성 요청 (link)
-     * @param apiKey API 키 (헤더)
+     * @param apiKey  API 키 (헤더)
      * @return 생성된 SoptStory 정보
      */
     @PostMapping
@@ -88,7 +90,7 @@ public class SoptStoryCommandController {
     /**
      * 좋아요 추가
      *
-     * @param id SoptStory ID
+     * @param id      SoptStory ID
      * @param request HTTP 요청 (IP 추출용)
      * @return 생성된 좋아요 정보
      */
@@ -118,7 +120,7 @@ public class SoptStoryCommandController {
     /**
      * 좋아요 취소
      *
-     * @param id SoptStory ID
+     * @param id      SoptStory ID
      * @param request HTTP 요청 (IP 추출용)
      * @return 삭제된 좋아요 정보
      */

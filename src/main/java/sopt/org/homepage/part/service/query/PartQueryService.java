@@ -1,21 +1,20 @@
 package sopt.org.homepage.part.service.query;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.part.repository.query.PartQueryRepository;
 import sopt.org.homepage.part.service.query.dto.PartCurriculumView;
 import sopt.org.homepage.part.service.query.dto.PartDetailView;
 import sopt.org.homepage.part.service.query.dto.PartIntroductionView;
 
-import java.util.List;
-
 /**
  * PartQueryService
- *
+ * <p>
  * 책임: PartType 조회 처리
  */
 @Service

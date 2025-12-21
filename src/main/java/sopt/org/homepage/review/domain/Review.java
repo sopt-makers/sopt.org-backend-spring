@@ -1,24 +1,34 @@
 package sopt.org.homepage.review.domain;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.review.domain.vo.*;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.review.domain.vo.CategoryType;
+import sopt.org.homepage.review.domain.vo.ReviewAuthor;
+import sopt.org.homepage.review.domain.vo.ReviewCategory;
+import sopt.org.homepage.review.domain.vo.ReviewContent;
+import sopt.org.homepage.review.domain.vo.ReviewSubjects;
+import sopt.org.homepage.review.domain.vo.ReviewUrl;
 import sopt.org.homepage.review.exception.DuplicateReviewUrlException;
-
-import java.time.LocalDateTime;
-import java.util.*;
 
 /**
  * 리뷰 도메인 엔티티
- *
- * 책임:
- * - 리뷰 생성 시 비즈니스 규칙 검증
- * - 리뷰 데이터의 일관성 유지
+ * <p>
+ * 책임: - 리뷰 생성 시 비즈니스 규칙 검증 - 리뷰 데이터의 일관성 유지
  */
 @Entity
 @Table(name = "\"Review\"")
@@ -63,12 +73,8 @@ public class Review {
 
     /**
      * 리뷰 생성을 위한 팩토리 메서드
-     *
-     * 비즈니스 규칙:
-     * 1. 모든 필드는 필수 (VO 내부에서 검증)
-     * 2. 카테고리에 맞는 세부 주제가 있어야 함
-     * 3. URL은 중복될 수 없음 (Repository에서 확인 필요)
-
+     * <p>
+     * 비즈니스 규칙: 1. 모든 필드는 필수 (VO 내부에서 검증) 2. 카테고리에 맞는 세부 주제가 있어야 함 3. URL은 중복될 수 없음 (Repository에서 확인 필요)
      */
     public static Review create(
             ReviewContent content,
@@ -125,8 +131,7 @@ public class Review {
     }
 
     /**
-     * URL 중복 검증을 위한 메서드
-     * Service 계층에서 Repository 조회 후 호출
+     * URL 중복 검증을 위한 메서드 Service 계층에서 Repository 조회 후 호출
      */
     public void validateUrlUniqueness(boolean isDuplicate) {
         if (isDuplicate) {
@@ -163,6 +168,7 @@ public class Review {
     public String getCategoryValue() {
         return category.getValue();
     }
+
     /**
      * 카테고리 타입 조회
      */
@@ -185,8 +191,6 @@ public class Review {
     public String getUrlValue() {
         return url.getValue();
     }
-
-
 
 
 }

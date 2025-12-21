@@ -1,9 +1,7 @@
 package sopt.org.homepage.project.dto.record;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.internal.playground.dto.Role;
-
-import java.util.List;
+import sopt.org.homepage.infrastructure.external.playground.dto.Role;
 
 
 public record Member(
@@ -16,7 +14,7 @@ public record Member(
 
         @Schema(description = "프로젝트 팀원의 역할 상세설명", requiredMode = Schema.RequiredMode.REQUIRED)
         String description
-){
+) {
 }
 
 

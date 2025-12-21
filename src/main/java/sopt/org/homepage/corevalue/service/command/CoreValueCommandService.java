@@ -1,5 +1,6 @@
 package sopt.org.homepage.corevalue.service.command;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -10,13 +11,11 @@ import sopt.org.homepage.corevalue.repository.query.CoreValueQueryRepository;
 import sopt.org.homepage.corevalue.service.command.dto.BulkCreateCoreValuesCommand;
 import sopt.org.homepage.corevalue.service.command.dto.CreateCoreValueCommand;
 import sopt.org.homepage.corevalue.service.command.dto.UpdateCoreValueCommand;
-import sopt.org.homepage.exception.ClientBadRequestException;
-
-import java.util.List;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
  * CoreValueCommandService
- *
+ * <p>
  * 책임: CoreValue 엔티티의 생성, 수정, 삭제 처리
  */
 @Service
@@ -42,8 +41,7 @@ public class CoreValueCommandService {
     }
 
     /**
-     * 핵심 가치 일괄 생성 (기존 데이터 모두 삭제 후 재생성)
-     * Admin에서 기수별 핵심 가치 전체 교체 시 사용
+     * 핵심 가치 일괄 생성 (기존 데이터 모두 삭제 후 재생성) Admin에서 기수별 핵심 가치 전체 교체 시 사용
      */
     public List<Long> bulkCreateCoreValues(BulkCreateCoreValuesCommand command) {
         log.info("Bulk creating core values for generation: {}", command.generationId());

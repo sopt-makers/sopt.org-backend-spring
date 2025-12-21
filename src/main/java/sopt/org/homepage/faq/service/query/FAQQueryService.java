@@ -1,19 +1,18 @@
 package sopt.org.homepage.faq.service.query;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.faq.repository.query.FAQQueryRepository;
 import sopt.org.homepage.faq.service.query.dto.FAQView;
-
-import java.util.List;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
  * FAQQueryService
- *
+ * <p>
  * 책임: FAQ 조회 처리
  */
 @Service

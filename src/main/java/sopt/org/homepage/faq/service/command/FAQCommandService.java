@@ -1,23 +1,22 @@
 package sopt.org.homepage.faq.service.command;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.exception.ClientBadRequestException;
 import sopt.org.homepage.faq.domain.FAQ;
 import sopt.org.homepage.faq.repository.command.FAQCommandRepository;
 import sopt.org.homepage.faq.repository.query.FAQQueryRepository;
 import sopt.org.homepage.faq.service.command.dto.BulkCreateFAQsCommand;
 import sopt.org.homepage.faq.service.command.dto.CreateFAQCommand;
 import sopt.org.homepage.faq.service.command.dto.UpdateFAQCommand;
-
-import java.util.List;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
  * FAQCommandService
- *
+ * <p>
  * 책임: FAQ 엔티티의 생성, 수정, 삭제 처리
  */
 @Service

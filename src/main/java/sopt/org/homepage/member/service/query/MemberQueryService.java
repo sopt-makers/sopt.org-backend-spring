@@ -1,20 +1,19 @@
 package sopt.org.homepage.member.service.query;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.member.domain.vo.MemberRole;
 import sopt.org.homepage.member.repository.query.MemberQueryRepository;
 import sopt.org.homepage.member.service.query.dto.MemberDetailView;
 import sopt.org.homepage.member.service.query.dto.MemberListView;
 
-import java.util.List;
-
 /**
  * MemberQueryService
- *
+ * <p>
  * 책임: Member 조회 처리
  */
 @Service

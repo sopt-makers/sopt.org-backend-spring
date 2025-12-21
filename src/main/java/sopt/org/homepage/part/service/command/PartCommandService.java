@@ -1,11 +1,15 @@
 package sopt.org.homepage.part.service.command;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.part.domain.Part;
 import sopt.org.homepage.part.repository.command.PartCommandRepository;
 import sopt.org.homepage.part.repository.query.PartQueryRepository;
@@ -13,14 +17,9 @@ import sopt.org.homepage.part.service.command.dto.BulkCreatePartsCommand;
 import sopt.org.homepage.part.service.command.dto.CreatePartCommand;
 import sopt.org.homepage.part.service.command.dto.UpdatePartCommand;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * PartCommandService
- *
+ * <p>
  * 책임: PartType 엔티티의 생성, 수정, 삭제 처리
  */
 @Service
@@ -55,9 +54,8 @@ public class PartCommandService {
     }
 
     /**
-     * 파트 일괄 생성 (기존 데이터 모두 삭제 후 재생성)
-     * Admin에서 기수별 파트 전체 교체 시 사용
-     *
+     * 파트 일괄 생성 (기존 데이터 모두 삭제 후 재생성) Admin에서 기수별 파트 전체 교체 시 사용
+     * <p>
      * PartIntroduction + PartCurriculum을 병합하여 PartType 생성
      */
     public List<Long> bulkCreateParts(BulkCreatePartsCommand command) {

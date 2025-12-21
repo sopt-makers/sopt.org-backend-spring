@@ -3,21 +3,20 @@ package sopt.org.homepage.news.controller.dto.request;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import sopt.org.homepage.admin.dto.request.main.branding.AddAdminBrandingColorRequestDto;
-import sopt.org.homepage.admin.dto.request.main.button.AddAdminMainButtonRequestDto;
-import sopt.org.homepage.admin.dto.request.main.core.AddAdminCoreValueRequestDto;
-import sopt.org.homepage.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
-import sopt.org.homepage.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
-import sopt.org.homepage.admin.dto.request.main.member.AddAdminMemberRequestDto;
-import sopt.org.homepage.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
-import sopt.org.homepage.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
-import sopt.org.homepage.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
-
-import java.util.List;
+import sopt.org.homepage.application.admin.dto.request.main.branding.AddAdminBrandingColorRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.button.AddAdminMainButtonRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.core.AddAdminCoreValueRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.member.AddAdminMemberRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
 
 @Validated
 @Schema(description = "어드민 배포하기")

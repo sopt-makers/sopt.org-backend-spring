@@ -1,14 +1,13 @@
 package sopt.org.homepage.news.controller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import sopt.org.homepage.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
-import sopt.org.homepage.admin.dto.response.main.member.AddAdminMemberResponseRecordDto;
-
-import java.util.List;
+import sopt.org.homepage.application.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.member.AddAdminMemberResponseRecordDto;
 
 @Validated
 @Schema(description = "어드민 메인정보 추가")

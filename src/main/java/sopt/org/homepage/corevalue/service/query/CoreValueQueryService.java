@@ -1,18 +1,17 @@
 package sopt.org.homepage.corevalue.service.query;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.corevalue.repository.query.CoreValueQueryRepository;
 import sopt.org.homepage.corevalue.service.query.dto.CoreValueView;
-import sopt.org.homepage.exception.ClientBadRequestException;
-
-import java.util.List;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
  * CoreValueQueryService
- *
+ * <p>
  * 책임: CoreValue 조회 처리
  */
 @Service

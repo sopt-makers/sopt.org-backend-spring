@@ -1,14 +1,13 @@
 package sopt.org.homepage.part.repository.query;
 
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.part.domain.Part;
-
 import java.util.List;
 import java.util.Optional;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.part.domain.Part;
 
 /**
  * PartQueryRepository
- *
+ * <p>
  * 책임: PartType 조회 쿼리
  */
 public interface PartQueryRepository {

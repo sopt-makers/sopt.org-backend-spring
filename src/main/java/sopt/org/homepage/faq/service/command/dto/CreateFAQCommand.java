@@ -1,14 +1,13 @@
 package sopt.org.homepage.faq.service.command.dto;
 
-import lombok.Builder;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.faq.domain.FAQ;
-
 import java.util.List;
+import lombok.Builder;
+import sopt.org.homepage.faq.domain.FAQ;
+import sopt.org.homepage.global.common.type.PartType;
 
 /**
  * CreateFAQCommand
- *
+ * <p>
  * FAQ 생성 커맨드
  */
 @Builder

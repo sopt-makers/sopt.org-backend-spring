@@ -1,11 +1,12 @@
 package sopt.org.homepage.recruitment.service.command;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.recruitment.domain.RecruitPartIntroduction;
 import sopt.org.homepage.recruitment.domain.vo.PartIntroduction;
 import sopt.org.homepage.recruitment.repository.command.RecruitPartIntroductionCommandRepository;
@@ -14,11 +15,9 @@ import sopt.org.homepage.recruitment.service.command.dto.BulkCreateRecruitPartIn
 import sopt.org.homepage.recruitment.service.command.dto.CreateRecruitPartIntroductionCommand;
 import sopt.org.homepage.recruitment.service.command.dto.UpdateRecruitPartIntroductionCommand;
 
-import java.util.List;
-
 /**
  * RecruitPartIntroductionCommandService
- *
+ * <p>
  * 책임: RecruitPartIntroduction 엔티티의 생성, 수정, 삭제 처리
  */
 @Service

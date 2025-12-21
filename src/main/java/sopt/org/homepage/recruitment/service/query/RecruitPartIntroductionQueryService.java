@@ -1,19 +1,18 @@
 package sopt.org.homepage.recruitment.service.query;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.exception.ClientBadRequestException;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.recruitment.repository.query.RecruitPartIntroductionQueryRepository;
 import sopt.org.homepage.recruitment.service.query.dto.RecruitPartIntroductionView;
 
-import java.util.List;
-
 /**
  * RecruitPartIntroductionQueryService
- *
+ * <p>
  * 책임: RecruitPartIntroduction 조회 처리
  */
 @Service
