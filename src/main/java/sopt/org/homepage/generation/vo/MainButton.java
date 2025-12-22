@@ -1,4 +1,4 @@
-package sopt.org.homepage.generation.domain.vo;
+package sopt.org.homepage.generation.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * MainButton Value Object
- *
- * 메인 페이지 버튼 설정
- * - text: 버튼 텍스트
- * - keyColor: 주요 컬러
- * - subColor: 보조 컬러
+ * <p>
+ * 메인 페이지 버튼 설정 - text: 버튼 텍스트 - keyColor: 주요 컬러 - subColor: 보조 컬러
  */
 @Embeddable
 @Getter

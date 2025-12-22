@@ -1,24 +1,24 @@
-package sopt.org.homepage.generation.domain;
+package sopt.org.homepage.generation;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import sopt.org.homepage.generation.domain.vo.BrandingColor;
-import sopt.org.homepage.generation.domain.vo.MainButton;
-
-import java.time.LocalDateTime;
+import sopt.org.homepage.generation.vo.BrandingColor;
+import sopt.org.homepage.generation.vo.MainButton;
 
 /**
  * Generation (기수) 애그리거트 루트
- *
- * 책임:
- * - 기수 기본 정보 관리 (번호, 이름)
- * - 브랜딩 설정 관리 (컬러, 버튼)
- * - 이미지 리소스 관리 (헤더 이미지)
+ * <p>
+ * 책임: - 기수 기본 정보 관리 (번호, 이름) - 브랜딩 설정 관리 (컬러, 버튼) - 이미지 리소스 관리 (헤더 이미지)
  */
 @Entity
 @Table(name = "\"Generation\"")
