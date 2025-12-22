@@ -40,10 +40,9 @@ import sopt.org.homepage.global.common.constants.CacheType;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.infrastructure.aws.s3.S3Service;
 import sopt.org.homepage.infrastructure.cache.CacheService;
-import sopt.org.homepage.member.service.command.MemberCommandService;
-import sopt.org.homepage.member.service.command.dto.BulkCreateMembersCommand;
-import sopt.org.homepage.member.service.query.MemberQueryService;
-import sopt.org.homepage.member.service.query.dto.MemberDetailView;
+import sopt.org.homepage.member.MemberService;
+import sopt.org.homepage.member.dto.BulkCreateMembersCommand;
+import sopt.org.homepage.member.dto.MemberDetailView;
 import sopt.org.homepage.news.MainNewsEntity;
 import sopt.org.homepage.news.controller.dto.request.AddAdminConfirmRequestDto;
 import sopt.org.homepage.news.controller.dto.request.AddAdminRequestDto;
@@ -79,16 +78,16 @@ public class AdminServiceImpl implements AdminService {
     private final CoreValueService coreValueService;
     private final FAQService faqService;
     private final GenerationService generationService;
+    private final MemberService memberService;
+
 
     // ===== Domain Command Services =====
-    private final MemberCommandService memberCommandService;
     private final PartCommandService partCommandService;
     private final RecruitmentCommandService recruitmentCommandService;
     private final RecruitPartIntroductionCommandService recruitPartIntroductionCommandService;
 
     // ===== Domain Query Services =====
 
-    private final MemberQueryService memberQueryService;
     private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
     private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
@@ -298,7 +297,7 @@ public class AdminServiceImpl implements AdminService {
                             .build())
                     .build());
         }
-        memberCommandService.bulkCreateMembers(
+        memberService.bulkCreate(
                 BulkCreateMembersCommand.builder()
                         .generationId(generationId)
                         .members(memberDataList)
@@ -401,7 +400,7 @@ public class AdminServiceImpl implements AdminService {
         // ===== 각 도메인에서 데이터 조회 =====
         GenerationDetailView generation = generationService.findById(generationId);
         List<CoreValueView> coreValues = coreValueService.findByGeneration(generationId);
-        List<MemberDetailView> members = memberQueryService.getMembersByGeneration(generationId);
+        List<MemberDetailView> members = memberService.findByGeneration(generationId);
         List<PartDetailView> parts = partQueryService.getPartsByGeneration(generationId);
         List<RecruitmentView> recruitments = recruitmentQueryService.getRecruitmentsByGeneration(generationId);
         List<RecruitPartIntroductionView> recruitPartIntros =

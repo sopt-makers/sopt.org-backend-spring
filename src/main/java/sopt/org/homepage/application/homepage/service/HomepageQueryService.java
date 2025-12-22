@@ -17,8 +17,8 @@ import sopt.org.homepage.generation.dto.GenerationDetailView;
 import sopt.org.homepage.infrastructure.external.auth.AuthService;
 import sopt.org.homepage.infrastructure.external.crew.CrewService;
 import sopt.org.homepage.infrastructure.external.playground.PlaygroundService;
-import sopt.org.homepage.member.service.query.MemberQueryService;
-import sopt.org.homepage.member.service.query.dto.MemberDetailView;
+import sopt.org.homepage.member.MemberService;
+import sopt.org.homepage.member.dto.MemberDetailView;
 import sopt.org.homepage.news.MainNewsEntity;
 import sopt.org.homepage.news.repository.MainNewsRepository;
 import sopt.org.homepage.part.service.query.PartQueryService;
@@ -43,9 +43,9 @@ public class HomepageQueryService {
     private final CoreValueService coreValueService;
     private final FAQService faqService;
     private final GenerationService generationService;
+    private final MemberService memberService;
 
     // Domain Query Services
-    private final MemberQueryService memberQueryService;
     private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
     private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
@@ -146,7 +146,7 @@ public class HomepageQueryService {
 
         // 4. Members 조회
         List<MemberDetailView> members =
-                memberQueryService.getMembersByGeneration(generationId);
+                memberService.findByGeneration(generationId);
 
         // 5. Activities Records 조회 (Playground API)
         AboutPageResponse.ActivitiesRecords activitiesRecords =
