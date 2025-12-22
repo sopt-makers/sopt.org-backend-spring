@@ -1,4 +1,4 @@
-package sopt.org.homepage.faq.domain;
+package sopt.org.homepage.faq;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -64,46 +64,6 @@ public class FAQ {
 
     // === 비즈니스 메서드 ===
 
-    /**
-     * 질문 목록 전체 교체
-     */
-    public void updateQuestions(List<QuestionAnswer> questions) {
-        validateQuestions(questions);
-        this.questions = questions != null ? new ArrayList<>(questions) : new ArrayList<>();
-    }
-
-    /**
-     * 질문 추가
-     */
-    public void addQuestion(QuestionAnswer questionAnswer) {
-        validateQuestionAnswer(questionAnswer);
-        this.questions.add(questionAnswer);
-    }
-
-    /**
-     * 특정 인덱스의 질문 수정
-     */
-    public void updateQuestion(int index, QuestionAnswer questionAnswer) {
-        validateIndex(index);
-        validateQuestionAnswer(questionAnswer);
-        this.questions.set(index, questionAnswer);
-    }
-
-    /**
-     * 특정 인덱스의 질문 삭제
-     */
-    public void removeQuestion(int index) {
-        validateIndex(index);
-        this.questions.remove(index);
-    }
-
-    /**
-     * 질문 개수 조회
-     */
-    public int getQuestionCount() {
-        return this.questions.size();
-    }
-
     // === Validation ===
 
     private void validatePart(PartType part) {
@@ -134,13 +94,6 @@ public class FAQ {
         }
     }
 
-    private void validateIndex(int index) {
-        if (index < 0 || index >= questions.size()) {
-            throw new IllegalArgumentException(
-                    String.format("Invalid index: %d. Valid range: 0-%d", index, questions.size() - 1)
-            );
-        }
-    }
 
     /**
      * QuestionAnswer Record (JSON에 저장될 Q&A)

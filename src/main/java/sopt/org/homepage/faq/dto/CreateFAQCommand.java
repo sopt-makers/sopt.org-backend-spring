@@ -1,15 +1,10 @@
-package sopt.org.homepage.faq.service.command.dto;
+package sopt.org.homepage.faq.dto;
 
 import java.util.List;
 import lombok.Builder;
-import sopt.org.homepage.faq.domain.FAQ;
+import sopt.org.homepage.faq.FAQ;
 import sopt.org.homepage.global.common.type.PartType;
 
-/**
- * CreateFAQCommand
- * <p>
- * FAQ 생성 커맨드
- */
 @Builder
 public record CreateFAQCommand(
         PartType part,
@@ -21,17 +16,10 @@ public record CreateFAQCommand(
                 .map(q -> new FAQ.QuestionAnswer(q.question(), q.answer()))
                 .toList()
                 : List.of();
-
-        return FAQ.builder()
-                .part(part)
-                .questions(questionAnswers)
-                .build();
+        return FAQ.builder().part(part).questions(questionAnswers).build();
     }
 
     @Builder
-    public record QuestionAnswerCommand(
-            String question,
-            String answer
-    ) {
+    public record QuestionAnswerCommand(String question, String answer) {
     }
 }
