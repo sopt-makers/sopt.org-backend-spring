@@ -1,12 +1,11 @@
-package sopt.org.homepage.part.service.command.dto;
-
-import lombok.Builder;
+package sopt.org.homepage.part.dto;
 
 import java.util.List;
+import lombok.Builder;
 
 /**
  * BulkCreatePartsCommand
- *
+ * <p>
  * 파트 일괄 생성 커맨드 (Admin용)
  */
 @Builder

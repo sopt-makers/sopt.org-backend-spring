@@ -1,13 +1,12 @@
-package sopt.org.homepage.part.service.query.dto;
-
-import lombok.Builder;
-import sopt.org.homepage.part.domain.Part;
+package sopt.org.homepage.part.dto;
 
 import java.util.List;
+import lombok.Builder;
+import sopt.org.homepage.part.Part;
 
 /**
  * PartCurriculumView
- *
+ * <p>
  * 파트 커리큘럼 조회 DTO (About 페이지용)
  */
 @Builder
