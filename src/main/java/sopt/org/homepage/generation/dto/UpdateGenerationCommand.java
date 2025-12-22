@@ -1,17 +1,16 @@
-package sopt.org.homepage.generation.service.command.dto;
+package sopt.org.homepage.generation.dto;
 
 import lombok.Builder;
-import sopt.org.homepage.generation.domain.Generation;
-import sopt.org.homepage.generation.domain.vo.BrandingColor;
-import sopt.org.homepage.generation.domain.vo.MainButton;
+import sopt.org.homepage.generation.vo.BrandingColor;
+import sopt.org.homepage.generation.vo.MainButton;
 
 /**
- * CreateGenerationCommand
- *
- * 새로운 기수 생성 커맨드
+ * UpdateGenerationCommand
+ * <p>
+ * 기수 정보 수정 커맨드
  */
 @Builder
-public record CreateGenerationCommand(
+public record UpdateGenerationCommand(
         Integer id,
         String name,
         String headerImage,
@@ -19,17 +18,6 @@ public record CreateGenerationCommand(
         BrandingColorCommand brandingColor,
         MainButtonCommand mainButton
 ) {
-    public Generation toEntity() {
-        return Generation.builder()
-                .id(id)
-                .name(name)
-                .headerImage(headerImage)
-                .recruitHeaderImage(recruitHeaderImage)
-                .brandingColor(brandingColor.toVO())
-                .mainButton(mainButton.toVO())
-                .build();
-    }
-
     @Builder
     public record BrandingColorCommand(
             String main,

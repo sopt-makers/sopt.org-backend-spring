@@ -1,13 +1,14 @@
-package sopt.org.homepage.generation.service.query.dto;
-
-import lombok.Builder;
-import sopt.org.homepage.generation.domain.Generation;
+package sopt.org.homepage.generation.dto;
 
 import java.time.LocalDateTime;
+import lombok.Builder;
+import sopt.org.homepage.generation.Generation;
+import sopt.org.homepage.generation.vo.BrandingColor;
+import sopt.org.homepage.generation.vo.MainButton;
 
 /**
  * GenerationDetailView
- *
+ * <p>
  * 기수 상세 조회 DTO
  */
 @Builder
@@ -44,13 +45,13 @@ public record GenerationDetailView(
             String low,
             String high
     ) {
-        public static BrandingColorView from(sopt.org.homepage.generation.domain.vo.BrandingColor brandingColor) {
+        public static BrandingColorView from(BrandingColor brandingColor) {
             return BrandingColorView.builder()
                     .main(brandingColor.getMain())
                     .sub(brandingColor.getSub())
                     .point(brandingColor.getPoint())
                     .background(brandingColor.getBackground())
-                    .low(brandingColor.getLow())  // sub와 동일
+                    .low(brandingColor.getLow())    // sub와 동일
                     .high(brandingColor.getHigh())  // point와 동일
                     .build();
         }
@@ -62,7 +63,7 @@ public record GenerationDetailView(
             String keyColor,
             String subColor
     ) {
-        public static MainButtonView from(sopt.org.homepage.generation.domain.vo.MainButton mainButton) {
+        public static MainButtonView from(MainButton mainButton) {
             return MainButtonView.builder()
                     .text(mainButton.getText())
                     .keyColor(mainButton.getKeyColor())

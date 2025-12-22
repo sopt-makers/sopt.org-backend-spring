@@ -12,8 +12,8 @@ import sopt.org.homepage.corevalue.CoreValueService;
 import sopt.org.homepage.corevalue.dto.CoreValueView;
 import sopt.org.homepage.faq.FAQService;
 import sopt.org.homepage.faq.dto.FAQView;
-import sopt.org.homepage.generation.service.query.GenerationQueryService;
-import sopt.org.homepage.generation.service.query.dto.GenerationDetailView;
+import sopt.org.homepage.generation.GenerationService;
+import sopt.org.homepage.generation.dto.GenerationDetailView;
 import sopt.org.homepage.infrastructure.external.auth.AuthService;
 import sopt.org.homepage.infrastructure.external.crew.CrewService;
 import sopt.org.homepage.infrastructure.external.playground.PlaygroundService;
@@ -42,9 +42,9 @@ import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
 public class HomepageQueryService {
     private final CoreValueService coreValueService;
     private final FAQService faqService;
+    private final GenerationService generationService;
 
     // Domain Query Services
-    private final GenerationQueryService generationQueryService;
     private final MemberQueryService memberQueryService;
     private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
@@ -65,7 +65,7 @@ public class HomepageQueryService {
         log.info("Querying main page data");
 
         // 1. Generation 정보 조회
-        GenerationDetailView generation = generationQueryService.getLatestGeneration();
+        GenerationDetailView generation = generationService.findLatest();
         Integer generationId = generation.id();
 
         // 2. Part Introduction 조회
@@ -133,7 +133,7 @@ public class HomepageQueryService {
         log.info("Querying about page data");
 
         // 1. Generation 정보 조회
-        GenerationDetailView generation = generationQueryService.getLatestGeneration();
+        GenerationDetailView generation = generationService.findLatest();
         Integer generationId = generation.id();
 
         // 2. Core Values 조회
@@ -204,7 +204,7 @@ public class HomepageQueryService {
         log.info("Querying recruit page data");
 
         // 1. Generation 정보 조회
-        GenerationDetailView generation = generationQueryService.getLatestGeneration();
+        GenerationDetailView generation = generationService.findLatest();
         Integer generationId = generation.id();
 
         // 2. Recruitment Schedules 조회

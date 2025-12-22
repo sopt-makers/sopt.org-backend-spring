@@ -1,4 +1,4 @@
-package sopt.org.homepage.generation.domain.vo;
+package sopt.org.homepage.generation.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -9,12 +9,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * BrandingColor Value Object
- *
- * 기수별 브랜딩 컬러 설정
- * - main: 메인 컬러
- * - sub: 서브 컬러 (기존 low)
- * - point: 포인트 컬러 (기존 high)
- * - background: 배경 컬러 (기존 point)
+ * <p>
+ * 기수별 브랜딩 컬러 설정 - main: 메인 컬러 - sub: 서브 컬러 (기존 low) - point: 포인트 컬러 (기존 high) - background: 배경 컬러 (기존 point)
  */
 @Embeddable
 @Getter

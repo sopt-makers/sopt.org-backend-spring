@@ -33,10 +33,9 @@ import sopt.org.homepage.corevalue.dto.CoreValueView;
 import sopt.org.homepage.faq.FAQService;
 import sopt.org.homepage.faq.dto.BulkCreateFAQsCommand;
 import sopt.org.homepage.faq.dto.FAQView;
-import sopt.org.homepage.generation.service.command.GenerationCommandService;
-import sopt.org.homepage.generation.service.command.dto.CreateGenerationCommand;
-import sopt.org.homepage.generation.service.query.GenerationQueryService;
-import sopt.org.homepage.generation.service.query.dto.GenerationDetailView;
+import sopt.org.homepage.generation.GenerationService;
+import sopt.org.homepage.generation.dto.CreateGenerationCommand;
+import sopt.org.homepage.generation.dto.GenerationDetailView;
 import sopt.org.homepage.global.common.constants.CacheType;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.infrastructure.aws.s3.S3Service;
@@ -79,17 +78,16 @@ public class AdminServiceImpl implements AdminService {
 
     private final CoreValueService coreValueService;
     private final FAQService faqService;
+    private final GenerationService generationService;
 
     // ===== Domain Command Services =====
-    private final GenerationCommandService generationCommandService;
     private final MemberCommandService memberCommandService;
     private final PartCommandService partCommandService;
     private final RecruitmentCommandService recruitmentCommandService;
     private final RecruitPartIntroductionCommandService recruitPartIntroductionCommandService;
 
-
     // ===== Domain Query Services =====
-    private final GenerationQueryService generationQueryService;
+
     private final MemberQueryService memberQueryService;
     private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
@@ -244,7 +242,7 @@ public class AdminServiceImpl implements AdminService {
                 .toList();
 
         // ===== 3. Generation 생성 =====
-        generationCommandService.createGeneration(
+        generationService.create(
                 CreateGenerationCommand.builder()
                         .id(generationId)
                         .name(cachedData.getName())
@@ -401,7 +399,7 @@ public class AdminServiceImpl implements AdminService {
         Integer generationId = request.getGeneration();
 
         // ===== 각 도메인에서 데이터 조회 =====
-        GenerationDetailView generation = generationQueryService.getGenerationDetail(generationId);
+        GenerationDetailView generation = generationService.findById(generationId);
         List<CoreValueView> coreValues = coreValueService.findByGeneration(generationId);
         List<MemberDetailView> members = memberQueryService.getMembersByGeneration(generationId);
         List<PartDetailView> parts = partQueryService.getPartsByGeneration(generationId);
