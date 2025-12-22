@@ -1,4 +1,4 @@
-package sopt.org.homepage.faq.domain;
+package sopt.org.homepage.faq;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
