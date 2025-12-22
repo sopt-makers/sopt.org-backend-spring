@@ -1,4 +1,4 @@
-package sopt.org.homepage.part.domain;
+package sopt.org.homepage.part;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -128,28 +128,6 @@ public class Part {
     public void addCurriculum(String curriculum) {
         validateCurriculumContent(curriculum);
         this.curriculums.add(curriculum);
-    }
-
-    /**
-     * 특정 주차 커리큘럼 삭제
-     */
-    public void removeCurriculum(int week) {
-        validateWeek(week);
-
-        if (week >= curriculums.size()) {
-            throw new IllegalArgumentException(
-                    String.format("Week %d does not exist. Current weeks: %d", week, curriculums.size())
-            );
-        }
-
-        this.curriculums.remove(week);
-    }
-
-    /**
-     * 커리큘럼 주차 수 조회
-     */
-    public int getCurriculumWeekCount() {
-        return this.curriculums.size();
     }
 
     // === Validation ===
