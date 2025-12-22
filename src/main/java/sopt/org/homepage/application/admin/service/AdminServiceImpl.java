@@ -51,10 +51,9 @@ import sopt.org.homepage.news.controller.dto.response.AddAdminConfirmResponseDto
 import sopt.org.homepage.news.controller.dto.response.AddAdminResponseDto;
 import sopt.org.homepage.news.controller.dto.response.GetAdminResponseDto;
 import sopt.org.homepage.news.repository.MainNewsRepository;
-import sopt.org.homepage.part.service.command.PartCommandService;
-import sopt.org.homepage.part.service.command.dto.BulkCreatePartsCommand;
-import sopt.org.homepage.part.service.query.PartQueryService;
-import sopt.org.homepage.part.service.query.dto.PartDetailView;
+import sopt.org.homepage.part.PartService;
+import sopt.org.homepage.part.dto.BulkCreatePartsCommand;
+import sopt.org.homepage.part.dto.PartDetailView;
 import sopt.org.homepage.recruitment.service.command.RecruitPartIntroductionCommandService;
 import sopt.org.homepage.recruitment.service.command.RecruitmentCommandService;
 import sopt.org.homepage.recruitment.service.command.dto.BulkCreateRecruitPartIntroductionsCommand;
@@ -79,16 +78,14 @@ public class AdminServiceImpl implements AdminService {
     private final FAQService faqService;
     private final GenerationService generationService;
     private final MemberService memberService;
-
+    private final PartService partService;
 
     // ===== Domain Command Services =====
-    private final PartCommandService partCommandService;
     private final RecruitmentCommandService recruitmentCommandService;
     private final RecruitPartIntroductionCommandService recruitPartIntroductionCommandService;
 
     // ===== Domain Query Services =====
 
-    private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
     private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
 
@@ -305,7 +302,7 @@ public class AdminServiceImpl implements AdminService {
         );
 
         // ===== 6. Part 일괄 생성 =====
-        partCommandService.bulkCreateParts(
+        partService.bulkCreate(
                 BulkCreatePartsCommand.builder()
                         .generationId(generationId)
                         .partIntroductions(cachedData.getPartIntroductions().stream()
@@ -401,7 +398,7 @@ public class AdminServiceImpl implements AdminService {
         GenerationDetailView generation = generationService.findById(generationId);
         List<CoreValueView> coreValues = coreValueService.findByGeneration(generationId);
         List<MemberDetailView> members = memberService.findByGeneration(generationId);
-        List<PartDetailView> parts = partQueryService.getPartsByGeneration(generationId);
+        List<PartDetailView> parts = partService.findByGeneration(generationId);
         List<RecruitmentView> recruitments = recruitmentQueryService.getRecruitmentsByGeneration(generationId);
         List<RecruitPartIntroductionView> recruitPartIntros =
                 recruitPartIntroductionQueryService.getRecruitPartIntroductionsByGeneration(generationId);

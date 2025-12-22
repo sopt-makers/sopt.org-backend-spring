@@ -21,9 +21,9 @@ import sopt.org.homepage.member.MemberService;
 import sopt.org.homepage.member.dto.MemberDetailView;
 import sopt.org.homepage.news.MainNewsEntity;
 import sopt.org.homepage.news.repository.MainNewsRepository;
-import sopt.org.homepage.part.service.query.PartQueryService;
-import sopt.org.homepage.part.service.query.dto.PartCurriculumView;
-import sopt.org.homepage.part.service.query.dto.PartIntroductionView;
+import sopt.org.homepage.part.PartService;
+import sopt.org.homepage.part.dto.PartCurriculumView;
+import sopt.org.homepage.part.dto.PartIntroductionView;
 import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
 import sopt.org.homepage.recruitment.service.query.RecruitPartIntroductionQueryService;
 import sopt.org.homepage.recruitment.service.query.RecruitmentQueryService;
@@ -44,9 +44,9 @@ public class HomepageQueryService {
     private final FAQService faqService;
     private final GenerationService generationService;
     private final MemberService memberService;
+    private final PartService partService;
 
     // Domain Query Services
-    private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
     private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
 
@@ -70,7 +70,7 @@ public class HomepageQueryService {
 
         // 2. Part Introduction 조회
         List<PartIntroductionView> partIntroductions =
-                partQueryService.getPartIntroductionsByGeneration(generationId);
+                partService.findIntroductionsByGeneration(generationId);
 
         // 3. Latest News 조회
         List<MainNewsEntity> mainNewsEntities = mainNewsRepository.findAll();
@@ -142,7 +142,7 @@ public class HomepageQueryService {
 
         // 3. Part Curriculums 조회
         List<PartCurriculumView> partCurriculums =
-                partQueryService.getPartCurriculumsByGeneration(generationId);
+                partService.findCurriculumsByGeneration(generationId);
 
         // 4. Members 조회
         List<MemberDetailView> members =
