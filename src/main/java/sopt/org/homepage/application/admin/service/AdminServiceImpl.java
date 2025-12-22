@@ -30,10 +30,9 @@ import sopt.org.homepage.application.admin.dto.response.main.recruit.schedule.Ge
 import sopt.org.homepage.corevalue.CoreValueService;
 import sopt.org.homepage.corevalue.dto.BulkCreateCoreValuesCommand;
 import sopt.org.homepage.corevalue.dto.CoreValueView;
-import sopt.org.homepage.faq.service.command.FAQCommandService;
-import sopt.org.homepage.faq.service.command.dto.BulkCreateFAQsCommand;
-import sopt.org.homepage.faq.service.query.FAQQueryService;
-import sopt.org.homepage.faq.service.query.dto.FAQView;
+import sopt.org.homepage.faq.FAQService;
+import sopt.org.homepage.faq.dto.BulkCreateFAQsCommand;
+import sopt.org.homepage.faq.dto.FAQView;
 import sopt.org.homepage.generation.service.command.GenerationCommandService;
 import sopt.org.homepage.generation.service.command.dto.CreateGenerationCommand;
 import sopt.org.homepage.generation.service.query.GenerationQueryService;
@@ -67,6 +66,7 @@ import sopt.org.homepage.recruitment.service.query.RecruitmentQueryService;
 import sopt.org.homepage.recruitment.service.query.dto.RecruitPartIntroductionView;
 import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
 
+
 /**
  * AdminServiceImpl
  * <p>
@@ -78,24 +78,23 @@ import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
 public class AdminServiceImpl implements AdminService {
 
     private final CoreValueService coreValueService;
+    private final FAQService faqService;
 
     // ===== Domain Command Services =====
     private final GenerationCommandService generationCommandService;
-    // private final CoreValueCommandService coreValueCommandService;
     private final MemberCommandService memberCommandService;
     private final PartCommandService partCommandService;
     private final RecruitmentCommandService recruitmentCommandService;
     private final RecruitPartIntroductionCommandService recruitPartIntroductionCommandService;
-    private final FAQCommandService faqCommandService;
+
 
     // ===== Domain Query Services =====
     private final GenerationQueryService generationQueryService;
-    // private final CoreValueQueryService coreValueQueryService;
     private final MemberQueryService memberQueryService;
     private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
     private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
-    private final FAQQueryService faqQueryService;
+
 
     // ===== Infrastructure Services =====
     private final S3Service s3Service;
@@ -365,12 +364,12 @@ public class AdminServiceImpl implements AdminService {
         );
 
         // ===== 9. FAQ 일괄 생성 =====
-        faqCommandService.bulkCreateFAQs(
+        faqService.bulkCreate(
                 BulkCreateFAQsCommand.builder()
                         .faqs(cachedData.getRecruitQuestions().stream()
                                 .map(rq -> BulkCreateFAQsCommand.FAQData.builder()
                                         .part(rq.getPart())
-                                        .question(rq.getQuestions().stream()  // ✅ getQuestions() 복수형!
+                                        .question(rq.getQuestions().stream()
                                                 .map(q -> BulkCreateFAQsCommand.QuestionData.builder()
                                                         .question(q.getQuestion())
                                                         .answer(q.getAnswer())
@@ -409,7 +408,7 @@ public class AdminServiceImpl implements AdminService {
         List<RecruitmentView> recruitments = recruitmentQueryService.getRecruitmentsByGeneration(generationId);
         List<RecruitPartIntroductionView> recruitPartIntros =
                 recruitPartIntroductionQueryService.getRecruitPartIntroductionsByGeneration(generationId);
-        List<FAQView> faqs = faqQueryService.getAllFAQs();
+        List<FAQView> faqs = faqService.findAll();
         List<MainNewsEntity> mainNewsEntities = mainNewsRepository.findAll();
 
         // ===== Response 조합 =====
@@ -493,7 +492,7 @@ public class AdminServiceImpl implements AdminService {
                         .toList())
                 .recruitQuestion(faqs.stream()
                         .map(faq -> GetAdminRecruitQuestionResponseRecordDto.builder()
-                                .part(faq.part())
+                                .part(faq.part().getValue())
                                 .questions(faq.questions().stream()  // ✅ questions() 복수형!
                                         .map(q -> GetAdminQuestionResponseRecordDto.builder()
                                                 .question(q.question())

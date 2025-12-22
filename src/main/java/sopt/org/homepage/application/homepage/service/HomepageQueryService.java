@@ -10,8 +10,8 @@ import sopt.org.homepage.application.homepage.controller.dto.MainPageResponse;
 import sopt.org.homepage.application.homepage.controller.dto.RecruitPageResponse;
 import sopt.org.homepage.corevalue.CoreValueService;
 import sopt.org.homepage.corevalue.dto.CoreValueView;
-import sopt.org.homepage.faq.service.query.FAQQueryService;
-import sopt.org.homepage.faq.service.query.dto.FAQView;
+import sopt.org.homepage.faq.FAQService;
+import sopt.org.homepage.faq.dto.FAQView;
 import sopt.org.homepage.generation.service.query.GenerationQueryService;
 import sopt.org.homepage.generation.service.query.dto.GenerationDetailView;
 import sopt.org.homepage.infrastructure.external.auth.AuthService;
@@ -41,6 +41,7 @@ import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
 @Transactional(readOnly = true)
 public class HomepageQueryService {
     private final CoreValueService coreValueService;
+    private final FAQService faqService;
 
     // Domain Query Services
     private final GenerationQueryService generationQueryService;
@@ -48,7 +49,6 @@ public class HomepageQueryService {
     private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
     private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
-    private final FAQQueryService faqQueryService;
 
     // Legacy Repositories & Services
     private final MainNewsRepository mainNewsRepository;
@@ -216,7 +216,7 @@ public class HomepageQueryService {
                 recruitPartIntroductionQueryService.getRecruitPartIntroductionsByGeneration(generationId);
 
         // 4. FAQs 조회
-        List<FAQView> faqs = faqQueryService.getAllFAQs();
+        List<FAQView> faqs = faqService.findAll();
 
         // 5. Response 조합
         return RecruitPageResponse.builder()
@@ -253,7 +253,7 @@ public class HomepageQueryService {
                         .toList())
                 .recruitQuestion(faqs.stream()
                         .map(faq -> RecruitPageResponse.RecruitQuestion.builder()
-                                .part(faq.part())
+                                .part(faq.part().getValue())
                                 .questions(faq.questions().stream()
                                         .map(q -> RecruitPageResponse.RecruitQuestion.Question.builder()
                                                 .question(q.question())
