@@ -5,10 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.member.dto.BulkCreateMembersCommand;
 import sopt.org.homepage.member.dto.MemberDetailView;
-import sopt.org.homepage.member.dto.MemberListView;
 import sopt.org.homepage.member.vo.MemberRole;
 import sopt.org.homepage.member.vo.SnsLinks;
 
@@ -60,21 +58,6 @@ public class MemberService {
         return saved.stream().map(Member::getId).toList();
     }
 
-    // ===== Query 메서드 =====
-
-    /**
-     * 특정 운영진 상세 조회
-     */
-    @Transactional(readOnly = true)
-    public MemberDetailView findById(Long memberId) {
-        log.debug("운영진 조회 - id={}", memberId);
-
-        return memberRepository.findById(memberId)
-                .map(MemberDetailView::from)
-                .orElseThrow(() -> new ClientBadRequestException(
-                        String.format("Member %d not found", memberId)
-                ));
-    }
 
     /**
      * 특정 기수의 모든 운영진 조회 (상세)
@@ -84,67 +67,6 @@ public class MemberService {
         log.debug("기수별 운영진 조회 - generationId={}", generationId);
 
         return memberRepository.findByGenerationIdOrderByRoleAscNameAsc(generationId)
-                .stream()
-                .map(MemberDetailView::from)
-                .toList();
-    }
-
-    /**
-     * 특정 기수의 모든 운영진 조회 (간략)
-     */
-    @Transactional(readOnly = true)
-    public List<MemberListView> findListByGeneration(Integer generationId) {
-        log.debug("기수별 운영진 목록 조회 - generationId={}", generationId);
-
-        return memberRepository.findByGenerationIdOrderByRoleAscNameAsc(generationId)
-                .stream()
-                .map(MemberListView::from)
-                .toList();
-    }
-
-    /**
-     * 특정 기수의 특정 역할 운영진 조회
-     */
-    @Transactional(readOnly = true)
-    public List<MemberDetailView> findByRole(Integer generationId, MemberRole role) {
-        log.debug("역할별 운영진 조회 - generationId={}, role={}", generationId, role);
-
-        return memberRepository.findByGenerationIdAndRoleOrderByNameAsc(generationId, role)
-                .stream()
-                .map(MemberDetailView::from)
-                .toList();
-    }
-
-    /**
-     * 특정 기수의 회장 조회
-     */
-    @Transactional(readOnly = true)
-    public MemberDetailView findPresident(Integer generationId) {
-        log.debug("회장 조회 - generationId={}", generationId);
-
-        return memberRepository.findByGenerationIdAndRole(generationId, MemberRole.PRESIDENT)
-                .map(MemberDetailView::from)
-                .orElseThrow(() -> new ClientBadRequestException(
-                        String.format("President not found for generation %d", generationId)
-                ));
-    }
-
-    /**
-     * 특정 기수의 운영진 수 조회
-     */
-    @Transactional(readOnly = true)
-    public long countByGeneration(Integer generationId) {
-        return memberRepository.countByGenerationId(generationId);
-    }
-
-    /**
-     * 여러 기수의 운영진 조회
-     */
-    @Transactional(readOnly = true)
-    public List<MemberDetailView> findByGenerations(List<Integer> generationIds) {
-        log.debug("여러 기수 운영진 조회 - generationIds={}", generationIds);
-
-        return memberRepository.findByGenerationIdIn(generationIds)
                 .stream()
                 .map(MemberDetailView::from)
                 .toList();
