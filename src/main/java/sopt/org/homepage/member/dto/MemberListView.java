@@ -1,11 +1,11 @@
-package sopt.org.homepage.member.service.query.dto;
+package sopt.org.homepage.member.dto;
 
 import lombok.Builder;
-import sopt.org.homepage.member.domain.Member;
+import sopt.org.homepage.member.Member;
 
 /**
  * MemberListView
- *
+ * <p>
  * 운영진 목록 조회 DTO (간략 정보)
  */
 @Builder

@@ -1,12 +1,12 @@
-package sopt.org.homepage.member.service.query.dto;
+package sopt.org.homepage.member.dto;
 
 import lombok.Builder;
-import sopt.org.homepage.member.domain.Member;
-import sopt.org.homepage.member.domain.vo.MemberRole;
+import sopt.org.homepage.member.Member;
+import sopt.org.homepage.member.vo.SnsLinks;
 
 /**
  * MemberDetailView
- *
+ * <p>
  * 운영진 상세 조회 DTO
  */
 @Builder
@@ -47,7 +47,7 @@ public record MemberDetailView(
             String github,
             String behance
     ) {
-        public static SnsLinksView from(sopt.org.homepage.member.domain.vo.SnsLinks snsLinks) {
+        public static SnsLinksView from(SnsLinks snsLinks) {
             if (snsLinks == null) {
                 return SnsLinksView.builder().build();
             }

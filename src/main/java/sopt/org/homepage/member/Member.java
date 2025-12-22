@@ -1,24 +1,28 @@
-package sopt.org.homepage.member.domain;
+package sopt.org.homepage.member;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import sopt.org.homepage.member.domain.vo.MemberRole;
-import sopt.org.homepage.member.domain.vo.SnsLinks;
-
-import java.time.LocalDateTime;
+import sopt.org.homepage.member.vo.MemberRole;
+import sopt.org.homepage.member.vo.SnsLinks;
 
 /**
  * Member 애그리거트 루트
- *
- * 책임:
- * - SOPT 운영진 정보 관리
- * - 기수별 운영진 구성
- * - SNS 링크 관리
+ * <p>
+ * 책임: - SOPT 운영진 정보 관리 - 기수별 운영진 구성 - SNS 링크 관리
  */
 @Entity
 @Table(name = "\"Member\"")

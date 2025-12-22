@@ -1,4 +1,4 @@
-package sopt.org.homepage.member.domain.vo;
+package sopt.org.homepage.member.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * SnsLinks Value Object
- *
+ * <p>
  * 운영진 SNS 링크 정보
  */
 @Embeddable
@@ -45,9 +45,7 @@ public class SnsLinks {
     }
 
     /**
-     * SNS 링크 유효성 검증 및 정규화
-     * - null 또는 빈 문자열은 null로 변환
-     * - 공백 제거
+     * SNS 링크 유효성 검증 및 정규화 - null 또는 빈 문자열은 null로 변환 - 공백 제거
      */
     private String validateAndNormalize(String url) {
         if (url == null || url.isBlank()) {

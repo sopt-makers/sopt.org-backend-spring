@@ -1,12 +1,11 @@
-package sopt.org.homepage.member.service.command.dto;
-
-import lombok.Builder;
+package sopt.org.homepage.member.dto;
 
 import java.util.List;
+import lombok.Builder;
 
 /**
  * BulkCreateMembersCommand
- *
+ * <p>
  * 운영진 일괄 생성 커맨드 (Admin용)
  */
 @Builder
