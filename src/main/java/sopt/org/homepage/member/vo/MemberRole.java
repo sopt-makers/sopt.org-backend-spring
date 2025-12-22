@@ -1,11 +1,11 @@
-package sopt.org.homepage.member.domain.vo;
+package sopt.org.homepage.member.vo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * MemberRole Enum
- *
+ * <p>
  * SOPT 운영진 역할 정의
  */
 
