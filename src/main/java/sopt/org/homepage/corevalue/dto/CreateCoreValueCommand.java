@@ -1,11 +1,11 @@
-package sopt.org.homepage.corevalue.service.command.dto;
+package sopt.org.homepage.corevalue.dto;
 
 import lombok.Builder;
-import sopt.org.homepage.corevalue.domain.CoreValue;
+import sopt.org.homepage.corevalue.CoreValue;
 
 /**
  * CreateCoreValueCommand
- *
+ * <p>
  * 핵심 가치 생성 커맨드
  */
 @Builder

@@ -27,10 +27,9 @@ import sopt.org.homepage.application.admin.dto.response.main.recruit.question.Ge
 import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminRecruitQuestionResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.schedule.GetAdminScheduleResponseRecordDto;
-import sopt.org.homepage.corevalue.service.command.CoreValueCommandService;
-import sopt.org.homepage.corevalue.service.command.dto.BulkCreateCoreValuesCommand;
-import sopt.org.homepage.corevalue.service.query.CoreValueQueryService;
-import sopt.org.homepage.corevalue.service.query.dto.CoreValueView;
+import sopt.org.homepage.corevalue.CoreValueService;
+import sopt.org.homepage.corevalue.dto.BulkCreateCoreValuesCommand;
+import sopt.org.homepage.corevalue.dto.CoreValueView;
 import sopt.org.homepage.faq.service.command.FAQCommandService;
 import sopt.org.homepage.faq.service.command.dto.BulkCreateFAQsCommand;
 import sopt.org.homepage.faq.service.query.FAQQueryService;
@@ -78,9 +77,11 @@ import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
 @Slf4j
 public class AdminServiceImpl implements AdminService {
 
+    private final CoreValueService coreValueService;
+
     // ===== Domain Command Services =====
     private final GenerationCommandService generationCommandService;
-    private final CoreValueCommandService coreValueCommandService;
+    // private final CoreValueCommandService coreValueCommandService;
     private final MemberCommandService memberCommandService;
     private final PartCommandService partCommandService;
     private final RecruitmentCommandService recruitmentCommandService;
@@ -89,7 +90,7 @@ public class AdminServiceImpl implements AdminService {
 
     // ===== Domain Query Services =====
     private final GenerationQueryService generationQueryService;
-    private final CoreValueQueryService coreValueQueryService;
+    // private final CoreValueQueryService coreValueQueryService;
     private final MemberQueryService memberQueryService;
     private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
@@ -275,7 +276,7 @@ public class AdminServiceImpl implements AdminService {
                     .displayOrder(i)
                     .build());
         }
-        coreValueCommandService.bulkCreateCoreValues(
+        coreValueService.bulkCreate(
                 BulkCreateCoreValuesCommand.builder()
                         .generationId(generationId)
                         .coreValues(coreValueDataList)
@@ -402,7 +403,7 @@ public class AdminServiceImpl implements AdminService {
 
         // ===== 각 도메인에서 데이터 조회 =====
         GenerationDetailView generation = generationQueryService.getGenerationDetail(generationId);
-        List<CoreValueView> coreValues = coreValueQueryService.getCoreValuesByGeneration(generationId);
+        List<CoreValueView> coreValues = coreValueService.findByGeneration(generationId);
         List<MemberDetailView> members = memberQueryService.getMembersByGeneration(generationId);
         List<PartDetailView> parts = partQueryService.getPartsByGeneration(generationId);
         List<RecruitmentView> recruitments = recruitmentQueryService.getRecruitmentsByGeneration(generationId);

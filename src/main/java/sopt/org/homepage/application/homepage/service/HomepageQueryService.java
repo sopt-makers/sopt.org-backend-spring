@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.application.homepage.controller.dto.AboutPageResponse;
 import sopt.org.homepage.application.homepage.controller.dto.MainPageResponse;
 import sopt.org.homepage.application.homepage.controller.dto.RecruitPageResponse;
-import sopt.org.homepage.corevalue.service.query.CoreValueQueryService;
-import sopt.org.homepage.corevalue.service.query.dto.CoreValueView;
+import sopt.org.homepage.corevalue.CoreValueService;
+import sopt.org.homepage.corevalue.dto.CoreValueView;
 import sopt.org.homepage.faq.service.query.FAQQueryService;
 import sopt.org.homepage.faq.service.query.dto.FAQView;
 import sopt.org.homepage.generation.service.query.GenerationQueryService;
@@ -40,10 +40,10 @@ import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
 @Slf4j
 @Transactional(readOnly = true)
 public class HomepageQueryService {
+    private final CoreValueService coreValueService;
 
     // Domain Query Services
     private final GenerationQueryService generationQueryService;
-    private final CoreValueQueryService coreValueQueryService;
     private final MemberQueryService memberQueryService;
     private final PartQueryService partQueryService;
     private final RecruitmentQueryService recruitmentQueryService;
@@ -138,7 +138,7 @@ public class HomepageQueryService {
 
         // 2. Core Values 조회
         List<CoreValueView> coreValues =
-                coreValueQueryService.getCoreValuesByGeneration(generationId);
+                coreValueService.findByGeneration(generationId);
 
         // 3. Part Curriculums 조회
         List<PartCurriculumView> partCurriculums =
