@@ -1,12 +1,11 @@
-package sopt.org.homepage.corevalue.service.command.dto;
-
-import lombok.Builder;
+package sopt.org.homepage.corevalue.dto;
 
 import java.util.List;
+import lombok.Builder;
 
 /**
  * BulkCreateCoreValuesCommand
- *
+ * <p>
  * 핵심 가치 일괄 생성 커맨드 (Admin용)
  */
 @Builder

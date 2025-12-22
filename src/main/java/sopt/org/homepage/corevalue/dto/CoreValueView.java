@@ -1,11 +1,11 @@
-package sopt.org.homepage.corevalue.service.query.dto;
+package sopt.org.homepage.corevalue.dto;
 
 import lombok.Builder;
-import sopt.org.homepage.corevalue.domain.CoreValue;
+import sopt.org.homepage.corevalue.CoreValue;
 
 /**
  * CoreValueView
- *
+ * <p>
  * 핵심 가치 조회 DTO
  */
 @Builder
