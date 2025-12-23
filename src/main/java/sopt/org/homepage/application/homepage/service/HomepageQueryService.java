@@ -25,10 +25,10 @@ import sopt.org.homepage.part.PartService;
 import sopt.org.homepage.part.dto.PartCurriculumView;
 import sopt.org.homepage.part.dto.PartIntroductionView;
 import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
-import sopt.org.homepage.recruitment.service.query.RecruitPartIntroductionQueryService;
-import sopt.org.homepage.recruitment.service.query.RecruitmentQueryService;
-import sopt.org.homepage.recruitment.service.query.dto.RecruitPartIntroductionView;
-import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
+import sopt.org.homepage.recruitment.RecruitmentService;
+import sopt.org.homepage.recruitment.dto.RecruitmentView;
+import sopt.org.homepage.recruitpartintroduction.RecruitPartIntroductionService;
+import sopt.org.homepage.recruitpartintroduction.dto.RecruitPartIntroductionView;
 
 /**
  * HomepageQueryService
@@ -45,10 +45,9 @@ public class HomepageQueryService {
     private final GenerationService generationService;
     private final MemberService memberService;
     private final PartService partService;
+    private final RecruitmentService recruitmentService;
+    private final RecruitPartIntroductionService recruitPartIntroductionService;
 
-    // Domain Query Services
-    private final RecruitmentQueryService recruitmentQueryService;
-    private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
 
     // Legacy Repositories & Services
     private final MainNewsRepository mainNewsRepository;
@@ -77,7 +76,7 @@ public class HomepageQueryService {
 
         // 4. Recruitment Schedule 조회
         List<RecruitmentView> recruitments =
-                recruitmentQueryService.getRecruitmentsByGeneration(generationId);
+                recruitmentService.findByGeneration(generationId);
 
         // 5. Response 조합
         return MainPageResponse.builder()
@@ -209,11 +208,11 @@ public class HomepageQueryService {
 
         // 2. Recruitment Schedules 조회
         List<RecruitmentView> recruitments =
-                recruitmentQueryService.getRecruitmentsByGeneration(generationId);
+                recruitmentService.findByGeneration(generationId);
 
         // 3. Recruit Part Introductions 조회
         List<RecruitPartIntroductionView> recruitPartIntros =
-                recruitPartIntroductionQueryService.getRecruitPartIntroductionsByGeneration(generationId);
+                recruitPartIntroductionService.findByGeneration(generationId);
 
         // 4. FAQs 조회
         List<FAQView> faqs = faqService.findAll();
