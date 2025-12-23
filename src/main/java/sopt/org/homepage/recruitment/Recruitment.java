@@ -1,24 +1,28 @@
-package sopt.org.homepage.recruitment.domain;
+package sopt.org.homepage.recruitment;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import sopt.org.homepage.recruitment.domain.vo.RecruitType;
-import sopt.org.homepage.recruitment.domain.vo.Schedule;
-
-import java.time.LocalDateTime;
+import sopt.org.homepage.recruitment.vo.RecruitType;
+import sopt.org.homepage.recruitment.vo.Schedule;
 
 /**
  * Recruitment 애그리거트 루트
- *
- * 책임:
- * - 기수별 모집 일정 관리
- * - OB/YB 구분
- * - 모집 프로세스 일정 관리
+ * <p>
+ * 책임: - 기수별 모집 일정 관리 - OB/YB 구분 - 모집 프로세스 일정 관리
  */
 @Entity
 @Table(name = "\"Recruitment\"")

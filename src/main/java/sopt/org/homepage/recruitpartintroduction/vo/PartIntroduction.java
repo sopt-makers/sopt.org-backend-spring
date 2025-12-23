@@ -1,4 +1,4 @@
-package sopt.org.homepage.recruitment.domain.vo;
+package sopt.org.homepage.recruitpartintroduction.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * PartIntroduction Value Object
- *
+ * <p>
  * 파트별 소개 정보
  */
 @Embeddable

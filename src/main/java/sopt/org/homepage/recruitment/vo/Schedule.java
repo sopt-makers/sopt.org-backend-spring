@@ -1,22 +1,19 @@
-package sopt.org.homepage.recruitment.domain.vo;
+package sopt.org.homepage.recruitment.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-
 /**
  * Schedule Value Object
- *
- * 모집 일정 정보
- * - 레거시 형식(ISO 8601: yyyy-MM-ddTHH:mm) 그대로 유지
- * - API 호환성 보장
+ * <p>
+ * 모집 일정 정보 - 레거시 형식(ISO 8601: yyyy-MM-ddTHH:mm) 그대로 유지 - API 호환성 보장
  */
 @Embeddable
 @Getter
@@ -137,15 +134,11 @@ public class Schedule {
 
     /**
      * 여러 형식을 받아서 → 레거시 형식(yyyy-MM-ddTHH:mm)으로 정규화
-     *
-     * 입력 형식 (모두 허용):
-     * - 2025-08-16T10:00 (레거시) ✅
-     * - 2025-08-16T10:00:00 (초 포함) ✅
-     * - 2025-08-16 10:00:00 (공백 구분) ✅
-     * - 2025-08-16 10:00 (공백, 초 없음) ✅
-     *
-     * 출력 형식 (항상 레거시):
-     * - 2025-08-16T10:00
+     * <p>
+     * 입력 형식 (모두 허용): - 2025-08-16T10:00 (레거시) ✅ - 2025-08-16T10:00:00 (초 포함) ✅ - 2025-08-16 10:00:00 (공백 구분) ✅ -
+     * 2025-08-16 10:00 (공백, 초 없음) ✅
+     * <p>
+     * 출력 형식 (항상 레거시): - 2025-08-16T10:00
      */
     private String normalizeToLegacyFormat(String dateTime, String fieldName) {
         if (dateTime == null || dateTime.isBlank()) {

@@ -54,14 +54,12 @@ import sopt.org.homepage.news.repository.MainNewsRepository;
 import sopt.org.homepage.part.PartService;
 import sopt.org.homepage.part.dto.BulkCreatePartsCommand;
 import sopt.org.homepage.part.dto.PartDetailView;
-import sopt.org.homepage.recruitment.service.command.RecruitPartIntroductionCommandService;
-import sopt.org.homepage.recruitment.service.command.RecruitmentCommandService;
-import sopt.org.homepage.recruitment.service.command.dto.BulkCreateRecruitPartIntroductionsCommand;
-import sopt.org.homepage.recruitment.service.command.dto.BulkCreateRecruitmentsCommand;
-import sopt.org.homepage.recruitment.service.query.RecruitPartIntroductionQueryService;
-import sopt.org.homepage.recruitment.service.query.RecruitmentQueryService;
-import sopt.org.homepage.recruitment.service.query.dto.RecruitPartIntroductionView;
-import sopt.org.homepage.recruitment.service.query.dto.RecruitmentView;
+import sopt.org.homepage.recruitment.RecruitmentService;
+import sopt.org.homepage.recruitment.dto.BulkCreateRecruitmentsCommand;
+import sopt.org.homepage.recruitment.dto.RecruitmentView;
+import sopt.org.homepage.recruitpartintroduction.RecruitPartIntroductionService;
+import sopt.org.homepage.recruitpartintroduction.dto.BulkCreateRecruitPartIntroductionsCommand;
+import sopt.org.homepage.recruitpartintroduction.dto.RecruitPartIntroductionView;
 
 
 /**
@@ -79,15 +77,8 @@ public class AdminServiceImpl implements AdminService {
     private final GenerationService generationService;
     private final MemberService memberService;
     private final PartService partService;
-
-    // ===== Domain Command Services =====
-    private final RecruitmentCommandService recruitmentCommandService;
-    private final RecruitPartIntroductionCommandService recruitPartIntroductionCommandService;
-
-    // ===== Domain Query Services =====
-
-    private final RecruitmentQueryService recruitmentQueryService;
-    private final RecruitPartIntroductionQueryService recruitPartIntroductionQueryService;
+    private final RecruitmentService recruitmentService;
+    private final RecruitPartIntroductionService recruitPartIntroductionService;
 
 
     // ===== Infrastructure Services =====
@@ -321,7 +312,7 @@ public class AdminServiceImpl implements AdminService {
         );
 
         // ===== 7. Recruitment 일괄 생성 =====
-        recruitmentCommandService.bulkCreateRecruitments(
+        recruitmentService.bulkCreate(
                 BulkCreateRecruitmentsCommand.builder()
                         .generationId(generationId)
                         .recruitments(cachedData.getRecruitSchedules().stream()
@@ -341,7 +332,7 @@ public class AdminServiceImpl implements AdminService {
         );
 
         // ===== 8. RecruitPartIntroduction 일괄 생성 =====
-        recruitPartIntroductionCommandService.bulkCreateRecruitPartIntroductions(
+        recruitPartIntroductionService.bulkCreate(
                 BulkCreateRecruitPartIntroductionsCommand.builder()
                         .generationId(generationId)
                         .partIntroductions(cachedData.getRecruitPartCurriculums().stream()
@@ -399,9 +390,9 @@ public class AdminServiceImpl implements AdminService {
         List<CoreValueView> coreValues = coreValueService.findByGeneration(generationId);
         List<MemberDetailView> members = memberService.findByGeneration(generationId);
         List<PartDetailView> parts = partService.findByGeneration(generationId);
-        List<RecruitmentView> recruitments = recruitmentQueryService.getRecruitmentsByGeneration(generationId);
+        List<RecruitmentView> recruitments = recruitmentService.findByGeneration(generationId);
         List<RecruitPartIntroductionView> recruitPartIntros =
-                recruitPartIntroductionQueryService.getRecruitPartIntroductionsByGeneration(generationId);
+                recruitPartIntroductionService.findByGeneration(generationId);
         List<FAQView> faqs = faqService.findAll();
         List<MainNewsEntity> mainNewsEntities = mainNewsRepository.findAll();
 
