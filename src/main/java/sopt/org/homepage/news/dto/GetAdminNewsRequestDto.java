@@ -1,21 +1,19 @@
-package sopt.org.homepage.news.controller.dto.request;
+package sopt.org.homepage.news.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@Schema(description = "최신소식 삭제하기")
+@Schema(description = "최신소식 조회하기")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-public class DeleteAdminNewsRequestDto {
+@RequiredArgsConstructor
+public class GetAdminNewsRequestDto {
     @Schema(description = "최신소식 ID", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotNull(message = "id must not be null")
-    private int id;
+    private final int id;
 }
 
 

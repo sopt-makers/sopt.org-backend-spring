@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sopt.org.homepage.application.admin.dto.AddAdminConfirmRequestDto;
+import sopt.org.homepage.application.admin.dto.AddAdminConfirmResponseDto;
+import sopt.org.homepage.application.admin.dto.AddAdminRequestDto;
+import sopt.org.homepage.application.admin.dto.AddAdminResponseDto;
+import sopt.org.homepage.application.admin.dto.GetAdminRequestDto;
+import sopt.org.homepage.application.admin.dto.GetAdminResponseDto;
 import sopt.org.homepage.application.admin.service.AdminService;
 import sopt.org.homepage.global.common.constants.SecurityConstants;
-import sopt.org.homepage.news.controller.dto.request.AddAdminConfirmRequestDto;
-import sopt.org.homepage.news.controller.dto.request.AddAdminRequestDto;
-import sopt.org.homepage.news.controller.dto.request.GetAdminRequestDto;
-import sopt.org.homepage.news.controller.dto.response.AddAdminConfirmResponseDto;
-import sopt.org.homepage.news.controller.dto.response.AddAdminResponseDto;
-import sopt.org.homepage.news.controller.dto.response.GetAdminResponseDto;
 
 @RestController
 @RequiredArgsConstructor
