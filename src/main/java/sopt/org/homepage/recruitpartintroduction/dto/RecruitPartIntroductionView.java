@@ -1,11 +1,12 @@
-package sopt.org.homepage.recruitment.service.query.dto;
+package sopt.org.homepage.recruitpartintroduction.dto;
 
 import lombok.Builder;
-import sopt.org.homepage.recruitment.domain.RecruitPartIntroduction;
+import sopt.org.homepage.recruitpartintroduction.RecruitPartIntroduction;
+import sopt.org.homepage.recruitpartintroduction.vo.PartIntroduction;
 
 /**
  * RecruitPartIntroductionView
- *
+ * <p>
  * 파트 소개 조회 DTO
  */
 @Builder
@@ -29,7 +30,7 @@ public record RecruitPartIntroductionView(
             String content,
             String preference
     ) {
-        public static IntroductionView from(sopt.org.homepage.recruitment.domain.vo.PartIntroduction introduction) {
+        public static IntroductionView from(PartIntroduction introduction) {
             return IntroductionView.builder()
                     .content(introduction.getContent())
                     .preference(introduction.getPreference())

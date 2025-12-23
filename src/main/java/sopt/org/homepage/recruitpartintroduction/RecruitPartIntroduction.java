@@ -1,4 +1,4 @@
-package sopt.org.homepage.recruitment.domain;
+package sopt.org.homepage.recruitpartintroduction;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import sopt.org.homepage.global.common.type.PartType;
-import sopt.org.homepage.recruitment.domain.vo.PartIntroduction;
+import sopt.org.homepage.recruitpartintroduction.vo.PartIntroduction;
 
 /**
  * RecruitPartIntroduction 애그리거트 루트

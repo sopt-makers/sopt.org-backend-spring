@@ -1,11 +1,12 @@
-package sopt.org.homepage.recruitment.service.query.dto;
+package sopt.org.homepage.recruitment.dto;
 
 import lombok.Builder;
-import sopt.org.homepage.recruitment.domain.Recruitment;
+import sopt.org.homepage.recruitment.Recruitment;
+import sopt.org.homepage.recruitment.vo.Schedule;
 
 /**
  * RecruitmentView
- *
+ * <p>
  * 모집 일정 조회 DTO
  */
 @Builder
@@ -33,7 +34,7 @@ public record RecruitmentView(
             String interviewEndTime,
             String finalResultTime
     ) {
-        public static ScheduleView from(sopt.org.homepage.recruitment.domain.vo.Schedule schedule) {
+        public static ScheduleView from(Schedule schedule) {
             return ScheduleView.builder()
                     .applicationStartTime(schedule.getApplicationStartTime())
                     .applicationEndTime(schedule.getApplicationEndTime())

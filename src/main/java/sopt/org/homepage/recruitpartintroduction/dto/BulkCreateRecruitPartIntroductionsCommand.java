@@ -1,12 +1,11 @@
-package sopt.org.homepage.recruitment.service.command.dto;
-
-import lombok.Builder;
+package sopt.org.homepage.recruitpartintroduction.dto;
 
 import java.util.List;
+import lombok.Builder;
 
 /**
  * BulkCreateRecruitPartIntroductionsCommand
- *
+ * <p>
  * 파트 소개 일괄 생성 커맨드 (Admin용)
  */
 @Builder

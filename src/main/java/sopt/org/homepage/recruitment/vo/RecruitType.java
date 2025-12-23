@@ -1,11 +1,11 @@
-package sopt.org.homepage.recruitment.domain.vo;
+package sopt.org.homepage.recruitment.vo;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
  * RecruitType Enum
- *
+ * <p>
  * 모집 대상 구분
  */
 @Getter
