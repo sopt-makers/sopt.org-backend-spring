@@ -19,8 +19,8 @@ import sopt.org.homepage.infrastructure.external.crew.CrewService;
 import sopt.org.homepage.infrastructure.external.playground.PlaygroundService;
 import sopt.org.homepage.member.MemberService;
 import sopt.org.homepage.member.dto.MemberDetailView;
-import sopt.org.homepage.news.MainNewsEntity;
-import sopt.org.homepage.news.repository.MainNewsRepository;
+import sopt.org.homepage.news.News;
+import sopt.org.homepage.news.NewsService;
 import sopt.org.homepage.part.PartService;
 import sopt.org.homepage.part.dto.PartCurriculumView;
 import sopt.org.homepage.part.dto.PartIntroductionView;
@@ -50,7 +50,7 @@ public class HomepageQueryService {
 
 
     // Legacy Repositories & Services
-    private final MainNewsRepository mainNewsRepository;
+    private final NewsService newsService;
     private final CrewService crewService;
     private final PlaygroundService playgroundService;
     private final AuthService authService;
@@ -72,7 +72,7 @@ public class HomepageQueryService {
                 partService.findIntroductionsByGeneration(generationId);
 
         // 3. Latest News 조회
-        List<MainNewsEntity> mainNewsEntities = mainNewsRepository.findAll();
+        List<News> newsEntities = newsService.findAll();
 
         // 4. Recruitment Schedule 조회
         List<RecruitmentView> recruitments =
@@ -99,7 +99,7 @@ public class HomepageQueryService {
                                 .description(pi.description())
                                 .build())
                         .toList())
-                .latestNews(mainNewsEntities.stream()
+                .latestNews(newsEntities.stream()
                         .map(news -> MainPageResponse.LatestNews.builder()
                                 .id(news.getId())
                                 .title(news.getTitle())

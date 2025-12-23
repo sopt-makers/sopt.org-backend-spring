@@ -1,4 +1,4 @@
-package sopt.org.homepage.news.controller.dto.response;
+package sopt.org.homepage.news.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
-@Schema(description = "최신소식 삭제")
+@Schema(description = "최신 소식 추가")
 @Getter
 @Builder
 @RequiredArgsConstructor
-public class DeleteAdminNewsResponseDto {
+public class AddAdminNewsResponseDto {
     @Schema(description = "성공 메세지", requiredMode = Schema.RequiredMode.REQUIRED, example = "success")
     private final String message;
 }

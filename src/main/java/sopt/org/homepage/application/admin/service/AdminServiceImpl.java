@@ -6,6 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sopt.org.homepage.application.admin.dto.AddAdminConfirmRequestDto;
+import sopt.org.homepage.application.admin.dto.AddAdminConfirmResponseDto;
+import sopt.org.homepage.application.admin.dto.AddAdminRequestDto;
+import sopt.org.homepage.application.admin.dto.AddAdminResponseDto;
+import sopt.org.homepage.application.admin.dto.GetAdminRequestDto;
+import sopt.org.homepage.application.admin.dto.GetAdminResponseDto;
 import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
@@ -43,14 +49,8 @@ import sopt.org.homepage.infrastructure.cache.CacheService;
 import sopt.org.homepage.member.MemberService;
 import sopt.org.homepage.member.dto.BulkCreateMembersCommand;
 import sopt.org.homepage.member.dto.MemberDetailView;
-import sopt.org.homepage.news.MainNewsEntity;
-import sopt.org.homepage.news.controller.dto.request.AddAdminConfirmRequestDto;
-import sopt.org.homepage.news.controller.dto.request.AddAdminRequestDto;
-import sopt.org.homepage.news.controller.dto.request.GetAdminRequestDto;
-import sopt.org.homepage.news.controller.dto.response.AddAdminConfirmResponseDto;
-import sopt.org.homepage.news.controller.dto.response.AddAdminResponseDto;
-import sopt.org.homepage.news.controller.dto.response.GetAdminResponseDto;
-import sopt.org.homepage.news.repository.MainNewsRepository;
+import sopt.org.homepage.news.News;
+import sopt.org.homepage.news.NewsService;
 import sopt.org.homepage.part.PartService;
 import sopt.org.homepage.part.dto.BulkCreatePartsCommand;
 import sopt.org.homepage.part.dto.PartDetailView;
@@ -84,7 +84,7 @@ public class AdminServiceImpl implements AdminService {
     // ===== Infrastructure Services =====
     private final S3Service s3Service;
     private final CacheService cacheService;
-    private final MainNewsRepository mainNewsRepository;
+    private final NewsService newsService;
 
     /**
      * Admin 메인 데이터 배포 (1단계)
@@ -394,7 +394,7 @@ public class AdminServiceImpl implements AdminService {
         List<RecruitPartIntroductionView> recruitPartIntros =
                 recruitPartIntroductionService.findByGeneration(generationId);
         List<FAQView> faqs = faqService.findAll();
-        List<MainNewsEntity> mainNewsEntities = mainNewsRepository.findAll();
+        List<News> newsEntities = newsService.findAll();
 
         // ===== Response 조합 =====
         return GetAdminResponseDto.builder()
@@ -430,7 +430,7 @@ public class AdminServiceImpl implements AdminService {
                                 .description(p.description())
                                 .build())
                         .toList())
-                .latestNews(mainNewsEntities.stream()
+                .latestNews(newsEntities.stream()
                         .map(news -> GetAdminLatestNewsResponseRecordDto.builder()
                                 .id(news.getId())
                                 .title(news.getTitle())
