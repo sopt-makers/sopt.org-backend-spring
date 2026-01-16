@@ -22,8 +22,10 @@ public record MainPageResponse(
         MainButton mainButton,
         List<PartIntroduction> partIntroduction,
         List<LatestNews> latestNews,
-        List<RecruitSchedule> recruitSchedule
+        List<RecruitSchedule> recruitSchedule,
+        ActivitiesRecords activitiesRecords // ✅ 추가
 ) {
+
     @Builder
     public record BrandingColor(
             String main,
@@ -62,6 +64,7 @@ public record MainPageResponse(
             String type,
             Schedule schedule
     ) {
+
         @Builder
         public record Schedule(
                 String applicationStartTime,
@@ -72,5 +75,19 @@ public record MainPageResponse(
                 String finalResultTime
         ) {
         }
+    }
+
+    // ✅ 신규 추가
+    @Builder
+    public record ActivitiesRecords(
+            @Schema(description = "활동 회원 수", example = "154")
+            int activitiesMemberCount,
+
+            @Schema(description = "프로젝트 수", example = "1")
+            int projectCounts,
+
+            @Schema(description = "스터디 수", example = "98")
+            int studyCounts
+    ) {
     }
 }
