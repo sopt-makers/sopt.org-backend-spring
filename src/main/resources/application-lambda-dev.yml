@@ -59,21 +59,34 @@ spring:
 # ============================================
 # Swagger/OpenAPI
 # ============================================
+#springdoc:
+#  swagger-ui:
+#    path: /api-docs
+#    operations-sorter: alpha
+#  api-docs:
+#    path: /api-docs
+#    groups:
+#      enabled: true
+
 springdoc:
   swagger-ui:
-    path: /api-docs
-    operations-sorter: alpha
+    path: /swagger-ui.html
+    url: /v3/api-docs                    # ✨ /dev 제거됨
+    config-url: /v3/api-docs/swagger-config  # ✨ /dev 제거됨
   api-docs:
-    path: /api-docs
-    groups:
-      enabled: true
+    path: /v3/api-docs
+
 
 # ============================================
 # 서버 설정
 # ============================================
 server:
   servlet:
-    context-path: /v2
+    #context-path: /v2              # ✨ 이거 추가!
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
 
 # ============================================
 # AWS 설정
