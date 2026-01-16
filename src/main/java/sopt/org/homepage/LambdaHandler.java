@@ -22,7 +22,8 @@ public class LambdaHandler implements RequestStreamHandler {
         try {
             handler = SpringBootLambdaContainerHandler
                     .getAwsProxyHandler(HomepageApplication.class);
-
+            handler.getContainerConfig().setStripBasePath(true);
+            handler.getContainerConfig().setServiceBasePath("/v2");
             // Binary Content Type 등록 (Swagger UI 이미지, 파일 다운로드 등)
             SpringBootLambdaContainerHandler.getContainerConfig().addBinaryContentTypes(
                     "image/png",
