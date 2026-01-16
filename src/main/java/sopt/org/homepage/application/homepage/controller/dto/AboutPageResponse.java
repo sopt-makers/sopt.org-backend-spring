@@ -24,8 +24,7 @@ public record AboutPageResponse(
         BrandingColor brandingColor,
         List<CoreValue> coreValue,
         List<PartCurriculum> partCurriculum,
-        List<Member> member,
-        ActivitiesRecords activitiesRecords
+        List<Member> member
 ) {
     @Builder
     public record BrandingColor(
@@ -68,13 +67,5 @@ public record AboutPageResponse(
                 String behance
         ) {
         }
-    }
-
-    @Builder
-    public record ActivitiesRecords(
-            int activitiesMemberCount,  // 추가!
-            int projectCounts,          // 's' 추가!
-            int studyCounts             // 's' 추가!
-    ) {
     }
 }
