@@ -73,7 +73,11 @@ springdoc:
 # ============================================
 server:
   servlet:
-    context-path: /v2
+    context-path:  # Lambda에서는 context-path 제거 (API Gateway stage와 충돌 방지)
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
 
 # ============================================
 # AWS 설정
