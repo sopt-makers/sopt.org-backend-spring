@@ -78,7 +78,11 @@ public class HomepageQueryService {
         List<RecruitmentView> recruitments =
                 recruitmentService.findByGeneration(generationId);
 
-        // 5. Response 조합
+        // 5. Activities Records 조회 (Playground API)
+        MainPageResponse.ActivitiesRecords activitiesRecords =
+                getActivitiesRecords(generationId);
+
+        // 6. Response 조합
         return MainPageResponse.builder()
                 .generation(generation.id())
                 .name(generation.name())
@@ -120,6 +124,7 @@ public class HomepageQueryService {
                                         .build())
                                 .build())
                         .toList())
+                .activitiesRecords(activitiesRecords)
                 .build();
     }
 
@@ -267,7 +272,7 @@ public class HomepageQueryService {
     /**
      * Activities Records 조회 (Playground API 호출)
      */
-    private AboutPageResponse.ActivitiesRecords getActivitiesRecords(Integer generationId) {
+    private MainPageResponse.ActivitiesRecords getActivitiesRecords(Integer generationId) {
         try {
 
             // 1. 활동 회원 수 조회 (Generation별 Member 수)
@@ -285,10 +290,10 @@ public class HomepageQueryService {
             // Study 개수 조회 (Crew API)
             int studyCount = crewService.getStudyCount(generationId);
 
-            return AboutPageResponse.ActivitiesRecords.builder()
-                    .activitiesMemberCount((int) activitiesMemberCount)  // 추가!
-                    .projectCounts(projectCount)  // 's' 추가!
-                    .studyCounts(studyCount)      // 's' 추가!
+            return MainPageResponse.ActivitiesRecords.builder()
+                    .activitiesMemberCount((int) activitiesMemberCount)
+                    .projectCounts(projectCount)
+                    .studyCounts(studyCount)
                     .build();
 
         } catch (Exception e) {
@@ -296,7 +301,7 @@ public class HomepageQueryService {
                     generationId, e.getMessage());
 
             // 실패 시 기본값 반환
-            return AboutPageResponse.ActivitiesRecords.builder()
+            return MainPageResponse.ActivitiesRecords.builder()
                     .activitiesMemberCount(0)
                     .projectCounts(0)
                     .studyCounts(0)
