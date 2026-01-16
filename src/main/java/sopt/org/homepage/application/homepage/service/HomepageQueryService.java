@@ -152,10 +152,6 @@ public class HomepageQueryService {
         List<MemberDetailView> members =
                 memberService.findByGeneration(generationId);
 
-        // 5. Activities Records 조회 (Playground API)
-        AboutPageResponse.ActivitiesRecords activitiesRecords =
-                getActivitiesRecords(generationId);
-
         // 6. Response 조합
         return AboutPageResponse.builder()
                 .generation(generation.id())
@@ -195,7 +191,6 @@ public class HomepageQueryService {
                                         .build())
                                 .build())
                         .toList())
-                .activitiesRecords(activitiesRecords)
                 .build();
     }
 
