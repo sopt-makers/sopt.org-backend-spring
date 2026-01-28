@@ -1,5 +1,6 @@
 package sopt.org.homepage.member;
 
+import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,13 +62,18 @@ public class MemberService {
 
     /**
      * 특정 기수의 모든 운영진 조회 (상세)
+     * <p>
+     * 정렬 순서: MemberRole.order 순 → 같은 역할 내 이름순
      */
     @Transactional(readOnly = true)
     public List<MemberDetailView> findByGeneration(Integer generationId) {
         log.debug("기수별 운영진 조회 - generationId={}", generationId);
 
-        return memberRepository.findByGenerationIdOrderByRoleAscNameAsc(generationId)
+        return memberRepository.findByGenerationId(generationId)
                 .stream()
+                .sorted(Comparator
+                        .comparing((Member m) -> m.getRole().getOrder())
+                        .thenComparing(Member::getName))
                 .map(MemberDetailView::from)
                 .toList();
     }

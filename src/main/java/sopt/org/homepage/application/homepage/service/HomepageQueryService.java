@@ -80,7 +80,7 @@ public class HomepageQueryService {
 
         // 5. Activities Records 조회 (Playground API)
         MainPageResponse.ActivitiesRecords activitiesRecords =
-                getActivitiesRecords(generationId);
+                getActivitiesRecords(generationId - 1);
 
         // 6. Response 조합
         return MainPageResponse.builder()

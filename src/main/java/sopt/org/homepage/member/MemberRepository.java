@@ -15,8 +15,16 @@ import sopt.org.homepage.member.vo.MemberRole;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     /**
-     * 특정 기수의 모든 운영진 조회 (역할순, 이름순)
+     * 특정 기수의 모든 운영진 조회 (정렬 없음 - Service에서 정렬)
      */
+    List<Member> findByGenerationId(Integer generationId);
+
+    /**
+     * 특정 기수의 모든 운영진 조회 (역할순, 이름순)
+     *
+     * @deprecated 알파벳순 정렬 이슈로 사용 지양. findByGenerationId + 애플리케이션 정렬 사용 권장
+     */
+    @Deprecated
     List<Member> findByGenerationIdOrderByRoleAscNameAsc(Integer generationId);
 
     /**

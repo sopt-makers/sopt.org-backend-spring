@@ -6,31 +6,32 @@ import lombok.RequiredArgsConstructor;
 /**
  * MemberRole Enum
  * <p>
- * SOPT 운영진 역할 정의
+ * SOPT 운영진 역할 정의 order 필드로 정렬 순서를 명시적으로 관리
  */
 
 @Getter
 @RequiredArgsConstructor
 public enum MemberRole {
-    PRESIDENT("회장"),
-    VICE_PRESIDENT("부회장"),
-    GENERAL_AFFAIRS("총무"),
-    OPERATION_TEAM_LEADER("운영 팀장"),
-    MEDIA_TEAM_LEADER("미디어 팀장"),
-    MAKERS_TEAM_LEADER("메이커스 팀장"),
-    PLANNING_TEAM_LEADER("기획 팀장"),
-    DESIGN_TEAM_LEADER("디자인 팀장"),
-    ANDROID_LEADER("안드로이드 파트장"),
-    IOS_LEADER("iOS 파트장"),
-    WEB_LEADER("웹 파트장"),
-    SERVER_LEADER("서버 파트장"),
-    PLAN_LEADER("기획 파트장"),
-    DESIGN_LEADER("디자인 파트장"),
-    MEDIA_TEAM_MEMBER("미디어팀"),
-    PLANNING_TEAM_MEMBER("기획팀"),
-    DESIGN_TEAM_MEMBER("디자인팀");
+    PRESIDENT("회장", 1),
+    VICE_PRESIDENT("부회장", 2),
+    GENERAL_AFFAIRS("총무", 3),
+    OPERATION_TEAM_LEADER("운영 팀장", 4),
+    MEDIA_TEAM_LEADER("미디어 팀장", 5),
+    MAKERS_TEAM_LEADER("메이커스 팀장", 6),
+    PLANNING_TEAM_LEADER("기획 팀장", 7),
+    DESIGN_TEAM_LEADER("디자인 팀장", 8),
+    ANDROID_LEADER("안드로이드 파트장", 9),
+    IOS_LEADER("iOS 파트장", 10),
+    WEB_LEADER("웹 파트장", 11),
+    SERVER_LEADER("서버 파트장", 12),
+    PLAN_LEADER("기획 파트장", 13),
+    DESIGN_LEADER("디자인 파트장", 14),
+    MEDIA_TEAM_MEMBER("미디어팀", 15),
+    PLANNING_TEAM_MEMBER("기획팀", 16),
+    DESIGN_TEAM_MEMBER("디자인팀", 17);
 
     private final String displayName;
+    private final int order;
 
     /**
      * 레거시 role 문자열을 MemberRole로 매핑
