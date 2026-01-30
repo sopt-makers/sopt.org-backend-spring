@@ -1,7 +1,7 @@
 package sopt.org.homepage.review.controller.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 
 /**
  * 리뷰 검색 요청 DTO

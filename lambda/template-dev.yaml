@@ -1,0 +1,247 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SOPT.org Backend Spring - Lambda Dev Environment
+  Spring Boot 3.2.3 애플리케이션을 AWS Lambda에서 실행
+
+# ============================================
+# 전역 설정
+# ============================================
+Globals:
+  Function:
+    Timeout: 300              # 최대 실행 시간 (초)
+    MemorySize: 2048          # 메모리 (MB) - 필요시 조정
+    Runtime: java17
+  Api:
+    OpenApiVersion: 3.0.1
+    BinaryMediaTypes:
+      - "multipart/form-data"
+
+# ============================================
+# 파라미터 정의
+# ============================================
+Parameters:
+  # S3 설정
+  S3Bucket:
+    Type: String
+    Description: S3 bucket containing the Lambda JAR
+  S3Key:
+    Type: String
+    Description: S3 key (path) to the Lambda JAR file
+
+  # Spring 프로파일
+  SpringProfile:
+    Type: String
+    Default: "lambda-dev"
+    Description: Spring profile to activate
+
+  # 데이터베이스 설정
+  DbHost:
+    Type: String
+    Description: Database host
+  DbPort:
+    Type: String
+    Default: "5432"
+    Description: Database port
+  DbDatabase:
+    Type: String
+    Description: Database name
+  DbUsername:
+    Type: String
+    NoEcho: true
+    Description: Database username
+  DbPassword:
+    Type: String
+    NoEcho: true
+    Description: Database password
+
+  # AWS 설정
+  AwsAccessKeyId:
+    Type: String
+    NoEcho: true
+    Description: AWS Access Key ID for S3
+  AwsSecretAccessKey:
+    Type: String
+    NoEcho: true
+    Description: AWS Secret Access Key for S3
+  BucketName:
+    Type: String
+    Description: S3 bucket name for file uploads
+
+  # Internal API 설정
+  PlaygroundApiUrl:
+    Type: String
+    Description: Playground API URL
+  PlaygroundApiToken:
+    Type: String
+    NoEcho: true
+    Description: Playground API JWT Token
+  CrewApiUrl:
+    Type: String
+    Description: Crew API URL
+  CrewApiToken:
+    Type: String
+    NoEcho: true
+    Description: Crew API JWT Token
+  AuthApiKey:
+    Type: String
+    NoEcho: true
+    Description: Auth API Key
+  OurServiceName:
+    Type: String
+    Default: "admin"
+    Description: Service name for Auth
+
+  # JWT 설정
+  AccessTokenSecret:
+    Type: String
+    NoEcho: true
+    Description: JWT Access Token Secret
+  RefreshTokenSecret:
+    Type: String
+    NoEcho: true
+    Description: JWT Refresh Token Secret
+  AdminTokenSecret:
+    Type: String
+    NoEcho: true
+    Description: JWT Admin Token Secret
+
+  # Official API Key
+  OfficialApiKey:
+    Type: String
+    NoEcho: true
+    Description: Official API Key
+
+  # Sentry 설정
+  SentryDsn:
+    Type: String
+    Description: Sentry DSN
+
+# ============================================
+# 리소스 정의
+# ============================================
+Resources:
+  # Lambda 함수
+  SoptOrgApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "${AWS::StackName}-api"
+      Description: SOPT.org Backend Spring Boot API
+
+      CodeUri: # 코드 위치
+        Bucket: !Ref S3Bucket
+        Key: !Ref S3Key
+      Handler: sopt.org.homepage.LambdaHandler
+
+      SnapStart: # SnapStart 활성화 (Cold Start 90% 감소)
+        ApplyOn: PublishedVersions
+      AutoPublishAlias: live
+
+      # 환경변수
+      Environment:
+        Variables:
+          # Spring 설정
+          SPRING_PROFILES_ACTIVE: !Ref SpringProfile
+          TZ: Asia/Seoul
+          JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+
+          # 데이터베이스
+          DB_HOST: !Ref DbHost
+          DB_PORT: !Ref DbPort
+          DB_DATABASE: !Ref DbDatabase
+          DB_USERNAME: !Ref DbUsername
+          DB_PASSWORD: !Ref DbPassword
+
+          # AWS
+          APP_AWS_ACCESS_KEY_ID: !Ref AwsAccessKeyId
+          APP_AWS_SECRET_ACCESS_KEY: !Ref AwsSecretAccessKey
+          BUCKET_NAME: !Ref BucketName
+
+          # Internal APIs
+          PLAYGROUND_API_URL: !Ref PlaygroundApiUrl
+          PLAYGROUND_API_URL_JWT_TOKEN: !Ref PlaygroundApiToken
+          CREW_API_URL: !Ref CrewApiUrl
+          CREW_API_URL_JWT_TOKEN: !Ref CrewApiToken
+          AUTH_API_KEY: !Ref AuthApiKey
+          OUR_SERVICE_NAME: !Ref OurServiceName
+
+          # JWT
+          ACCESS_TOKEN_SECRET: !Ref AccessTokenSecret
+          REFRESH_TOKEN_SECRET: !Ref RefreshTokenSecret
+          ADMIN_TOKEN_SECRET: !Ref AdminTokenSecret
+
+          # Official
+          OFFICIAL_API_KEY: !Ref OfficialApiKey
+
+          # Sentry
+          DEV_SENTRY_DSN: !Ref SentryDsn
+
+      # IAM 권한
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:PutObject
+                - s3:DeleteObject
+              Resource:
+                - !Sub "arn:aws:s3:::${BucketName}/*"
+                - !Sub "arn:aws:s3:::${S3Bucket}/*"
+
+      # API Gateway 이벤트
+      Events:
+        ApiRoot:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SoptOrgApi
+            Path: /
+            Method: ANY
+        ApiProxy:
+          Type: Api
+          Properties:
+            RestApiId: !Ref SoptOrgApi
+            Path: /{proxy+}
+            Method: ANY
+
+  # API Gateway
+  SoptOrgApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "${AWS::StackName}-api"
+      StageName: dev
+      Description: SOPT.org Backend API Gateway
+
+      # CORS 설정
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'*'"
+        AllowMethods: "'*'"
+        AllowCredentials: false
+
+#      BinaryMediaTypes: # 바이너리 미디어 타입 (이미지 업로드 등) TODO 프리사인드 URL
+#        - "*/*"
+
+
+# ============================================
+# 출력값
+# ============================================
+Outputs:
+  ApiEndpoint:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${SoptOrgApi}.execute-api.${AWS::Region}.amazonaws.com/dev"
+    Export:
+      Name: !Sub "${AWS::StackName}-ApiEndpoint"
+
+  FunctionArn:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt SoptOrgApiFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionArn"
+
+  FunctionName:
+    Description: "Lambda Function Name"
+    Value: !Ref SoptOrgApiFunction
+    Export:
+      Name: !Sub "${AWS::StackName}-FunctionName"

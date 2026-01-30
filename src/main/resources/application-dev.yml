@@ -24,13 +24,19 @@ spring:
       ddl-auto: none
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-
     properties:
       hibernate:
         show_sql: true
         format_sql: true
         use_sql_comments: true
         default_schema: public
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 1  # 현재 상태를 baseline으로
+    locations: classpath:db/migration
+    clean-disabled: true  # 중요! 실수 방지
+
 
 springdoc:
   swagger-ui:

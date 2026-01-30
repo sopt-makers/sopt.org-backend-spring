@@ -1,25 +1,28 @@
 package sopt.org.homepage.review.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import sopt.org.homepage.common.type.PartType;
-import sopt.org.homepage.review.domain.vo.*;
+import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.review.domain.vo.CategoryType;
+import sopt.org.homepage.review.domain.vo.ReviewAuthor;
+import sopt.org.homepage.review.domain.vo.ReviewCategory;
+import sopt.org.homepage.review.domain.vo.ReviewContent;
+import sopt.org.homepage.review.domain.vo.ReviewSubjects;
+import sopt.org.homepage.review.domain.vo.ReviewUrl;
 import sopt.org.homepage.review.exception.DuplicateReviewUrlException;
 import sopt.org.homepage.review.exception.InvalidReviewSubjectException;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.*;
-
 /**
  * Review 엔티티 단위 테스트
- *
- * Rich Domain Model의 핵심:
- * - Mock 없이 순수 도메인 로직 테스트
- * - 팩토리 메서드 검증
- * - 비즈니스 규칙 검증
+ * <p>
+ * Rich Domain Model의 핵심: - Mock 없이 순수 도메인 로직 테스트 - 팩토리 메서드 검증 - 비즈니스 규칙 검증
  */
 @DisplayName("Review 엔티티 단위 테스트")
 class ReviewTest {

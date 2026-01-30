@@ -2,10 +2,10 @@ package sopt.org.homepage.review.service.command.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-import sopt.org.homepage.common.type.PartType;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.review.controller.dto.CreateReviewReq;
 import sopt.org.homepage.review.domain.vo.CategoryType;
-import sopt.org.homepage.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.infrastructure.external.scrap.dto.CreateScraperResponseDto;
 
 /**
  * 리뷰 생성 커맨드

@@ -1,0 +1,161 @@
+spring:
+  config:
+    activate:
+      on-profile: lambda-dev
+
+  # ============================================
+  # Lambda 최적화 설정
+  # ============================================
+  main:
+    lazy-initialization: true      # Cold Start 최적화
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+      file-size-threshold: 2KB
+
+  # ============================================
+  # 데이터베이스 설정 (Lambda 최적화)
+  # ============================================
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 1         # Lambda 단일 요청 처리
+      minimum-idle: 0              # Cold Start 최적화
+      connection-timeout: 5000     # 5초 (빠른 실패)
+      idle-timeout: 30000          # 30초
+      max-lifetime: 60000          # 60초 (Lambda 수명 고려)
+      validation-timeout: 2000
+      leak-detection-threshold: 20000
+      connection-test-query: SELECT 1
+      register-mbeans: false       # JMX MBean 비활성화
+
+  # ============================================
+  # JPA 설정
+  # ============================================
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        show_sql: false            # Lambda에서는 로깅 최소화
+        format_sql: false
+        use_sql_comments: false
+        default_schema: public
+    open-in-view: false            # Lambda 필수 설정
+
+  # ============================================
+  # Flyway 비활성화 (Lambda에서는 별도 마이그레이션)
+  # ============================================
+  flyway:
+    enabled: false
+
+# ============================================
+# Swagger/OpenAPI
+# ============================================
+#springdoc:
+#  swagger-ui:
+#    path: /api-docs
+#    operations-sorter: alpha
+#  api-docs:
+#    path: /api-docs
+#    groups:
+#      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    url: /v3/api-docs                    # ✨ /dev 제거됨
+    config-url: /v3/api-docs/swagger-config  # ✨ /dev 제거됨
+  api-docs:
+    path: /v3/api-docs
+
+
+# ============================================
+# 서버 설정
+# ============================================
+server:
+  servlet:
+    #context-path: /v2              # ✨ 이거 추가!
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+# ============================================
+# AWS 설정
+# ============================================
+aws:
+  region: ap-northeast-2
+  credentials:
+    access-key: ${APP_AWS_ACCESS_KEY_ID}
+    secret-key: ${APP_AWS_SECRET_ACCESS_KEY}
+  bucket:
+    image: ${BUCKET_NAME}
+    dir: develop/
+
+# ============================================
+# Internal API 설정
+# ============================================
+internal:
+  playground:
+    url: ${PLAYGROUND_API_URL}
+    token: ${PLAYGROUND_API_URL_JWT_TOKEN}
+  crew:
+    url: ${CREW_API_URL}
+    token: ${CREW_API_URL_JWT_TOKEN}
+  auth:
+    url: https://auth.api.sopt.org
+    api-key: ${AUTH_API_KEY}
+    service-name: ${OUR_SERVICE_NAME}
+
+# ============================================
+# JWT 설정
+# ============================================
+jwt:
+  access: ${ACCESS_TOKEN_SECRET}
+  refresh: ${REFRESH_TOKEN_SECRET}
+  admin: ${ADMIN_TOKEN_SECRET}
+
+# ============================================
+# Official API Key
+# ============================================
+official:
+  apikey: ${OFFICIAL_API_KEY}
+
+# ============================================
+# Sentry 설정
+# ============================================
+sentry:
+  dsn: ${DEV_SENTRY_DSN}
+  environment: lambda-dev
+  traces-sample-rate: 1.0
+  send-default-pii: false
+  enable-tracing: true
+  logging:
+    minimum-event-level: warn
+    minimum-breadcrumb-level: info
+
+# ============================================
+# Actuator 설정 (Lambda 최적화)
+# ============================================
+management:
+  health:
+    diskspace:
+      enabled: false               # Lambda 읽기 전용 파일시스템
+
+# ============================================
+# 로깅 설정 (Lambda 최적화)
+# ============================================
+logging:
+  level:
+    root: INFO
+    sopt.org.homepage: INFO
+    org.hibernate.SQL: WARN        # SQL 로깅 최소화
+    com.zaxxer.hikari: WARN
