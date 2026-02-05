@@ -28,12 +28,11 @@ jobs:
           docker tag ${{ secrets.PROD_ECR_REPO }}:latest public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
           docker push public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
 
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: ssh command deploy
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.PROD_HOST }}
@@ -51,16 +50,16 @@ jobs:
                 key=$(echo $name | awk -F'/' '{print $NF}')
                 echo "${key}=${value}"
             done > /tmp/.env
-            
+
             PARAM_COUNT=$(wc -l < /tmp/.env)
             echo "✅ ${PARAM_COUNT}개 파라미터 로드 완료"
-            
+
             if [ "$PARAM_COUNT" -lt 5 ]; then
               echo "❌ 파라미터가 너무 적습니다. 배포를 중단합니다."
               rm -f /tmp/.env
               exit 1
             fi
-            
+
             sudo docker stop spring-prod-server || true
             sudo docker rm spring-prod-server || true
             sudo docker image prune -a -f
@@ -69,5 +68,5 @@ jobs:
               --env-file /tmp/.env \
               -d -p 8080:8080 -t \
               public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
-            
+
             rm -f /tmp/.env

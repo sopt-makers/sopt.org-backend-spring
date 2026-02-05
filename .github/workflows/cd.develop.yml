@@ -28,49 +28,12 @@ jobs:
           docker tag ${{ secrets.DEV_ECR_REPO }}:latest public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
           docker push public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
 
-  # CD: EC2 배포.
+  # CD: EC2 배포
   deploy:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ap-northeast-2
-
-      - name: Fetch env from Parameter Store
-        run: |
-          aws ssm get-parameters-by-path \
-            --path "/sopt/dev/" \
-            --recursive \
-            --with-decryption \
-            --query "Parameters[*].[Name,Value]" \
-            --output text | while read name value; do
-              key=$(echo $name | awk -F'/' '{print $NF}')
-              echo "${key}=${value}"
-          done > /tmp/.env
-          
-          PARAM_COUNT=$(wc -l < /tmp/.env)
-          echo "✅ ${PARAM_COUNT}개 파라미터 로드 완료"
-          
-          if [ "$PARAM_COUNT" -lt 5 ]; then
-            echo "❌ 파라미터가 너무 적습니다. 배포를 중단합니다."
-            rm -f /tmp/.env
-            exit 1
-          fi
-
-      - name: Copy .env to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ec2-user
-          key: ${{ secrets.DEV_PEM_KEY }}
-          source: "/tmp/.env"
-          target: "/tmp/"
-
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
         with:
@@ -78,6 +41,28 @@ jobs:
           username: ec2-user
           key: ${{ secrets.DEV_PEM_KEY }}
           script: |
+            # Parameter Store에서 .env 생성
+            aws ssm get-parameters-by-path \
+              --path "/sopt/dev/" \
+              --recursive \
+              --with-decryption \
+              --query "Parameters[*].[Name,Value]" \
+              --output text \
+              --region ap-northeast-2 \
+              --profile team-org | while read name value; do
+                key=$(echo $name | awk -F'/' '{print $NF}')
+                echo "${key}=${value}"
+            done > /tmp/.env
+
+            PARAM_COUNT=$(wc -l < /tmp/.env)
+            echo "✅ ${PARAM_COUNT}개 파라미터 로드 완료"
+
+            if [ "$PARAM_COUNT" -lt 5 ]; then
+              echo "❌ 파라미터가 너무 적습니다. 배포를 중단합니다."
+              rm -f /tmp/.env
+              exit 1
+            fi
+
             sudo docker stop spring-dev-server || true
             sudo docker rm spring-dev-server || true
             sudo docker image prune -a -f
@@ -86,5 +71,5 @@ jobs:
               --env-file /tmp/.env \
               -d -p 8086:8080 -t \
               public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
-            
+
             rm -f /tmp/.env
