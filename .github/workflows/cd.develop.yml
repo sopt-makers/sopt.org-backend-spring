@@ -28,7 +28,7 @@ jobs:
           docker tag ${{ secrets.DEV_ECR_REPO }}:latest public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
           docker push public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
 
-  # CD: EC2 배포
+  # CD: EC2 배포.
   deploy:
     needs: build
     runs-on: ubuntu-latest
