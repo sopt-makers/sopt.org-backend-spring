@@ -6,6 +6,11 @@ on:
     branches:
       - 'main'
 
+env:
+  AWS_ACCOUNT_ID: k9s0h6l7
+  ECR_REPO: sopt-makers/official-homepage-spring-prod
+  ECR_PUBLIC_REGION: us-east-1
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,15 +23,15 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ap-northeast-2
 
       - name: Push Image to AWS ECR Public Repo
         id: ecr-image-push
         run: |
-          aws ecr-public get-login-password --region ${{ secrets.AWS_PUBLIC_REPO_REGION }} | docker login --username AWS --password-stdin public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}
-          docker build -t ${{ secrets.PROD_ECR_REPO }}:latest .
-          docker tag ${{ secrets.PROD_ECR_REPO }}:latest public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
-          docker push public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
+          aws ecr-public get-login-password --region ${{ env.ECR_PUBLIC_REGION }} | docker login --username AWS --password-stdin public.ecr.aws/${{ env.AWS_ACCOUNT_ID }}
+          docker build -t ${{ env.ECR_REPO }}:latest .
+          docker tag ${{ env.ECR_REPO }}:latest public.ecr.aws/${{ env.AWS_ACCOUNT_ID }}/${{ env.ECR_REPO }}:latest
+          docker push public.ecr.aws/${{ env.AWS_ACCOUNT_ID }}/${{ env.ECR_REPO }}:latest
 
   deploy:
     needs: build
@@ -63,10 +68,10 @@ jobs:
             sudo docker stop spring-prod-server || true
             sudo docker rm spring-prod-server || true
             sudo docker image prune -a -f
-            sudo docker pull public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
+            sudo docker pull public.ecr.aws/k9s0h6l7/sopt-makers/official-homepage-spring-prod:latest
             sudo docker run --name spring-prod-server \
               --env-file /tmp/.env \
               -d -p 8080:8080 -t \
-              public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
+              public.ecr.aws/k9s0h6l7/sopt-makers/official-homepage-spring-prod:latest
 
             rm -f /tmp/.env
