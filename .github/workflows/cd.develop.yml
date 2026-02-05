@@ -21,32 +21,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Delete all ECR images
-        env:
-          ECR_REPOSITORY: ${{ secrets.DEV_ECR_REPO }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_PUBLIC_REPO_REGION: ${{ secrets.AWS_PUBLIC_REPO_REGION }}
-        run: |
-          echo "Deleting all images from ECR repository: $ECR_REPOSITORY"
-          
-          IMAGE_IDS=$(aws ecr-public describe-images \
-            --region $AWS_PUBLIC_REPO_REGION \
-            --repository-name $ECR_REPOSITORY \
-            --query 'imageDetails[*].{imageDigest:imageDigest}' \
-            --output json 2>/dev/null || echo "[]")
-          
-          if [ "$IMAGE_IDS" != "[]" ] && [ "$IMAGE_IDS" != "" ]; then
-            echo "Found images to delete..."
-            aws ecr-public batch-delete-image \
-              --region $AWS_PUBLIC_REPO_REGION \
-              --repository-name $ECR_REPOSITORY \
-              --image-ids "$IMAGE_IDS" \
-              && echo "Successfully deleted all images" \
-              || echo "Failed to delete some images"
-          else
-            echo "No images to delete or repository is empty"
-          fi
-
       - name: Build and Push Image to AWS ECR Public Repo
         run: |
           aws ecr-public get-login-password --region ${{ secrets.AWS_PUBLIC_REPO_REGION }} | docker login --username AWS --password-stdin public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}
@@ -67,8 +41,35 @@ jobs:
           username: ec2-user
           key: ${{ secrets.DEV_PEM_KEY }}
           script: |
-            sudo docker stop spring-dev-server
-            sudo docker rm spring-dev-server
+            # Parameter Store에서 .env 생성
+            aws ssm get-parameters-by-path \
+              --path "/sopt/dev/" \
+              --recursive \
+              --with-decryption \
+              --query "Parameters[*].[Name,Value]" \
+              --output text \
+              --region ap-northeast-2 \
+              --profile team-org | while read name value; do
+                key=$(echo $name | awk -F'/' '{print $NF}')
+                echo "${key}=${value}"
+            done > /tmp/.env
+
+            PARAM_COUNT=$(wc -l < /tmp/.env)
+            echo "✅ ${PARAM_COUNT}개 파라미터 로드 완료"
+
+            if [ "$PARAM_COUNT" -lt 5 ]; then
+              echo "❌ 파라미터가 너무 적습니다. 배포를 중단합니다."
+              rm -f /tmp/.env
+              exit 1
+            fi
+
+            sudo docker stop spring-dev-server || true
+            sudo docker rm spring-dev-server || true
             sudo docker image prune -a -f
             sudo docker pull public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
-            sudo docker run --name spring-dev-server --env-file /home/ec2-user/official/.env -d -p 8086:8080 -t public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
+            sudo docker run --name spring-dev-server \
+              --env-file /tmp/.env \
+              -d -p 8086:8080 -t \
+              public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.DEV_ECR_REPO }}:latest
+
+            rm -f /tmp/.env
