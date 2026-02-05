@@ -29,45 +29,45 @@ jobs:
           docker push public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
 
 
-deploy:
-  needs: build
-  runs-on: ubuntu-latest
-  steps:
-    - name: ssh command deploy
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.PROD_HOST }}
-        username: ubuntu
-        key: ${{ secrets.PEM_KEY }}
-        script: |
-          # Parameter Store에서 .env 생성
-          aws ssm get-parameters-by-path \
-            --path "/sopt/prod/" \
-            --recursive \
-            --with-decryption \
-            --query "Parameters[*].[Name,Value]" \
-            --output text \
-            --region ap-northeast-2 | while read name value; do
-              key=$(echo $name | awk -F'/' '{print $NF}')
-              echo "${key}=${value}"
-          done > /tmp/.env
-          
-          PARAM_COUNT=$(wc -l < /tmp/.env)
-          echo "✅ ${PARAM_COUNT}개 파라미터 로드 완료"
-          
-          if [ "$PARAM_COUNT" -lt 5 ]; then
-            echo "❌ 파라미터가 너무 적습니다. 배포를 중단합니다."
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: ssh command deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PROD_HOST }}
+          username: ubuntu
+          key: ${{ secrets.PEM_KEY }}
+          script: |
+            # Parameter Store에서 .env 생성
+            aws ssm get-parameters-by-path \
+              --path "/sopt/prod/" \
+              --recursive \
+              --with-decryption \
+              --query "Parameters[*].[Name,Value]" \
+              --output text \
+              --region ap-northeast-2 | while read name value; do
+                key=$(echo $name | awk -F'/' '{print $NF}')
+                echo "${key}=${value}"
+            done > /tmp/.env
+            
+            PARAM_COUNT=$(wc -l < /tmp/.env)
+            echo "✅ ${PARAM_COUNT}개 파라미터 로드 완료"
+            
+            if [ "$PARAM_COUNT" -lt 5 ]; then
+              echo "❌ 파라미터가 너무 적습니다. 배포를 중단합니다."
+              rm -f /tmp/.env
+              exit 1
+            fi
+            
+            sudo docker stop spring-prod-server || true
+            sudo docker rm spring-prod-server || true
+            sudo docker image prune -a -f
+            sudo docker pull public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
+            sudo docker run --name spring-prod-server \
+              --env-file /tmp/.env \
+              -d -p 8080:8080 -t \
+              public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
+            
             rm -f /tmp/.env
-            exit 1
-          fi
-          
-          sudo docker stop spring-prod-server || true
-          sudo docker rm spring-prod-server || true
-          sudo docker image prune -a -f
-          sudo docker pull public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
-          sudo docker run --name spring-prod-server \
-            --env-file /tmp/.env \
-            -d -p 8080:8080 -t \
-            public.ecr.aws/${{ secrets.AWS_ACCOUNT_ID }}/${{ secrets.PROD_ECR_REPO }}:latest
-          
-          rm -f /tmp/.env
