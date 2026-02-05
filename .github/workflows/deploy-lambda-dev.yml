@@ -32,7 +32,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ap-northeast-2
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -54,32 +54,65 @@ jobs:
       - name: Install SAM CLI
         uses: aws-actions/setup-sam@v2
 
+      - name: Fetch params from Parameter Store
+        run: |
+          get_param() {
+            aws ssm get-parameter \
+              --name "/sopt/lambda-dev/$1" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text \
+              --region ${{ env.AWS_REGION }}
+          }
+
+          echo "DB_HOST=$(get_param DB_HOST)" >> $GITHUB_ENV
+          echo "DB_PORT=$(get_param DB_PORT)" >> $GITHUB_ENV
+          echo "DB_DATABASE=$(get_param DB_DATABASE)" >> $GITHUB_ENV
+          echo "DB_USERNAME=$(get_param DB_USERNAME)" >> $GITHUB_ENV
+          echo "DB_PASSWORD=$(get_param DB_PASSWORD)" >> $GITHUB_ENV
+          echo "LAMBDA_ACCESS_KEY=$(get_param AWS_ACCESS_KEY_ID)" >> $GITHUB_ENV
+          echo "LAMBDA_SECRET_KEY=$(get_param AWS_SECRET_ACCESS_KEY)" >> $GITHUB_ENV
+          echo "BUCKET_NAME=$(get_param BUCKET_NAME)" >> $GITHUB_ENV
+          echo "PLAYGROUND_API_URL=$(get_param PLAYGROUND_API_URL)" >> $GITHUB_ENV
+          echo "PLAYGROUND_API_TOKEN=$(get_param PLAYGROUND_API_URL_JWT_TOKEN)" >> $GITHUB_ENV
+          echo "CREW_API_URL=$(get_param CREW_API_URL)" >> $GITHUB_ENV
+          echo "CREW_API_TOKEN=$(get_param CREW_API_URL_JWT_TOKEN)" >> $GITHUB_ENV
+          echo "AUTH_API_KEY=$(get_param AUTH_API_KEY)" >> $GITHUB_ENV
+          echo "OUR_SERVICE_NAME=$(get_param OUR_SERVICE_NAME)" >> $GITHUB_ENV
+          echo "ACCESS_TOKEN_SECRET=$(get_param ACCESS_TOKEN_SECRET)" >> $GITHUB_ENV
+          echo "REFRESH_TOKEN_SECRET=$(get_param REFRESH_TOKEN_SECRET)" >> $GITHUB_ENV
+          echo "ADMIN_TOKEN_SECRET=$(get_param ADMIN_TOKEN_SECRET)" >> $GITHUB_ENV
+          echo "OFFICIAL_API_KEY=$(get_param OFFICIAL_API_KEY)" >> $GITHUB_ENV
+          echo "SENTRY_DSN=$(get_param DEV_SENTRY_DSN)" >> $GITHUB_ENV
+
+          echo "✅ Parameter Store에서 19개 파라미터 로드 완료"
+
       - name: Create parameter file
         run: |
-          cat > params.json << 'EOF'
+          cat > params.json << EOF
           {
             "S3Bucket": "${{ env.S3_BUCKET }}",
             "S3Key": "${{ env.S3_KEY }}",
             "SpringProfile": "lambda-dev",
-            "DbHost": "${{ secrets.DEV_DB_HOST }}",
-            "DbPort": "${{ secrets.DEV_DB_PORT }}",
-            "DbDatabase": "${{ secrets.DEV_DB_DATABASE }}",
-            "DbUsername": "${{ secrets.DEV_DB_USERNAME }}",
-            "DbPassword": "${{ secrets.DEV_DB_PASSWORD }}",
-            "AwsAccessKeyId": "${{ secrets.LAMBDA_AWS_ACCESS_KEY_ID }}",
-            "AwsSecretAccessKey": "${{ secrets.LAMBDA_AWS_SECRET_ACCESS_KEY }}",
-            "BucketName": "${{ secrets.S3_BUCKET_NAME }}",
-            "PlaygroundApiUrl": "${{ secrets.DEV_PLAYGROUND_API_URL }}",
-            "PlaygroundApiToken": "${{ secrets.DEV_PLAYGROUND_API_TOKEN }}",
-            "CrewApiUrl": "${{ secrets.DEV_CREW_API_URL }}",
-            "CrewApiToken": "${{ secrets.DEV_CREW_API_TOKEN }}",
-            "AuthApiKey": "${{ secrets.DEV_AUTH_API_KEY }}",
-            "OurServiceName": "${{ secrets.DEV_SERVICE_NAME }}",
-            "AccessTokenSecret": "${{ secrets.ACCESS_TOKEN_SECRET }}",
-            "RefreshTokenSecret": "${{ secrets.REFRESH_TOKEN_SECRET }}",
-            "AdminTokenSecret": "${{ secrets.ADMIN_TOKEN_SECRET }}",
-            "OfficialApiKey": "${{ secrets.OFFICIAL_API_KEY }}",
-            "SentryDsn": "${{ secrets.DEV_SENTRY_DSN }}"
+            "DbHost": "${{ env.DB_HOST }}",
+            "DbPort": "${{ env.DB_PORT }}",
+            "DbDatabase": "${{ env.DB_DATABASE }}",
+            "DbUsername": "${{ env.DB_USERNAME }}",
+            "DbPassword": "${{ env.DB_PASSWORD }}",
+            "AwsAccessKeyId": "${{ env.LAMBDA_ACCESS_KEY }}",
+            "AwsSecretAccessKey": "${{ env.LAMBDA_SECRET_KEY }}",
+            "BucketName": "${{ env.BUCKET_NAME }}",
+            "PlaygroundApiUrl": "${{ env.PLAYGROUND_API_URL }}",
+            "PlaygroundApiToken": "${{ env.PLAYGROUND_API_TOKEN }}",
+            "CrewApiUrl": "${{ env.CREW_API_URL }}",
+            "CrewApiToken": "${{ env.CREW_API_TOKEN }}",
+            "AuthApiKey": "${{ env.AUTH_API_KEY }}",
+            "OurServiceName": "${{ env.OUR_SERVICE_NAME }}",
+            "AccessTokenSecret": "${{ env.ACCESS_TOKEN_SECRET }}",
+            "RefreshTokenSecret": "${{ env.REFRESH_TOKEN_SECRET }}",
+            "AdminTokenSecret": "${{ env.ADMIN_TOKEN_SECRET }}",
+            "OfficialApiKey": "${{ env.OFFICIAL_API_KEY }}",
+            "SentryDsn": "${{ env.SENTRY_DSN }}"
           }
           EOF
           
