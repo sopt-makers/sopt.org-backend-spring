@@ -2,7 +2,6 @@ package sopt.org.homepage.project;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sopt.org.homepage.global.common.dto.PaginateResponseDto;
@@ -19,7 +18,7 @@ public class ProjectService {
     private final ArrayUtil arrayUtil;
 
     public PaginateResponseDto<ProjectsResponseDto> paginateProjects(GetProjectsRequestDto dto) {
-        var allProjects = findAll(dto);
+        List<ProjectsResponseDto> allProjects = playgroundService.getAllProjects(dto);
         allProjects.sort(Comparator.comparing(
                 ProjectsResponseDto::getGeneration,
                 Comparator.nullsLast(Comparator.reverseOrder())
@@ -35,18 +34,7 @@ public class ProjectService {
         );
     }
 
-    public List<ProjectsResponseDto> findAll(GetProjectsRequestDto dto) {
-        return playgroundService.getAllProjects(dto);
-    }
-
     public ProjectDetailResponseDto findOne(Long projectId) {
         return playgroundService.getProjectDetail(projectId);
-    }
-
-    public List<ProjectsResponseDto> findByGeneration(Integer generation) {
-        var allProjects = findAll(new GetProjectsRequestDto(1, Integer.MAX_VALUE, null, null));
-        return allProjects.stream()
-                .filter(project -> project.getGeneration() != null && project.getGeneration().equals(generation))
-                .collect(Collectors.toList());
     }
 }
