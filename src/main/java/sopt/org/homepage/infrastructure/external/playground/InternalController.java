@@ -14,6 +14,9 @@ import sopt.org.homepage.global.config.AuthConfig;
 import sopt.org.homepage.global.exception.BusinessLogicException;
 import sopt.org.homepage.infrastructure.external.playground.dto.request.ScrapLinkRequestDto;
 import sopt.org.homepage.infrastructure.external.playground.dto.response.ScrapLinkResponseDto;
+import sopt.org.homepage.infrastructure.external.scrap.dto.CreateScraperResponseDto;
+import sopt.org.homepage.infrastructure.external.scrap.dto.ScrapArticleDto;
+import sopt.org.homepage.infrastructure.external.scrap.service.ScraperService;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,7 +24,7 @@ import sopt.org.homepage.infrastructure.external.playground.dto.response.ScrapLi
 @Tag(name = "Internal")
 public class InternalController {
 
-    private final PlaygroundService playgroundService;
+    private final ScraperService scraperService;
     private final AuthConfig authConfig;
 
     @PostMapping("scrap")
@@ -38,9 +41,18 @@ public class InternalController {
             throw new BusinessLogicException("api-key is invalid");
         }
 
-        return ResponseEntity.ok(playgroundService.scrapLink(dto));
+        CreateScraperResponseDto scrapResult = scraperService.scrap(
+                new ScrapArticleDto(dto.getLink())
+        );
+
+        return ResponseEntity.ok(
+                ScrapLinkResponseDto.builder()
+                        .thumbnailUrl(scrapResult.getThumbnailUrl())
+                        .title(scrapResult.getTitle())
+                        .description(scrapResult.getDescription())
+                        .url(scrapResult.getArticleUrl())
+                        .build()
+        );
     }
-
 }
-
 
