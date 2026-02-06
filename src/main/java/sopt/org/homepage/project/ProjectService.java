@@ -1,5 +1,6 @@
 package sopt.org.homepage.project;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,6 @@ import sopt.org.homepage.infrastructure.external.playground.PlaygroundService;
 import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
 import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
 import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
-import sopt.org.homepage.project.util.ProjectComparator;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +20,10 @@ public class ProjectService {
 
     public PaginateResponseDto<ProjectsResponseDto> paginateProjects(GetProjectsRequestDto dto) {
         var allProjects = findAll(dto);
-        allProjects.sort(ProjectComparator::compare);
+        allProjects.sort(Comparator.comparing(
+                ProjectsResponseDto::getGeneration,
+                Comparator.nullsLast(Comparator.reverseOrder())
+        ));
 
         var paginatedProject = arrayUtil.paginateArray(allProjects, dto.getPageNo(), dto.getLimit());
 
