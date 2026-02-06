@@ -13,18 +13,16 @@ import sopt.org.homepage.global.common.mapper.ResponseMapper;
 import sopt.org.homepage.global.common.util.ArrayUtil;
 import sopt.org.homepage.global.config.AuthConfig;
 import sopt.org.homepage.infrastructure.cache.CacheService;
-import sopt.org.homepage.infrastructure.external.playground.dto.PlaygroundMemberListResponse;
 import sopt.org.homepage.infrastructure.external.playground.dto.PlaygroundProjectAxiosResponseDto;
 import sopt.org.homepage.infrastructure.external.playground.dto.PlaygroundProjectResponseDto;
-import sopt.org.homepage.infrastructure.external.playground.dto.PlaygroundUserResponse;
 import sopt.org.homepage.infrastructure.external.playground.dto.request.ScrapLinkRequestDto;
 import sopt.org.homepage.infrastructure.external.playground.dto.response.ScrapLinkResponseDto;
-import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
-import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
-import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 import sopt.org.homepage.infrastructure.external.scrap.dto.CreateScraperResponseDto;
 import sopt.org.homepage.infrastructure.external.scrap.dto.ScrapArticleDto;
 import sopt.org.homepage.infrastructure.external.scrap.service.ScraperService;
+import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
+import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
+import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 
 @Slf4j
 @Service
@@ -38,10 +36,6 @@ public class PlaygroundServiceImpl implements PlaygroundService {
     private static final String PROJECT_CACHE_KEY = "all_projects";
     private final ScraperService scraperService;
 
-    @Override
-    public PlaygroundUserResponse getPlaygroundUserInfo(String authToken) {
-        return playgroundClient.getPlaygroundUser(authToken);
-    }
 
     @Override
     public List<ProjectsResponseDto> getAllProjects(GetProjectsRequestDto projectRequest) {
@@ -137,10 +131,6 @@ public class PlaygroundServiceImpl implements PlaygroundService {
         return responseMapper.toProjectDetailResponse(projectResponse);
     }
 
-    @Override
-    public PlaygroundMemberListResponse getAllMembers(Integer generation) {
-        return playgroundClient.getAllMembers(authConfig.getPlaygroundToken(), null, generation);
-    }
 
     @Override
     public ScrapLinkResponseDto scrapLink(ScrapLinkRequestDto dto) {
