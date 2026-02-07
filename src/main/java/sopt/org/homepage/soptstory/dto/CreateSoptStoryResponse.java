@@ -1,4 +1,4 @@
-package sopt.org.homepage.soptstory.controller.dto;
+package sopt.org.homepage.soptstory.dto;
 
 /**
  * SoptStory 생성 응답 DTO

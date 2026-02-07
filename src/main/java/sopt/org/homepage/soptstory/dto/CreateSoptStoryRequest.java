@@ -1,5 +1,4 @@
-
-package sopt.org.homepage.soptstory.controller.dto;
+package sopt.org.homepage.soptstory.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
