@@ -1,4 +1,4 @@
-package sopt.org.homepage.soptstory.controller.dto;
+package sopt.org.homepage.soptstory.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
