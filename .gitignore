@@ -61,7 +61,7 @@ bin/
 .vscode/
 
 ### config yml ###
-.env
+*.env
 
 ### Some additional ignores
 *.DS_Store
