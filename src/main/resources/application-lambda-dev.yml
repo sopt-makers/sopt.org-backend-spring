@@ -146,6 +146,13 @@ sentry:
 # Actuator 설정 (Lambda 최적화)
 # ============================================
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics
+  endpoint:
+    metrics:
+      enabled: true
   health:
     diskspace:
       enabled: false               # Lambda 읽기 전용 파일시스템
@@ -159,3 +166,6 @@ logging:
     sopt.org.homepage: INFO
     org.hibernate.SQL: WARN        # SQL 로깅 최소화
     com.zaxxer.hikari: WARN
+
+
+
