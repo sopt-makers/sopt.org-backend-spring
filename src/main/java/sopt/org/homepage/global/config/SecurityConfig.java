@@ -55,6 +55,7 @@ public class SecurityConfig {
                                         .of(SWAGGER_URL)
                                         .map(AntPathRequestMatcher::antMatcher)
                                         .toArray(AntPathRequestMatcher[]::new)).permitAll()
+                                .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers(Stream
                                         .of(WHITELIST_URL)
                                         .map(AntPathRequestMatcher::antMatcher)

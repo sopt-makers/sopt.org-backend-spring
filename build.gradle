@@ -98,6 +98,9 @@ dependencies {
     implementation 'com.amazonaws:aws-lambda-java-core:1.4.0'
     implementation 'com.amazonaws:aws-lambda-java-events:3.16.1'
 
+    // Actuator + Micrometer (캐시 메트릭 계측용)
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
