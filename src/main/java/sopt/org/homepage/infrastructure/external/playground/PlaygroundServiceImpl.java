@@ -1,6 +1,5 @@
 package sopt.org.homepage.infrastructure.external.playground;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import sopt.org.homepage.global.common.constants.CacheType;
 import sopt.org.homepage.global.common.mapper.ResponseMapper;
 import sopt.org.homepage.global.common.util.ArrayUtil;
 import sopt.org.homepage.global.config.AuthConfig;
@@ -63,25 +61,35 @@ public class PlaygroundServiceImpl implements PlaygroundService {
      * <p>Micrometer 메트릭으로 캐시 히트/미스를 계측한다.</p>
      */
     private List<PlaygroundProjectResponseDto> fetchProjectsWithCache() {
-        List<PlaygroundProjectResponseDto> cached = cacheService.get(
-                CacheType.PROJECT_LIST, PROJECT_CACHE_KEY, new TypeReference<>() {
-                }
-        );
-        if (cached != null) {
-            meterRegistry.counter(PlaygroundMetrics.CACHE_HIT).increment();     // 🆕
-            return cached;
-        }
+//        List<PlaygroundProjectResponseDto> cached = cacheService.get(
+//                CacheType.PROJECT_LIST, PROJECT_CACHE_KEY, new TypeReference<>() {
+//                }
+//        );
+//        if (cached != null) {
+//            meterRegistry.counter(PlaygroundMetrics.CACHE_HIT).increment();     // 🆕
+//            return cached;
+//        }
+//
+//        meterRegistry.counter(PlaygroundMetrics.CACHE_MISS).increment();        // 🆕
+//
+//        try {
+//            List<PlaygroundProjectResponseDto> fetched = fetchAllFromApi();
+//            cacheService.put(CacheType.PROJECT_LIST, PROJECT_CACHE_KEY, fetched);
+//            return fetched;
+//        } catch (Exception e) {
+//            log.error("Failed to fetch projects from Playground API", e);
+//            return Collections.emptyList();
+//        }
 
-        meterRegistry.counter(PlaygroundMetrics.CACHE_MISS).increment();        // 🆕
-
+        // Baseline 측정: 캐시 비활성화 — 매 요청마다 외부 API 직접 호출
+        meterRegistry.counter(PlaygroundMetrics.CACHE_MISS).increment();
         try {
-            List<PlaygroundProjectResponseDto> fetched = fetchAllFromApi();
-            cacheService.put(CacheType.PROJECT_LIST, PROJECT_CACHE_KEY, fetched);
-            return fetched;
+            return fetchAllFromApi();
         } catch (Exception e) {
             log.error("Failed to fetch projects from Playground API", e);
             return Collections.emptyList();
         }
+
     }
 
     /**
