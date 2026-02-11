@@ -10,6 +10,10 @@ const warmLatency = new Trend('warm_request_latency', true);
 const coldCount = new Counter('cold_request_count');
 const warmCount = new Counter('warm_request_count');
 
+const VUS = Number(__ENV.VUS || 10);
+const ITERATIONS = Number(__ENV.ITERATIONS || 20);
+
+
 // ============================================
 // 테스트 설정
 // ============================================
@@ -27,8 +31,9 @@ export const options = {
     scenarios: {
         cold_warm_test: {
             executor: 'per-vu-iterations',
-            vus: 10,                 // 10개 VU (Lambda에서는 각각 별도 인스턴스 가능)
-            iterations: 20,          // VU당 20회 반복 (총 200 요청)
+            vus: VUS,               // VU 수 (env로 조절 가능)
+            iterations: ITERATIONS, // VU당 반복 횟수 (env로 조절 가능)
+
         },
     },
     thresholds: {
@@ -50,8 +55,8 @@ export function setup() {
     console.log('========================================');
     console.log('Cold/Warm Split Measurement');
     console.log(`Target URL: ${PROJECTS_URL}`);
-    console.log(`VUs: ${options.scenarios.cold_warm_test.vus}`);
-    console.log(`Iterations per VU: ${options.scenarios.cold_warm_test.iterations}`);
+    console.log(`VUs: ${VUS}`);
+    console.log(`Iterations per VU: ${ITERATIONS}`);
     console.log('========================================');
 
     return {projectsUrl: PROJECTS_URL};
