@@ -33,7 +33,7 @@ export const options = {
             executor: 'per-vu-iterations',
             vus: VUS,               // VU 수 (env로 조절 가능)
             iterations: ITERATIONS, // VU당 반복 횟수 (env로 조절 가능)
-
+            maxDuration: '12h', // ✅ 추가 (충분히 크게)
         },
     },
     thresholds: {
