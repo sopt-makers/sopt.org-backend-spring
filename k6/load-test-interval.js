@@ -51,6 +51,7 @@ export const options = {
             executor: 'per-vu-iterations',
             vus: 1,
             iterations: ITERATION_COUNT,
+            maxDuration: '12h', // ✅ 추가 (충분히 크게)
         },
     },
     // 간격 테스트는 장시간 실행되므로 타임아웃을 넉넉하게
