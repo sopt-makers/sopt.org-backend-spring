@@ -34,6 +34,7 @@ export const options = {
             vus: VUS,               // VU 수 (env로 조절 가능)
             iterations: ITERATIONS, // VU당 반복 횟수 (env로 조절 가능)
 
+
         },
     },
     thresholds: {

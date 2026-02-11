@@ -117,6 +117,14 @@ Parameters:
     Type: String
     Description: Sentry DSN
 
+  # Redis 설정
+  RedisHost:
+    Type: String
+    Description: Redis host address
+  RedisPort:
+    Type: String
+    Description: Redis port
+
 # ============================================
 # 리소스 정의
 # ============================================
@@ -175,6 +183,10 @@ Resources:
 
           # Sentry
           DEV_SENTRY_DSN: !Ref SentryDsn
+
+          # Redis
+          REDIS_HOST: !Ref RedisHost
+          REDIS_PORT: !Ref RedisPort
 
       # IAM 권한
       Policies:

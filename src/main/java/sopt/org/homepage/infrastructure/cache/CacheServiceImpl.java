@@ -6,10 +6,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import sopt.org.homepage.global.common.constants.CacheType;
 
 @Service
+@Profile("!lambda-dev")
 @RequiredArgsConstructor
 @Slf4j
 public class CacheServiceImpl implements CacheService {

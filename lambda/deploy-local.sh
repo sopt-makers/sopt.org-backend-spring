@@ -118,7 +118,9 @@ cat > "$PARAMS_FILE" << EOF
     "RefreshTokenSecret": "${REFRESH_TOKEN_SECRET}",
     "AdminTokenSecret": "${ADMIN_TOKEN_SECRET}",
     "OfficialApiKey": "${OFFICIAL_API_KEY}",
-    "SentryDsn": "${DEV_SENTRY_DSN}"
+    "SentryDsn": "${DEV_SENTRY_DSN}",
+    "RedisHost": "${REDIS_HOST}",
+    "RedisPort": "${REDIS_PORT}"
 }
 EOF
 
