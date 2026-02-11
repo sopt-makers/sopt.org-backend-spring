@@ -112,7 +112,9 @@ jobs:
             "RefreshTokenSecret": "${{ env.REFRESH_TOKEN_SECRET }}",
             "AdminTokenSecret": "${{ env.ADMIN_TOKEN_SECRET }}",
             "OfficialApiKey": "${{ env.OFFICIAL_API_KEY }}",
-            "SentryDsn": "${{ env.SENTRY_DSN }}"
+            "SentryDsn": "${{ env.SENTRY_DSN }}",
+            "RedisHost": "${{ env.REDIS_HOST }}",
+            "RedisPort": "${{ env.REDIS_PORT }}"
           }
           EOF
           
