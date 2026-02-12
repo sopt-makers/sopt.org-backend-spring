@@ -92,3 +92,17 @@ sentry:
     minimum-event-level: warn
     minimum-breadcrumb-level: info
 
+# ============================================
+# Actuator 설정 (메트릭 노출)
+# ============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+    metrics:
+      enabled: true

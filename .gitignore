@@ -61,7 +61,7 @@ bin/
 .vscode/
 
 ### config yml ###
-.env
+*.env
 
 ### Some additional ignores
 *.DS_Store
@@ -71,3 +71,9 @@ bin/
 src/main/resources/application.yml
 
 lambda/.env
+
+# k6 결과 파일 (용량이 클 수 있음)
+
+results/*.json
+results/*.csv
+!results/.gitkeep

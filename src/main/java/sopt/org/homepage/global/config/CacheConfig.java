@@ -11,11 +11,13 @@ import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import sopt.org.homepage.global.common.constants.CacheType;
 
 @Configuration
 @EnableCaching
+@Profile("!lambda-dev")
 @Getter
 @EnableScheduling
 public class CacheConfig {

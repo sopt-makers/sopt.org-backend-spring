@@ -107,7 +107,7 @@ AlreadyLikedException(...);
 - ✅ 불변 VO로 상태 관리 (LikeCount.increment() → 새 객체 반환)
 
 **결론:** 상태 변화 + 도메인 불변식 → **Full DDD 유지**
-
+**결론 (v2 재평가):** 상태 변화가 있으나 int 증감 수준. 조건부 검증, 필드 간 관계, 복잡한 계산 모두 없음. → **Light로 전환**
 ---
 
 ### 2.2 Light 단순화 대상 (단순 CRUD)
