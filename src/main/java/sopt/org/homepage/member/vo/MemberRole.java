@@ -18,17 +18,18 @@ public enum MemberRole {
     OPERATION_TEAM_LEADER("운영 팀장", 4),
     MEDIA_TEAM_LEADER("미디어 팀장", 5),
     MAKERS_TEAM_LEADER("메이커스 팀장", 6),
-    PLANNING_TEAM_LEADER("기획 팀장", 7),
-    DESIGN_TEAM_LEADER("디자인 팀장", 8),
-    PLAN_LEADER("기획 파트장", 9),
-    DESIGN_LEADER("디자인 파트장", 10),
-    ANDROID_LEADER("안드로이드 파트장", 11),
-    IOS_LEADER("iOS 파트장", 12),
-    WEB_LEADER("웹 파트장", 13),
-    SERVER_LEADER("서버 파트장", 14),
-    MEDIA_TEAM_MEMBER("미디어팀", 15),
-    PLANNING_TEAM_MEMBER("기획팀", 16),
-    DESIGN_TEAM_MEMBER("디자인팀", 17);
+    ART_DIRECTOR("아트디렉터", 7),
+    PLANNING_TEAM_LEADER("기획 팀장", 8),
+    DESIGN_TEAM_LEADER("디자인 팀장", 9),
+    PLAN_LEADER("기획 파트장", 10),
+    DESIGN_LEADER("디자인 파트장", 11),
+    ANDROID_LEADER("안드로이드 파트장", 12),
+    IOS_LEADER("iOS 파트장", 13),
+    WEB_LEADER("웹 파트장", 14),
+    SERVER_LEADER("서버 파트장", 15),
+    MEDIA_TEAM_MEMBER("미디어팀", 16),
+    PLANNING_TEAM_MEMBER("기획팀", 17),
+    DESIGN_TEAM_MEMBER("디자인팀", 18);
 
     private final String displayName;
     private final int order;
@@ -44,7 +45,6 @@ public enum MemberRole {
             throw new IllegalArgumentException("Role must not be blank");
         }
 
-        // 레거시 매핑 (기존 "회장", "부회장" 등의 문자열 그대로 사용)
         return switch (role) {
             case "회장" -> PRESIDENT;
             case "부회장" -> VICE_PRESIDENT;
@@ -52,6 +52,7 @@ public enum MemberRole {
             case "운영 팀장" -> OPERATION_TEAM_LEADER;
             case "미디어 팀장" -> MEDIA_TEAM_LEADER;
             case "메이커스 팀장" -> MAKERS_TEAM_LEADER;
+            case "아트디렉터" -> ART_DIRECTOR;
             case "기획", "기획 파트장" -> PLANNING_TEAM_LEADER;
             case "디자인", "디자인 팀장", "디자인 파트장" -> DESIGN_TEAM_LEADER;
             case "안드로이드", "안드로이드 파트장" -> ANDROID_LEADER;
