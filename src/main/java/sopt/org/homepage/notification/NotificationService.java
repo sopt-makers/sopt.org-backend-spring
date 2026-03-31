@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sopt.org.homepage.notification.exception.DuplicateNotificationException;
+import sopt.org.homepage.notification.exception.NotificationDomainException;
 
 /**
  * Notification Service
@@ -29,7 +29,7 @@ public class NotificationService {
      * @param email      이메일
      * @param generation 기수
      * @return 등록된 알림
-     * @throws DuplicateNotificationException 중복 등록 시
+     * @throws NotificationDomainException 중복 등록 시
      */
     @Transactional
     public Notification register(String email, Integer generation) {
@@ -38,7 +38,7 @@ public class NotificationService {
         // 중복 검사
         if (notificationRepository.existsByEmailAndGeneration(email, generation)) {
             log.warn("중복 알림 등록 시도 차단 - email={}, generation={}", email, generation);
-            throw new DuplicateNotificationException(email, generation);
+            throw NotificationDomainException.duplicateNotification(email, generation);
         }
 
         // 저장

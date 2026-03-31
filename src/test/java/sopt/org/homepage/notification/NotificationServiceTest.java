@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import sopt.org.homepage.common.IntegrationTestBase;
-import sopt.org.homepage.notification.exception.DuplicateNotificationException;
+import sopt.org.homepage.notification.exception.NotificationDomainException;
 
 /**
  * Notification 통합 테스트
@@ -65,7 +65,7 @@ class NotificationServiceTest extends IntegrationTestBase {
 
             // when & then
             assertThatThrownBy(() -> notificationService.register(email, generation))
-                    .isInstanceOf(DuplicateNotificationException.class)
+                    .isInstanceOf(NotificationDomainException.class)
                     .hasMessageContaining("이미 등록된 알림")
                     .hasMessageContaining(email);
         }
