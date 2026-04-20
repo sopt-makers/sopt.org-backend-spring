@@ -12,7 +12,7 @@ import sopt.org.homepage.application.recruitpage.service.RecruitPageService;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("recruit-page")
+@RequestMapping("recruit")
 @Tag(name = "Recruit Page", description = "지원서 API")
 public class RecruitPageController {
 
