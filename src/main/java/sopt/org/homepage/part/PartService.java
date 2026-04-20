@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.global.exception.NotFoundException;
 import sopt.org.homepage.part.dto.BulkCreatePartsCommand;
 import sopt.org.homepage.part.dto.PartCurriculumView;
 import sopt.org.homepage.part.dto.PartDetailView;
@@ -104,6 +105,7 @@ public class PartService {
     }
 
 
+
     /**
      * 특정 기수의 모든 파트 소개 조회 (Main 페이지용)
      */
@@ -128,6 +130,28 @@ public class PartService {
                 .stream()
                 .map(PartCurriculumView::from)
                 .toList();
+    }
+
+    /**
+     * 특정 기수의 특정 파트 조회 (지원서 페이지용)
+     */
+    @Transactional(readOnly = true)
+    public PartCurriculumView findCurriculumsByGenerationAndPartType(Integer generationId, PartType partType){
+        Part part = partRepository.findByGenerationIdAndPartType(generationId, partType)
+                .orElseThrow(() -> new NotFoundException("파트 정보가 존재하지 않습니다."));
+
+        return PartCurriculumView.from(part);
+    }
+
+    /**
+     * 특정 기수의 특정 파트 소개 단건 조회
+     */
+    @Transactional(readOnly = true)
+    public PartIntroductionView findIntroductionByGenerationAndPartType(Integer generationId, PartType partType) {
+        Part part = partRepository.findByGenerationIdAndPartType(generationId, partType)
+                .orElseThrow(() -> new NotFoundException("파트 정보가 존재하지 않습니다."));
+
+        return PartIntroductionView.from(part);
     }
 
     // ===== 내부 클래스 =====

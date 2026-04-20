@@ -67,5 +67,18 @@ public class RecruitPartIntroductionService {
                 .toList();
     }
 
+    /**
+     * 특정 기수의 특정 파트 소개 단건 조회
+     */
+    @Transactional(readOnly = true)
+    public RecruitPartIntroductionView findByGenerationAndPart(Integer generationId, PartType part) {
+        log.debug("기수/파트 소개 조회 - generationId={}, part={}", generationId, part);
+
+        return repository.findByGenerationIdAndPart(generationId, part)
+                .map(RecruitPartIntroductionView::from)
+                .orElseThrow(() -> new sopt.org.homepage.global.exception.NotFoundException(
+                        "파트 소개 정보가 존재하지 않습니다."
+                ));
+    }
 
 }
