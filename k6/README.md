@@ -1,5 +1,96 @@
 # 🚀 k6 부하 테스트
 
+## 스크립트 종류
+
+| 스크립트 | 목적 |
+|---|---|
+| `load-test-homepage.js` | **VU 기반 부하 테스트** — 사용자 수를 조절, 사용자 행동 시뮬레이션 |
+| `load-test-tps.js` | **TPS 고정 부하 테스트** — TPS를 직접 지정, 서버 한계 탐색 |
+| `load-test-projects.js` | 프로젝트 조회 API 캐시 전략 비교용 |
+| `load-test-cold-warm.js` | Lambda Cold/Warm 분리 측정용 |
+| `load-test-interval.js` | Lambda 간헐적 트래픽 시뮬레이션용 |
+
+> 자세한 가이드는 [`docs/load-testing-guide.md`](../docs/load-testing-guide.md)를 참고하세요.
+
+---
+
+## load-test-homepage.js (서버 통합 부하 테스트)
+
+t3.small 통합 인스턴스에서 SOPT 공식 홈페이지 API 서버의 부하를 측정합니다.
+
+### k6 설치 (Windows + Git Bash)
+
+```bash
+# winget (권장)
+winget install k6 --source winget
+
+# 설치 확인 (Git Bash 재시작 후)
+k6 version
+```
+
+### 실행 방법 (Git Bash)
+
+`--out web-dashboard=open` 옵션을 붙이면 브라우저가 자동으로 열리며 실시간 대시보드가 표시됩니다.
+테스트 종료 후에는 `report-날짜시간.html` 파일이 자동 생성됩니다.
+
+```bash
+# Smoke Test (1분, 기본 동작 확인) → 항상 먼저 실행
+k6 run --env BASE_URL=https://api.sopt.org --env SCENARIO=smoke --out web-dashboard=open k6/load-test-homepage.js
+
+# Load Test (8분, 정상 트래픽)
+k6 run --env BASE_URL=https://api.sopt.org --env SCENARIO=load --out web-dashboard=open k6/load-test-homepage.js
+
+# Stress Test (12분, 한계점 탐색)
+k6 run --env BASE_URL=https://api.sopt.org --env SCENARIO=stress --out web-dashboard=open k6/load-test-homepage.js
+
+# Spike Test (3분, 모집 시즌 급증 시뮬레이션)
+k6 run --env BASE_URL=https://api.sopt.org --env SCENARIO=spike --out web-dashboard=open k6/load-test-homepage.js
+```
+
+### 결과 확인
+
+| 시점 | 방법 |
+|---|---|
+| **테스트 중 (실시간)** | 브라우저 자동 오픈 → `http://127.0.0.1:5665` |
+| **테스트 후 (차트)** | 프로젝트 루트에 생성된 `report-날짜시간.html` 브라우저로 열기 |
+| **테스트 후 (요약)** | 터미널에 자동 출력되는 숫자 확인 (`✓`/`✗` 표시) |
+
+> 서버 CPU/메모리는 k6 대시보드에서 볼 수 없습니다.
+> AWS 콘솔 → CloudWatch → EC2 에서 별도로 확인하세요.
+
+---
+
+## load-test-tps.js (TPS 고정 부하 테스트)
+
+`load-test-homepage.js`와 달리 **TPS를 직접 지정**합니다.
+1 TPS = 초당 1개의 API 요청으로, 다른 팀과 동일한 기준으로 서버 한계를 측정합니다.
+
+### 실행 방법 (Git Bash)
+
+```bash
+# Steady Test: 100 TPS로 5분간 고정 (기본값)
+k6 run --env BASE_URL=https://api.sopt.org --env SCENARIO=steady --env TARGET_TPS=100 --out web-dashboard=open k6/load-test-tps.js
+
+# Steady Test: 150 TPS로 테스트
+k6 run --env BASE_URL=https://api.sopt.org --env SCENARIO=steady --env TARGET_TPS=150 --out web-dashboard=open k6/load-test-tps.js
+
+# Ramp-up Test: 10 TPS → 200 TPS까지 단계적으로 올려서 한계 탐색 (약 12분)
+k6 run --env BASE_URL=https://api.sopt.org --env SCENARIO=rampup --out web-dashboard=open k6/load-test-tps.js
+```
+
+### 두 스크립트 비교
+
+| | load-test-homepage.js | load-test-tps.js |
+|---|---|---|
+| 방식 | VU 수 조절 | TPS 직접 지정 |
+| 1 iteration | API 4개 호출 (사용자 1회 방문) | API 1개 호출 |
+| TPS 변화 | 서버 성능에 따라 변동 | 항상 고정 |
+| 적합한 용도 | 사용자 행동 시뮬레이션 | 서버 한계 TPS 측정 |
+
+---
+
+## load-test-projects.js (캐시 전략 비교)
+
 프로젝트 조회 API(`GET /projects`) 캐시 전략별 성능 비교를 위한 k6 부하 테스트 스크립트입니다.
 
 ## 사전 준비
