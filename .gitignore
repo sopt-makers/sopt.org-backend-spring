@@ -77,3 +77,6 @@ lambda/.env
 results/*.json
 results/*.csv
 !results/.gitkeep
+
+# CLAUDE
+CLAUDE.md
