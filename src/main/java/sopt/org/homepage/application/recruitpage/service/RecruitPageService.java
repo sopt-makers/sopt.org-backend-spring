@@ -4,14 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.application.recruitpage.dto.RecruitMainPageResponse;
+import sopt.org.homepage.application.recruitpage.dto.RecruitPartDetailResponse;
 import sopt.org.homepage.corevalue.CoreValueService;
 import sopt.org.homepage.corevalue.dto.CoreValueView;
 import sopt.org.homepage.faq.FAQService;
 import sopt.org.homepage.faq.dto.FAQView;
 import sopt.org.homepage.generation.GenerationService;
 import sopt.org.homepage.generation.dto.GenerationDetailView;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.member.MemberService;
 import sopt.org.homepage.part.PartService;
+import sopt.org.homepage.part.dto.PartCurriculumView;
 import sopt.org.homepage.part.dto.PartIntroductionView;
 import sopt.org.homepage.recruitment.RecruitmentService;
 import sopt.org.homepage.recruitpartintroduction.RecruitPartIntroductionService;
@@ -47,5 +50,21 @@ public class RecruitPageService {
 
         return RecruitMainPageResponse.from(generation, coreValues, partIntroductions, faqs);
 
+    }
+
+    public RecruitPartDetailResponse getPartDetail(PartType partType) {
+        GenerationDetailView generation = generationService.findLatest();
+        Integer generationId = generation.id();
+
+        PartIntroductionView partIntroduction =
+                partService.findIntroductionByGenerationAndPartType(generationId, partType);
+
+        RecruitPartIntroductionView recruitPartIntroduction =
+                recruitPartIntroductionService.findByGenerationAndPart(generationId, partType);
+
+        PartCurriculumView partCurriculum =
+                partService.findCurriculumsByGenerationAndPartType(generationId, partType);
+
+        return RecruitPartDetailResponse.from(partIntroduction, recruitPartIntroduction, partCurriculum);
     }
 }
