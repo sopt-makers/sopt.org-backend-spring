@@ -22,6 +22,9 @@ public record RecruitMainPageResponse(
         @Schema(description = "모집 헤더 이미지 URL")
         String recruitHeaderImage,
 
+        @Schema(description = "기수 브랜딩 컬러")
+        BrandingColor brandingColor,
+
         @Schema(description = "파트별 소개")
         List<PartIntroduction> partIntroduction,
 
@@ -49,6 +52,15 @@ public record RecruitMainPageResponse(
     }
 
     @Builder
+    public record BrandingColor(
+            String main,
+            String high,
+            String low,
+            String point
+    ) {
+    }
+
+    @Builder
     public record RecruitQuestion(
             String part,
             List<Question> questions
@@ -67,6 +79,12 @@ public record RecruitMainPageResponse(
 
         return RecruitMainPageResponse.builder()
                 .recruitHeaderImage(generation.headerImage())
+                .brandingColor(BrandingColor.builder()
+                        .main(generation.brandingColor().main())
+                        .high(generation.brandingColor().high())
+                        .low(generation.brandingColor().low())
+                        .point(generation.brandingColor().background())
+                        .build())
                 .partIntroduction(partIntroductions.stream()
                         .map(pi -> PartIntroduction.builder()
                                 .part(pi.part())
