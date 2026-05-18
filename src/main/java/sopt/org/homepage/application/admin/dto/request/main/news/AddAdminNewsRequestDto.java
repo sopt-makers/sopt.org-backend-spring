@@ -5,15 +5,14 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 
 @Getter
 @RequiredArgsConstructor
 public class AddAdminNewsRequestDto {
-    @Schema(description = "이미지", requiredMode = Schema.RequiredMode.REQUIRED, type = "string", format = "binary")
-    @NotNull(message = "image must not be null")
-    private final MultipartFile image;
+    @Schema(description = "이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "news.png")
+    @NotNull(message = "imageFileName must not be null")
+    private final String imageFileName;
 
     @Schema(description = "제목", requiredMode = Schema.RequiredMode.REQUIRED, example = "MIND 23")
     @NotEmpty(message = "title must not be empty")
