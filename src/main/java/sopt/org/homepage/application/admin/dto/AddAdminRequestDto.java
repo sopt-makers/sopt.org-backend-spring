@@ -14,11 +14,11 @@ import sopt.org.homepage.application.admin.dto.request.main.core.AddAdminCoreVal
 import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.member.AddAdminMemberRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.news.AddAdminNewsRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
-import sopt.org.homepage.news.dto.AddAdminNewsRequestDto;
 
 @Validated
 @Schema(description = "어드민 배포하기")

@@ -21,6 +21,9 @@ public class AddAdminResponseDto {
     @Schema(description = "헤더 이미지 S3 PresignedUrl", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://image.url")
     private final String headerImage;
 
+    @Schema(description = "홈 헤더 이미지 S3 PresignedUrl", requiredMode = Schema.RequiredMode.REQUIRED)
+    private final String homeHeaderImage;
+
     @Schema(description = "핵심가치 이미지 S3 PresigneUrl 정보", requiredMode = Schema.RequiredMode.REQUIRED)
     private final List<AddAdminCoreValueResponseRecordDto> coreValues;
 
