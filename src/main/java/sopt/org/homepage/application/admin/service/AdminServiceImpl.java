@@ -59,6 +59,8 @@ import sopt.org.homepage.part.dto.PartDetailView;
 import sopt.org.homepage.recruitment.RecruitmentService;
 import sopt.org.homepage.recruitment.dto.BulkCreateRecruitmentsCommand;
 import sopt.org.homepage.recruitment.dto.RecruitmentView;
+import sopt.org.homepage.application.admin.dto.response.main.review.GetAdminReviewResponseRecordDto;
+import sopt.org.homepage.application.homepage.review.domain.HomepageReview;
 import sopt.org.homepage.application.homepage.review.dto.BulkCreateHomepageReviewsCommand;
 import sopt.org.homepage.application.homepage.review.service.HomepageReviewService;
 import sopt.org.homepage.recruitpartintroduction.RecruitPartIntroductionService;
@@ -449,6 +451,7 @@ public class AdminServiceImpl implements AdminService {
                 recruitPartIntroductionService.findByGeneration(generationId);
         List<FAQView> faqs = faqService.findAll();
         List<News> newsEntities = newsService.findAll();
+        List<HomepageReview> reviews = homepageReviewService.findAll();
 
         // ===== Response 조합 =====
         return GetAdminResponseDto.builder()
@@ -495,6 +498,7 @@ public class AdminServiceImpl implements AdminService {
                         .map(cv -> GetAdminCoreValueResponseRecordDto.builder()
                                 .value(cv.value())
                                 .description(cv.description())
+                                .detailDescription(cv.detailDescription())
                                 .image(cv.imageUrl())
                                 .build())
                         .toList())
@@ -538,6 +542,14 @@ public class AdminServiceImpl implements AdminService {
                                                 .answer(q.answer())
                                                 .build())
                                         .toList())
+                                .build())
+                        .toList())
+                .review(reviews.stream()
+                        .map(r -> GetAdminReviewResponseRecordDto.builder()
+                                .id(r.getId())
+                                .title(r.getTitle())
+                                .content(r.getContent())
+                                .authorInfo(r.getAuthorInfo())
                                 .build())
                         .toList())
                 .build();

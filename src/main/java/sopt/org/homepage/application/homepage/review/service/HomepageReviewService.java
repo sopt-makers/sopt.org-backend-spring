@@ -9,12 +9,19 @@ import sopt.org.homepage.application.homepage.review.domain.HomepageReview;
 import sopt.org.homepage.application.homepage.review.dto.BulkCreateHomepageReviewsCommand;
 import sopt.org.homepage.application.homepage.review.repository.HomepageReviewRepository;
 
+
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class HomepageReviewService {
 
     private final HomepageReviewRepository homepageReviewRepository;
+
+    @Transactional(readOnly = true)
+    public List<HomepageReview> findAll() {
+        return homepageReviewRepository.findAll();
+    }
 
     @Transactional
     public void bulkCreate(BulkCreateHomepageReviewsCommand command) {
