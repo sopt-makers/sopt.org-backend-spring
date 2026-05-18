@@ -15,6 +15,7 @@ public record UpdateGenerationCommand(
         String name,
         String headerImage,
         String recruitHeaderImage,
+        String homeHeaderImage,
         BrandingColorCommand brandingColor,
         MainButtonCommand mainButton
 ) {
