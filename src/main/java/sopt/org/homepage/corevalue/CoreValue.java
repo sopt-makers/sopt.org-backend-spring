@@ -61,6 +61,7 @@ public class CoreValue {
             Integer generationId,
             String value,
             String description,
+            String detailDescription,
             String imageUrl,
             Integer displayOrder
     ) {
@@ -73,6 +74,7 @@ public class CoreValue {
         this.generationId = generationId;
         this.value = value;
         this.description = description;
+        this.detailDescription = detailDescription;
         this.imageUrl = imageUrl;
         this.displayOrder = displayOrder;
     }
@@ -82,7 +84,7 @@ public class CoreValue {
     /**
      * 핵심 가치 정보 수정
      */
-    public void update(String value, String description, String imageUrl, Integer displayOrder) {
+    public void update(String value, String description, String detailDescription, String imageUrl, Integer displayOrder) {
         validateValue(value);
         validateDescription(description);
         validateImageUrl(imageUrl);
@@ -90,6 +92,7 @@ public class CoreValue {
 
         this.value = value;
         this.description = description;
+        this.detailDescription = detailDescription;
         this.imageUrl = imageUrl;
         this.displayOrder = displayOrder;
     }
