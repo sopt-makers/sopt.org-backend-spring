@@ -17,6 +17,8 @@ import sopt.org.homepage.application.admin.dto.request.main.member.AddAdminMembe
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
+import sopt.org.homepage.news.dto.AddAdminNewsRequestDto;
 
 @Validated
 @Schema(description = "어드민 배포하기")
@@ -35,16 +37,29 @@ public class AddAdminRequestDto {
     private String name;
 
     private List<AddAdminRecruitScheduleRequestDto> recruitSchedule;
+
     private AddAdminBrandingColorRequestDto brandingColor;
+
     private AddAdminMainButtonRequestDto mainButton;
+
+    @Schema(description = "홈 헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "header.png")
+    @NotEmpty(message = "homeHeaderImageFileName must not be empty")
+    private String homeHeaderImageFileName;
+
     private List<AddAdminPartIntroductionRequestDto> partIntroduction;
+
+    private List<AddAdminReviewRequestDto> review;
+
+    private List<AddAdminNewsRequestDto> news;
 
     @Schema(description = "헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "header.png")
     @NotEmpty(message = "headerImageFileName must not be empty")
     private String headerImageFileName;
 
     private List<AddAdminCoreValueRequestDto> coreValue;
+
     private List<AddAdminPartCurriculumRequestDto> partCurriculum;
+
     private List<AddAdminMemberRequestDto> member;
 
     @Schema(description = "지원하기 헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "recruit_header.png")
@@ -52,6 +67,7 @@ public class AddAdminRequestDto {
     private String recruitHeaderImageFileName;
 
     private List<AddAdminRecruitPartCurriculumRequestDto> recruitPartCurriculum;
+
     private List<AddAdminRecruitQuestionRequestDto> recruitQuestion;
 }
 
