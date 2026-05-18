@@ -16,6 +16,7 @@ public record CreateGenerationCommand(
         String name,
         String headerImage,
         String recruitHeaderImage,
+        String homeHeaderImage,
         BrandingColorCommand brandingColor,
         MainButtonCommand mainButton
 ) {
@@ -25,6 +26,7 @@ public record CreateGenerationCommand(
                 .name(name)
                 .headerImage(headerImage)
                 .recruitHeaderImage(recruitHeaderImage)
+                .homeHeaderImage(homeHeaderImage)
                 .brandingColor(brandingColor.toVO())
                 .mainButton(mainButton.toVO())
                 .build();

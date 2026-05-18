@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.infrastructure.aws.s3.S3Service;
 import sopt.org.homepage.news.dto.AddAdminNewsRequestDto;
+import sopt.org.homepage.news.dto.BulkCreateNewsCommand;
 import sopt.org.homepage.news.dto.AddAdminNewsResponseDto;
 import sopt.org.homepage.news.dto.AddAdminNewsV2RequestDto;
 import sopt.org.homepage.news.dto.DeleteAdminNewsRequestDto;
@@ -105,6 +106,19 @@ public class NewsService {
         return DeleteAdminNewsResponseDto.builder()
                 .message("최신소식 삭제 성공")
                 .build();
+    }
+
+    @Transactional
+    public void bulkCreate(BulkCreateNewsCommand command) {
+        List<News> newsList = command.news().stream()
+                .map(n -> News.builder()
+                        .title(n.title())
+                        .link(n.link())
+                        .image(n.imageUrl())
+                        .build())
+                .toList();
+        newsRepository.saveAll(newsList);
+        log.info("News 일괄 생성 완료 - count={}", newsList.size());
     }
 
     // ===== Query 메서드 =====

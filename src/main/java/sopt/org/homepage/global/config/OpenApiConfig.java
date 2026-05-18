@@ -33,7 +33,10 @@ public class OpenApiConfig {
         // To Add JWT Authorization Header, add this annotation to API
         // @SecurityRequirement(name = SecurityConstants.SCHEME_NAME)
 
-        List<Server> serverV2 = List.of(new Server().url("/v2"));
+        List<Server> serverV2 = List.of(
+                new Server().url("/v2"),
+                new Server().url("http://localhost:8080").description("Local")
+        );
 
         return new OpenAPI().info(info).components(components).servers(serverV2);
     }

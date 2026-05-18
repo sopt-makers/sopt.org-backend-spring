@@ -17,6 +17,7 @@ public record GenerationDetailView(
         String name,
         String headerImage,
         String recruitHeaderImage,
+        String homeHeaderImage,
         BrandingColorView brandingColor,
         MainButtonView mainButton,
         LocalDateTime createdAt,
@@ -28,6 +29,7 @@ public record GenerationDetailView(
                 .name(generation.getName())
                 .headerImage(generation.getHeaderImage())
                 .recruitHeaderImage(generation.getRecruitHeaderImage())
+                .homeHeaderImage(generation.getHomeHeaderImage())
                 .brandingColor(BrandingColorView.from(generation.getBrandingColor()))
                 .mainButton(MainButtonView.from(generation.getMainButton()))
                 .createdAt(generation.getCreatedAt())

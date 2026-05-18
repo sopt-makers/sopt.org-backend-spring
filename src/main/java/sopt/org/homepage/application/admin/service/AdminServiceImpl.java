@@ -17,6 +17,7 @@ import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdmi
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 import sopt.org.homepage.application.admin.dto.response.main.branding.GetAdminBrandingColorResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
@@ -51,12 +52,17 @@ import sopt.org.homepage.member.dto.BulkCreateMembersCommand;
 import sopt.org.homepage.member.dto.MemberDetailView;
 import sopt.org.homepage.news.News;
 import sopt.org.homepage.news.NewsService;
+import sopt.org.homepage.news.dto.BulkCreateNewsCommand;
 import sopt.org.homepage.part.PartService;
 import sopt.org.homepage.part.dto.BulkCreatePartsCommand;
 import sopt.org.homepage.part.dto.PartDetailView;
 import sopt.org.homepage.recruitment.RecruitmentService;
 import sopt.org.homepage.recruitment.dto.BulkCreateRecruitmentsCommand;
 import sopt.org.homepage.recruitment.dto.RecruitmentView;
+import sopt.org.homepage.application.admin.dto.response.main.review.GetAdminReviewResponseRecordDto;
+import sopt.org.homepage.application.homepage.review.domain.HomepageReview;
+import sopt.org.homepage.application.homepage.review.dto.BulkCreateHomepageReviewsCommand;
+import sopt.org.homepage.application.homepage.review.service.HomepageReviewService;
 import sopt.org.homepage.recruitpartintroduction.RecruitPartIntroductionService;
 import sopt.org.homepage.recruitpartintroduction.dto.BulkCreateRecruitPartIntroductionsCommand;
 import sopt.org.homepage.recruitpartintroduction.dto.RecruitPartIntroductionView;
@@ -79,7 +85,7 @@ public class AdminServiceImpl implements AdminService {
     private final PartService partService;
     private final RecruitmentService recruitmentService;
     private final RecruitPartIntroductionService recruitPartIntroductionService;
-
+    private final HomepageReviewService homepageReviewService;
 
     // ===== Infrastructure Services =====
     private final S3Service s3Service;
@@ -113,6 +119,10 @@ public class AdminServiceImpl implements AdminService {
                 request.getRecruitHeaderImageFileName(), baseDir);
         cachedData.setRecruitHeaderImageUrl(recruitHeaderImageUrl);
 
+        String homeHeaderImageUrl = s3Service.generatePresignedUrl(
+                request.getHomeHeaderImageFileName(), baseDir);
+        cachedData.setHomeHeaderImageUrl(homeHeaderImageUrl);
+
         // BrandingColor
         var brandingColorDto = request.getBrandingColor();
         cachedData.setBrandingColorMain(brandingColorDto.getMain());
@@ -135,6 +145,7 @@ public class AdminServiceImpl implements AdminService {
             coreValueDataList.add(CachedAdminData.CoreValueData.builder()
                     .value(cv.getValue())
                     .description(cv.getDescription())
+                    .detailDescription((cv.getDetailDescription()))
                     .imageUrl(imageUrl)
                     .build());
         }
@@ -160,12 +171,27 @@ public class AdminServiceImpl implements AdminService {
         }
         cachedData.setMembers(memberDataList);
 
+        // ===== News Presigned URLs =====
+        List<CachedAdminData.NewsData> newsDataList = new ArrayList<>();
+        for (var news : request.getNews()) {
+            String newsImageUrl = s3Service.generatePresignedUrl(
+                    news.getImageFileName(), baseDir + "news/");
+
+            newsDataList.add(CachedAdminData.NewsData.builder()
+                    .title(news.getTitle())
+                    .link(news.getLink())
+                    .imageUrl(newsImageUrl)
+                    .build());
+        }
+        cachedData.setNews(newsDataList);
+
         // ===== 4. 나머지 데이터 저장 (DTO 그대로 저장) =====
         cachedData.setPartIntroductions(new ArrayList<>(request.getPartIntroduction()));
         cachedData.setPartCurriculums(new ArrayList<>(request.getPartCurriculum()));
         cachedData.setRecruitSchedules(new ArrayList<>(request.getRecruitSchedule()));
         cachedData.setRecruitPartCurriculums(new ArrayList<>(request.getRecruitPartCurriculum()));
         cachedData.setRecruitQuestions(new ArrayList<>(request.getRecruitQuestion()));
+        cachedData.setReviews(new ArrayList<>(request.getReview()));
 
         // ===== 5. 캐시에 저장 =====
         cacheService.put(CacheType.ADMIN_MAIN_DATA, String.valueOf(generationId), cachedData);
@@ -176,6 +202,7 @@ public class AdminServiceImpl implements AdminService {
         return AddAdminResponseDto.builder()
                 .generation(generationId)
                 .headerImage(headerImageUrl)
+                .homeHeaderImage(homeHeaderImageUrl)
                 .coreValues(coreValueDataList.stream()
                         .map(cv -> AddAdminCoreValueResponseRecordDto.builder()
                                 .value(cv.getValue())
@@ -219,6 +246,7 @@ public class AdminServiceImpl implements AdminService {
         // ===== 2. Presigned URL → S3 Original URL 변환 =====
         String headerImageUrl = s3Service.getOriginalUrl(cachedData.getHeaderImageUrl());
         String recruitHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getRecruitHeaderImageUrl());
+        String homeHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getHomeHeaderImageUrl());
 
         List<String> coreValueImageUrls = cachedData.getCoreValues().stream()
                 .map(cv -> s3Service.getOriginalUrl(cv.getImageUrl()))
@@ -228,6 +256,7 @@ public class AdminServiceImpl implements AdminService {
                 .map(m -> s3Service.getOriginalUrl(m.getProfileImageUrl()))
                 .toList();
 
+
         // ===== 3. Generation 생성 =====
         generationService.create(
                 CreateGenerationCommand.builder()
@@ -235,6 +264,7 @@ public class AdminServiceImpl implements AdminService {
                         .name(cachedData.getName())
                         .headerImage(headerImageUrl)
                         .recruitHeaderImage(recruitHeaderImageUrl)
+                        .homeHeaderImage(homeHeaderImageUrl)
                         .brandingColor(CreateGenerationCommand.BrandingColorCommand.builder()
                                 .main(cachedData.getBrandingColorMain())
                                 .sub(cachedData.getBrandingColorLow())
@@ -256,6 +286,7 @@ public class AdminServiceImpl implements AdminService {
             coreValueDataList.add(BulkCreateCoreValuesCommand.CoreValueData.builder()
                     .value(cv.getValue())
                     .description(cv.getDescription())
+                    .detailDescription(cv.getDetailDescription())
                     .imageUrl(coreValueImageUrls.get(i))
                     .displayOrder(i)
                     .build());
@@ -365,7 +396,33 @@ public class AdminServiceImpl implements AdminService {
                         .build()
         );
 
-        // ===== 10. 캐시 삭제 =====
+        // ===== 10. News 일괄 생성 =====
+        newsService.bulkCreate(
+                BulkCreateNewsCommand.builder()
+                        .news(cachedData.getNews().stream()
+                                .map(n -> BulkCreateNewsCommand.NewsData.builder()
+                                        .title(n.getTitle())
+                                        .link(n.getLink())
+                                        .imageUrl(s3Service.getOriginalUrl(n.getImageUrl()))
+                                        .build())
+                                .toList())
+                        .build()
+        );
+
+        // ===== 11. Review 일괄 생성 =====
+        homepageReviewService.bulkCreate(
+                BulkCreateHomepageReviewsCommand.builder()
+                        .reviews(cachedData.getReviews().stream()
+                                .map(r -> BulkCreateHomepageReviewsCommand.ReviewData.builder()
+                                        .title(r.getTitle())
+                                        .content(r.getContent())
+                                        .authorInfo(r.getAuthorInfo())
+                                        .build())
+                                .toList())
+                        .build()
+        );
+
+        // ===== 12. 캐시 삭제 =====
         cacheService.evict(CacheType.ADMIN_MAIN_DATA, String.valueOf(generationId));
 
         log.info("Admin main data confirmed for generation: {}", generationId);
@@ -395,6 +452,7 @@ public class AdminServiceImpl implements AdminService {
                 recruitPartIntroductionService.findByGeneration(generationId);
         List<FAQView> faqs = faqService.findAll();
         List<News> newsEntities = newsService.findAll();
+        List<HomepageReview> reviews = homepageReviewService.findAll();
 
         // ===== Response 조합 =====
         return GetAdminResponseDto.builder()
@@ -437,10 +495,12 @@ public class AdminServiceImpl implements AdminService {
                                 .build())
                         .toList())
                 .headerImage(generation.headerImage())
+                .homeHeaderImage(generation.homeHeaderImage())
                 .coreValue(coreValues.stream()
                         .map(cv -> GetAdminCoreValueResponseRecordDto.builder()
                                 .value(cv.value())
                                 .description(cv.description())
+                                .detailDescription(cv.detailDescription())
                                 .image(cv.imageUrl())
                                 .build())
                         .toList())
@@ -486,6 +546,14 @@ public class AdminServiceImpl implements AdminService {
                                         .toList())
                                 .build())
                         .toList())
+                .review(reviews.stream()
+                        .map(r -> GetAdminReviewResponseRecordDto.builder()
+                                .id(r.getId())
+                                .title(r.getTitle())
+                                .content(r.getContent())
+                                .authorInfo(r.getAuthorInfo())
+                                .build())
+                        .toList())
                 .build();
     }
 
@@ -498,6 +566,7 @@ public class AdminServiceImpl implements AdminService {
         private String name;
         private String headerImageUrl;
         private String recruitHeaderImageUrl;
+        private String homeHeaderImageUrl;
 
         // BrandingColor
         private String brandingColorMain;
@@ -512,6 +581,12 @@ public class AdminServiceImpl implements AdminService {
 
         // CoreValue
         private List<CoreValueData> coreValues;
+
+        // Review
+        private List<AddAdminReviewRequestDto> reviews;
+
+        // News
+        private List<NewsData> news;
 
         // Member
         private List<MemberData> members;
@@ -532,6 +607,7 @@ public class AdminServiceImpl implements AdminService {
         public static class CoreValueData implements java.io.Serializable {
             private String value;
             private String description;
+            private String detailDescription;
             private String imageUrl;
         }
 
@@ -547,6 +623,14 @@ public class AdminServiceImpl implements AdminService {
             private String snsLinkedin;
             private String snsGithub;
             private String snsBehance;
+        }
+
+        @lombok.Builder
+        @lombok.Data
+        public static class NewsData implements java.io.Serializable {
+            private String title;
+            private String link;
+            private String imageUrl;
         }
     }
 

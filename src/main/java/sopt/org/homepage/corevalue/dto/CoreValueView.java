@@ -13,6 +13,7 @@ public record CoreValueView(
         Long id,
         String value,
         String description,
+        String detailDescription,
         String imageUrl,
         Integer displayOrder
 ) {
@@ -21,6 +22,7 @@ public record CoreValueView(
                 .id(coreValue.getId())
                 .value(coreValue.getValue())
                 .description(coreValue.getDescription())
+                .detailDescription(coreValue.getDetailDescription())
                 .imageUrl(coreValue.getImageUrl())
                 .displayOrder(coreValue.getDisplayOrder())
                 .build();

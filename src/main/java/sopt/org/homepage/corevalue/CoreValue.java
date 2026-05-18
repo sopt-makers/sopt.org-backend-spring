@@ -39,6 +39,9 @@ public class CoreValue {
     @Column(name = "\"description\"", nullable = false, length = 500)
     private String description;  // 핵심 가치 설명
 
+    @Column(name = "\"detailDescription\"", nullable = false, length = 100)
+    private String detailDescription; // 핵심 가치 세부 설명
+
     @Column(name = "\"imageUrl\"", nullable = false, length = 500)
     private String imageUrl;  // 이미지 URL
 
@@ -58,6 +61,7 @@ public class CoreValue {
             Integer generationId,
             String value,
             String description,
+            String detailDescription,
             String imageUrl,
             Integer displayOrder
     ) {
@@ -70,6 +74,7 @@ public class CoreValue {
         this.generationId = generationId;
         this.value = value;
         this.description = description;
+        this.detailDescription = detailDescription;
         this.imageUrl = imageUrl;
         this.displayOrder = displayOrder;
     }
@@ -79,7 +84,7 @@ public class CoreValue {
     /**
      * 핵심 가치 정보 수정
      */
-    public void update(String value, String description, String imageUrl, Integer displayOrder) {
+    public void update(String value, String description, String detailDescription, String imageUrl, Integer displayOrder) {
         validateValue(value);
         validateDescription(description);
         validateImageUrl(imageUrl);
@@ -87,6 +92,7 @@ public class CoreValue {
 
         this.value = value;
         this.description = description;
+        this.detailDescription = detailDescription;
         this.imageUrl = imageUrl;
         this.displayOrder = displayOrder;
     }
