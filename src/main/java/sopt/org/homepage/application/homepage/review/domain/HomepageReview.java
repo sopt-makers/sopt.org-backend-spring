@@ -1,4 +1,4 @@
-package sopt.org.homepage.application.homepage;
+package sopt.org.homepage.application.homepage.review.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,12 +13,20 @@ import java.time.LocalDateTime;
 @Table(name = "\"HomepageReview\"")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class homepageReview {
+public class HomepageReview {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "\"id\"", nullable = false)
     private Long id;
+
+    public static HomepageReview create(String title, String content, String authorInfo) {
+        HomepageReview review = new HomepageReview();
+        review.title = title;
+        review.content = content;
+        review.authorInfo = authorInfo;
+        return review;
+    }
 
     @Column(name = "\"title\"", nullable = false)
     private String title;
