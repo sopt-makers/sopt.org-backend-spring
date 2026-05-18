@@ -35,7 +35,7 @@ public class OpenApiConfig {
 
         List<Server> serverV2 = List.of(
                 new Server().url("/v2"),
-                new Server().url("http://localhost:8080").description("Local")
+                new Server().url("http://localhost:8080/v2").description("Local")
         );
 
         return new OpenAPI().info(info).components(components).servers(serverV2);
