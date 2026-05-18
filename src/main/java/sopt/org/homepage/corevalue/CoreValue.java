@@ -39,6 +39,9 @@ public class CoreValue {
     @Column(name = "\"description\"", nullable = false, length = 500)
     private String description;  // 핵심 가치 설명
 
+    @Column(name = "\"detailDescription\"", nullable = false, length = 100)
+    private String detailDescription; // 핵심 가치 세부 설명
+
     @Column(name = "\"imageUrl\"", nullable = false, length = 500)
     private String imageUrl;  // 이미지 URL
 
