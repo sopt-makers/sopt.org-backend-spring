@@ -15,6 +15,7 @@ import sopt.org.homepage.application.admin.dto.response.main.introduction.GetAdm
 import sopt.org.homepage.application.admin.dto.response.main.member.GetAdminMemberResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.news.GetAdminLatestNewsResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.curriculum.GetAdminRecruitPartCurriculumResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.activityschedule.GetAdminActivityScheduleResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.review.GetAdminReviewResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminRecruitQuestionResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
@@ -54,6 +55,7 @@ public class GetAdminResponseDto {
     private List<GetAdminRecruitPartCurriculumResponseRecordDto> recruitPartCurriculum;
     private List<GetAdminRecruitQuestionResponseRecordDto> recruitQuestion;
     private List<GetAdminReviewResponseRecordDto> review;
+    private List<GetAdminActivityScheduleResponseRecordDto> activitySchedule;
 }
 
 

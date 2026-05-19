@@ -17,7 +17,12 @@ import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdmi
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
+import sopt.org.homepage.activityschedule.ActivitySchedule;
+import sopt.org.homepage.activityschedule.ActivityScheduleService;
+import sopt.org.homepage.activityschedule.dto.BulkCreateActivitySchedulesCommand;
+import sopt.org.homepage.application.admin.dto.request.main.activityschedule.AddAdminActivityScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
+import sopt.org.homepage.application.admin.dto.response.main.activityschedule.GetAdminActivityScheduleResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.branding.GetAdminBrandingColorResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
@@ -86,6 +91,7 @@ public class AdminServiceImpl implements AdminService {
     private final RecruitmentService recruitmentService;
     private final RecruitPartIntroductionService recruitPartIntroductionService;
     private final HomepageReviewService homepageReviewService;
+    private final ActivityScheduleService activityScheduleService;
 
     // ===== Infrastructure Services =====
     private final S3Service s3Service;
@@ -192,6 +198,7 @@ public class AdminServiceImpl implements AdminService {
         cachedData.setRecruitPartCurriculums(new ArrayList<>(request.getRecruitPartCurriculum()));
         cachedData.setRecruitQuestions(new ArrayList<>(request.getRecruitQuestion()));
         cachedData.setReviews(new ArrayList<>(request.getReview()));
+        cachedData.setActivitySchedules(new ArrayList<>(request.getActivitySchedule()));
 
         // ===== 5. 캐시에 저장 =====
         cacheService.put(CacheType.ADMIN_MAIN_DATA, String.valueOf(generationId), cachedData);
@@ -422,8 +429,23 @@ public class AdminServiceImpl implements AdminService {
                         .build()
         );
 
-        // ===== 12. 캐시 삭제 =====
+        // ===== 12. ActivitySchedule 일괄 생성 =====
+        activityScheduleService.bulkCreate(
+                BulkCreateActivitySchedulesCommand.builder()
+                        .generationId(generationId)
+                        .activitySchedules(cachedData.getActivitySchedules().stream()
+                                .map(s -> BulkCreateActivitySchedulesCommand.ActivityScheduleData.builder()
+                                        .name(s.getName())
+                                        .date(java.time.LocalDate.parse(s.getDate()))
+                                        .displayOrder(cachedData.getActivitySchedules().indexOf(s))
+                                        .build())
+                                .toList())
+                        .build()
+        );
+
+        // ===== 13. 캐시 삭제 =====
         cacheService.evict(CacheType.ADMIN_MAIN_DATA, String.valueOf(generationId));
+
 
         log.info("Admin main data confirmed for generation: {}", generationId);
 
@@ -453,6 +475,7 @@ public class AdminServiceImpl implements AdminService {
         List<FAQView> faqs = faqService.findAll();
         List<News> newsEntities = newsService.findAll();
         List<HomepageReview> reviews = homepageReviewService.findAll();
+        List<ActivitySchedule> activitySchedules = activityScheduleService.findByGeneration(generationId);
 
         // ===== Response 조합 =====
         return GetAdminResponseDto.builder()
@@ -554,6 +577,12 @@ public class AdminServiceImpl implements AdminService {
                                 .authorInfo(r.getAuthorInfo())
                                 .build())
                         .toList())
+                .activitySchedule(activitySchedules.stream()
+                        .map(s -> GetAdminActivityScheduleResponseRecordDto.builder()
+                                .name(s.getName())
+                                .date(s.getDate().toString())
+                                .build())
+                        .toList())
                 .build();
     }
 
@@ -601,6 +630,9 @@ public class AdminServiceImpl implements AdminService {
 
         // FAQ - ✅ 구체적인 타입 사용
         private List<AddAdminRecruitQuestionRequestDto> recruitQuestions;
+
+        // ActivitySchedule
+        private List<AddAdminActivityScheduleRequestDto> activitySchedules;
 
         @lombok.Builder
         @lombok.Data
