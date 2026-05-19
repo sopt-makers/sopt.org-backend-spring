@@ -24,8 +24,16 @@ public record AboutPageResponse(
         BrandingColor brandingColor,
         List<CoreValue> coreValue,
         List<PartCurriculum> partCurriculum,
-        List<Member> member
+        List<Member> member,
+        List<Schedule> schedule
 ) {
+    @Builder
+    public record Schedule(
+            String name,
+            String date
+    ) {
+    }
+
     @Builder
     public record BrandingColor(
             String main,
