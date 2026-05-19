@@ -8,6 +8,6 @@ import lombok.Builder;
 public record BulkCreateActivitySchedulesCommand(Integer generationId, List<ActivityScheduleData> activitySchedules) {
 
     @Builder
-    public record ActivityScheduleData(String name, LocalDate startDate, LocalDate endDate, Integer displayOrder) {
+    public record ActivityScheduleData(String name, LocalDate startDate, LocalDate endDate) {
     }
 }

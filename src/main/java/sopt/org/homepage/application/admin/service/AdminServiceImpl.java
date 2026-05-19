@@ -438,7 +438,6 @@ public class AdminServiceImpl implements AdminService {
                                         .name(s.getName())
                                         .startDate(java.time.LocalDate.parse(s.getStartDate()))
                                         .endDate(s.getEndDate() != null ? java.time.LocalDate.parse(s.getEndDate()) : null)
-                                        .displayOrder(cachedData.getActivitySchedules().indexOf(s))
                                         .build())
                                 .toList())
                         .build()

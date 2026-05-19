@@ -37,9 +37,6 @@ public class ActivitySchedule {
     @Column(name = "\"endDate\"")
     private LocalDate endDate;
 
-    @Column(name = "\"displayOrder\"", nullable = false)
-    private Integer displayOrder;
-
     @CreationTimestamp
     @Column(name = "\"createdAt\"", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -48,13 +45,12 @@ public class ActivitySchedule {
     @Column(name = "\"updatedAt\"", nullable = false)
     private LocalDateTime updatedAt;
 
-    public static ActivitySchedule create(Integer generationId, String name, LocalDate startDate, LocalDate endDate, Integer displayOrder) {
+    public static ActivitySchedule create(Integer generationId, String name, LocalDate startDate, LocalDate endDate) {
         ActivitySchedule schedule = new ActivitySchedule();
         schedule.generationId = generationId;
         schedule.name = name;
         schedule.startDate = startDate;
         schedule.endDate = endDate;
-        schedule.displayOrder = displayOrder;
         return schedule;
     }
 }

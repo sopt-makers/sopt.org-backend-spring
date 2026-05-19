@@ -16,7 +16,7 @@ public class ActivityScheduleService {
 
     @Transactional(readOnly = true)
     public List<ActivitySchedule> findByGeneration(Integer generationId) {
-        return activityScheduleRepository.findByGenerationIdOrderByDisplayOrderAsc(generationId);
+        return activityScheduleRepository.findByGenerationIdOrderByStartDateAsc(generationId);
     }
 
     @Transactional
@@ -24,7 +24,7 @@ public class ActivityScheduleService {
         activityScheduleRepository.deleteByGenerationId(command.generationId());
 
         List<ActivitySchedule> schedules = command.activitySchedules().stream()
-                .map(s -> ActivitySchedule.create(command.generationId(), s.name(), s.startDate(), s.endDate(), s.displayOrder()))
+                .map(s -> ActivitySchedule.create(command.generationId(), s.name(), s.startDate(), s.endDate()))
                 .toList();
 
         activityScheduleRepository.saveAll(schedules);
