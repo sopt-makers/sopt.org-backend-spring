@@ -201,7 +201,8 @@ public class HomepageQueryService {
                 .schedule(activitySchedules.stream()
                         .map(s -> AboutPageResponse.Schedule.builder()
                                 .name(s.getName())
-                                .date(s.getDate().toString())
+                                .startDate(s.getStartDate().toString())
+                                .endDate(s.getEndDate() != null ? s.getEndDate().toString() : null)
                                 .build())
                         .toList())
                 .build();

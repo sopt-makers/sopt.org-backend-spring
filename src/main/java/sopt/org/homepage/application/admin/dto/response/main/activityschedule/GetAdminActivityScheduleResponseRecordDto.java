@@ -7,6 +7,7 @@ import lombok.Builder;
 @Builder
 public record GetAdminActivityScheduleResponseRecordDto(
         @Schema(description = "일정명", example = "OT") String name,
-        @Schema(description = "날짜 (yyyy-MM-dd)", example = "2026-03-28") String date
+        @Schema(description = "시작 날짜 (yyyy-MM-dd)", example = "2026-03-28") String startDate,
+        @Schema(description = "종료 날짜 (yyyy-MM-dd), 단일 날짜인 경우 null", example = "2026-03-29") String endDate
 ) {
 }

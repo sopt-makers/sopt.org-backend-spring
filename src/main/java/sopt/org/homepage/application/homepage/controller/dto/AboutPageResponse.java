@@ -30,7 +30,8 @@ public record AboutPageResponse(
     @Builder
     public record Schedule(
             String name,
-            String date
+            String startDate,
+            String endDate
     ) {
     }
 

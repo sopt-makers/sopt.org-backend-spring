@@ -13,7 +13,10 @@ public class AddAdminActivityScheduleRequestDto {
     @NotBlank
     private final String name;
 
-    @Schema(description = "날짜 (yyyy-MM-dd)", example = "2026-03-28")
+    @Schema(description = "시작 날짜 (yyyy-MM-dd)", example = "2026-03-28")
     @NotBlank
-    private final String date;
+    private final String startDate;
+
+    @Schema(description = "종료 날짜 (yyyy-MM-dd), 단일 날짜인 경우 null", example = "2026-03-29")
+    private final String endDate;
 }

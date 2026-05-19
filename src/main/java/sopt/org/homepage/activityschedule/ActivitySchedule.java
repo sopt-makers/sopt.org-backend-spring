@@ -31,8 +31,11 @@ public class ActivitySchedule {
     @Column(name = "\"name\"", nullable = false, length = 100)
     private String name;
 
-    @Column(name = "\"date\"", nullable = false)
-    private LocalDate date;
+    @Column(name = "\"startDate\"", nullable = false)
+    private LocalDate startDate;
+
+    @Column(name = "\"endDate\"")
+    private LocalDate endDate;
 
     @Column(name = "\"displayOrder\"", nullable = false)
     private Integer displayOrder;
@@ -45,11 +48,12 @@ public class ActivitySchedule {
     @Column(name = "\"updatedAt\"", nullable = false)
     private LocalDateTime updatedAt;
 
-    public static ActivitySchedule create(Integer generationId, String name, LocalDate date, Integer displayOrder) {
+    public static ActivitySchedule create(Integer generationId, String name, LocalDate startDate, LocalDate endDate, Integer displayOrder) {
         ActivitySchedule schedule = new ActivitySchedule();
         schedule.generationId = generationId;
         schedule.name = name;
-        schedule.date = date;
+        schedule.startDate = startDate;
+        schedule.endDate = endDate;
         schedule.displayOrder = displayOrder;
         return schedule;
     }

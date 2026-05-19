@@ -24,7 +24,7 @@ public class ActivityScheduleService {
         activityScheduleRepository.deleteByGenerationId(command.generationId());
 
         List<ActivitySchedule> schedules = command.activitySchedules().stream()
-                .map(s -> ActivitySchedule.create(command.generationId(), s.name(), s.date(), s.displayOrder()))
+                .map(s -> ActivitySchedule.create(command.generationId(), s.name(), s.startDate(), s.endDate(), s.displayOrder()))
                 .toList();
 
         activityScheduleRepository.saveAll(schedules);
