@@ -18,6 +18,7 @@ import sopt.org.homepage.application.admin.dto.request.main.news.AddAdminNewsReq
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.activityschedule.AddAdminActivityScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 
 @Validated
@@ -69,6 +70,8 @@ public class AddAdminRequestDto {
     private List<AddAdminRecruitPartCurriculumRequestDto> recruitPartCurriculum;
 
     private List<AddAdminRecruitQuestionRequestDto> recruitQuestion;
+
+    private List<AddAdminActivityScheduleRequestDto> activitySchedule;
 }
 
 

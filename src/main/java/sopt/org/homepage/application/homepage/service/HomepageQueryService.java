@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.application.homepage.controller.dto.AboutPageResponse;
 import sopt.org.homepage.application.homepage.controller.dto.MainPageResponse;
 import sopt.org.homepage.application.homepage.controller.dto.RecruitPageResponse;
+import sopt.org.homepage.activityschedule.ActivitySchedule;
+import sopt.org.homepage.activityschedule.ActivityScheduleService;
 import sopt.org.homepage.corevalue.CoreValueService;
 import sopt.org.homepage.corevalue.dto.CoreValueView;
 import sopt.org.homepage.faq.FAQService;
@@ -40,6 +42,7 @@ import sopt.org.homepage.recruitpartintroduction.dto.RecruitPartIntroductionView
 @Slf4j
 @Transactional(readOnly = true)
 public class HomepageQueryService {
+    private final ActivityScheduleService activityScheduleService;
     private final CoreValueService coreValueService;
     private final FAQService faqService;
     private final GenerationService generationService;
@@ -152,6 +155,10 @@ public class HomepageQueryService {
         List<MemberDetailView> members =
                 memberService.findByGeneration(generationId);
 
+        // 5. Activity Schedules 조회
+        List<ActivitySchedule> activitySchedules =
+                activityScheduleService.findByGeneration(generationId);
+
         // 6. Response 조합
         return AboutPageResponse.builder()
                 .generation(generation.id())
@@ -189,6 +196,13 @@ public class HomepageQueryService {
                                         .github(m.snsLinks().github())
                                         .behance(m.snsLinks().behance())
                                         .build())
+                                .build())
+                        .toList())
+                .schedule(activitySchedules.stream()
+                        .map(s -> AboutPageResponse.Schedule.builder()
+                                .name(s.getName())
+                                .startDate(s.getStartDate().toString())
+                                .endDate(s.getEndDate() != null ? s.getEndDate().toString() : null)
                                 .build())
                         .toList())
                 .build();
