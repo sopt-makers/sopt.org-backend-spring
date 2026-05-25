@@ -87,7 +87,10 @@ public record MainPageResponse(
             int projectCounts,
 
             @Schema(description = "스터디 수", example = "98")
-            int studyCounts
+            int studyCounts,
+
+            @Schema(description = "운영 기간", example = "37")
+            int operationPeriod
     ) {
     }
 }
