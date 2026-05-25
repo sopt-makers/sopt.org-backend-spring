@@ -299,10 +299,13 @@ public class HomepageQueryService {
             // Study 개수 조회 (Crew API)
             int studyCount = crewService.getStudyCount(generationId);
 
+            final int OPERATION_PERIOD = 37;
+
             return MainPageResponse.ActivitiesRecords.builder()
                     .activitiesMemberCount((int) activitiesMemberCount)
                     .projectCounts(projectCount)
                     .studyCounts(studyCount)
+                    .operationPeriod(OPERATION_PERIOD)
                     .build();
 
         } catch (Exception e) {
