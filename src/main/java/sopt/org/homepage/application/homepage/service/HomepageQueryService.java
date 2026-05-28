@@ -188,7 +188,6 @@ public class HomepageQueryService {
                                 .role(m.role())
                                 .name(m.name())
                                 .affiliation(m.affiliation())
-                                .project(m.project())
                                 .introduction(m.introduction())
                                 .profileImage(m.profileImageUrl())
                                 .sns(AboutPageResponse.Member.SnsLinks.builder()
