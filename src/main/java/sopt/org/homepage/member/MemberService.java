@@ -42,6 +42,7 @@ public class MemberService {
                         .role(MemberRole.fromLegacyRole(data.role()))
                         .name(data.name())
                         .affiliation(data.affiliation())
+                        .project(data.project())
                         .introduction(data.introduction())
                         .profileImageUrl(data.profileImageUrl())
                         .snsLinks(data.snsLinks() != null ? SnsLinks.builder()
