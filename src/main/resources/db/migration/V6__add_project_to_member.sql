@@ -1,2 +1,0 @@
-ALTER TABLE "Member"
-    ADD COLUMN "project" VARCHAR(200);

@@ -18,7 +18,6 @@ public record BulkCreateMembersCommand(
             String role,  // 레거시 문자열 role
             String name,
             String affiliation,
-            String project,
             String introduction,
             String profileImageUrl,
             SnsLinksData snsLinks

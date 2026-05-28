@@ -64,7 +64,6 @@ public record AboutPageResponse(
             String role,
             String name,
             String affiliation,
-            String project,
             String introduction,
             String profileImage,
             SnsLinks sns
