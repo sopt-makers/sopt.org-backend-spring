@@ -167,6 +167,7 @@ public class AdminServiceImpl implements AdminService {
                     .role(member.getRole())
                     .name(member.getName())
                     .affiliation(member.getAffiliation())
+                    .project(member.getProject())
                     .introduction(member.getIntroduction())
                     .profileImageUrl(profileImageUrl)
                     .snsEmail(member.getSns() != null ? member.getSns().getEmail() : null)
@@ -313,6 +314,7 @@ public class AdminServiceImpl implements AdminService {
                     .role(m.getRole())
                     .name(m.getName())
                     .affiliation(m.getAffiliation())
+                    .project(m.getProject())
                     .introduction(m.getIntroduction())
                     .profileImageUrl(memberProfileImageUrls.get(i))
                     .snsLinks(BulkCreateMembersCommand.SnsLinksData.builder()
@@ -538,6 +540,7 @@ public class AdminServiceImpl implements AdminService {
                                 .role(m.role())
                                 .name(m.name())
                                 .affiliation(m.affiliation())
+                                .project(m.project())
                                 .introduction(m.introduction())
                                 .profileImage(m.profileImageUrl())
                                 .sns(GetAdminSnsLinksResponseRecordDto.builder()
@@ -650,6 +653,7 @@ public class AdminServiceImpl implements AdminService {
             private String role;
             private String name;
             private String affiliation;
+            private String project;
             private String introduction;
             private String profileImageUrl;
             private String snsEmail;
