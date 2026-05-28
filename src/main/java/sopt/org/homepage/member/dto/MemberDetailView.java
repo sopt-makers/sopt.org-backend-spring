@@ -16,6 +16,7 @@ public record MemberDetailView(
         String role,  // 레거시 호환용 문자열
         String name,
         String affiliation,
+        String project,
         String introduction,
         String profileImageUrl,
         SnsLinksView snsLinks
@@ -27,6 +28,7 @@ public record MemberDetailView(
                 .role(member.getRole().getDisplayName())  // Enum → 한글 문자열
                 .name(member.getName())
                 .affiliation(member.getAffiliation())
+                .project(member.getProject())
                 .introduction(member.getIntroduction())
                 .profileImageUrl(member.getProfileImageUrl())
                 .snsLinks(SnsLinksView.from(member.getSnsLinks()))

@@ -48,6 +48,9 @@ public class Member {
     @Column(name = "\"affiliation\"", nullable = false, length = 100)
     private String affiliation;  // 소속 (학교/회사)
 
+    @Column(name = "\"project\"", length = 200)
+    private String project;  // 대표 프로젝트
+
     @Column(name = "\"introduction\"", nullable = false, length = 500)
     private String introduction;  // 한 줄 소개
 
@@ -71,6 +74,7 @@ public class Member {
             MemberRole role,
             String name,
             String affiliation,
+            String project,
             String introduction,
             String profileImageUrl,
             SnsLinks snsLinks
@@ -86,6 +90,7 @@ public class Member {
         this.role = role;
         this.name = name;
         this.affiliation = affiliation;
+        this.project = project;
         this.introduction = introduction;
         this.profileImageUrl = profileImageUrl;
         this.snsLinks = snsLinks != null ? snsLinks : SnsLinks.empty();
@@ -100,6 +105,7 @@ public class Member {
             MemberRole role,
             String name,
             String affiliation,
+            String project,
             String introduction,
             String profileImageUrl,
             SnsLinks snsLinks
@@ -113,6 +119,7 @@ public class Member {
         this.role = role;
         this.name = name;
         this.affiliation = affiliation;
+        this.project = project;
         this.introduction = introduction;
         this.profileImageUrl = profileImageUrl;
         this.snsLinks = snsLinks != null ? snsLinks : SnsLinks.empty();

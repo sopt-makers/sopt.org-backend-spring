@@ -18,9 +18,12 @@ public class AddAdminMemberRequestDto {
     @NotBlank(message = "이름을 입력해주세요")
     private String name;
 
-    @Schema(description = "소속", example = "SOPT", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "소속", example = "경기대학교", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "소속을 입력해주세요")
     private String affiliation;
+
+    @Schema(description = "대표 프로젝트", example = "SOPT APP")
+    private String project;
 
     @Schema(description = "한줄 소개", example = "안녕하세요!", requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "한줄 소개를 입력해주세요")
