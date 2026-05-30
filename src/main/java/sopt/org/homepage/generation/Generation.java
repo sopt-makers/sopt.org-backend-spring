@@ -39,6 +39,9 @@ public class Generation {
     @Column(name = "\"recruitHeaderImage\"", nullable = false, length = 500)
     private String recruitHeaderImage;  // Recruiting 페이지 헤더 이미지 URL
 
+    @Column(name = "\"homeHeaderImage\"", nullable = false, length = 500)
+    private String homeHeaderImage;  // Home 페이지 헤더 이미지 URL
+
     @Embedded
     private BrandingColor brandingColor;  // 브랜딩 컬러 (VO)
 
@@ -59,6 +62,7 @@ public class Generation {
             String name,
             String headerImage,
             String recruitHeaderImage,
+            String homeHeaderImage,
             BrandingColor brandingColor,
             MainButton mainButton
     ) {
@@ -66,6 +70,7 @@ public class Generation {
         this.name = name;
         this.headerImage = headerImage;
         this.recruitHeaderImage = recruitHeaderImage;
+        this.homeHeaderImage = homeHeaderImage;
         this.brandingColor = brandingColor;
         this.mainButton = mainButton;
     }
@@ -79,12 +84,14 @@ public class Generation {
             String name,
             String headerImage,
             String recruitHeaderImage,
+            String homeHeaderImage,
             BrandingColor brandingColor,
             MainButton mainButton
     ) {
         this.name = name;
         this.headerImage = headerImage;
         this.recruitHeaderImage = recruitHeaderImage;
+        this.homeHeaderImage = homeHeaderImage;
         this.brandingColor = brandingColor;
         this.mainButton = mainButton;
     }
@@ -101,6 +108,13 @@ public class Generation {
      */
     public void updateRecruitHeaderImage(String recruitHeaderImage) {
         this.recruitHeaderImage = recruitHeaderImage;
+    }
+
+    /**
+     * 홈 헤더 이미지 변경
+     */
+    public void updateHomeHeaderImage(String homeHeaderImage) {
+        this.homeHeaderImage = homeHeaderImage;
     }
 
     /**

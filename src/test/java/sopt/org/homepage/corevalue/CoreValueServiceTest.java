@@ -38,6 +38,7 @@ class CoreValueServiceTest extends IntegrationTestBase {
                     .generationId(35)
                     .value("도전")
                     .description("새로운 도전을 두려워하지 않습니다")
+                    .detailDescription("두려움 없이 나아가는 자세")
                     .imageUrl("https://example.com/challenge.jpg")
                     .displayOrder(1)
                     .build();
@@ -56,7 +57,7 @@ class CoreValueServiceTest extends IntegrationTestBase {
         void bulkCreate_ReplacesExisting() {
             // given - 기존 데이터
             coreValueRepository.save(CoreValue.builder()
-                    .generationId(35).value("기존값").description("d")
+                    .generationId(35).value("기존값").description("d").detailDescription("dd")
                     .imageUrl("u").displayOrder(1).build());
 
             // when - 교체
@@ -64,9 +65,9 @@ class CoreValueServiceTest extends IntegrationTestBase {
                     .generationId(35)
                     .coreValues(List.of(
                             BulkCreateCoreValuesCommand.CoreValueData.builder()
-                                    .value("도전").description("d1").imageUrl("u1").displayOrder(1).build(),
+                                    .value("도전").description("d1").detailDescription("dd1").imageUrl("u1").displayOrder(1).build(),
                             BulkCreateCoreValuesCommand.CoreValueData.builder()
-                                    .value("성장").description("d2").imageUrl("u2").displayOrder(2).build()
+                                    .value("성장").description("d2").detailDescription("dd2").imageUrl("u2").displayOrder(2).build()
                     ))
                     .build();
 
@@ -88,11 +89,11 @@ class CoreValueServiceTest extends IntegrationTestBase {
         void findByGeneration_Ordered() {
             // given
             coreValueRepository.saveAll(List.of(
-                    CoreValue.builder().generationId(35).value("세번째").description("d").imageUrl("u").displayOrder(3)
+                    CoreValue.builder().generationId(35).value("세번째").description("d").detailDescription("dd").imageUrl("u").displayOrder(3)
                             .build(),
-                    CoreValue.builder().generationId(35).value("첫번째").description("d").imageUrl("u").displayOrder(1)
+                    CoreValue.builder().generationId(35).value("첫번째").description("d").detailDescription("dd").imageUrl("u").displayOrder(1)
                             .build(),
-                    CoreValue.builder().generationId(35).value("두번째").description("d").imageUrl("u").displayOrder(2)
+                    CoreValue.builder().generationId(35).value("두번째").description("d").detailDescription("dd").imageUrl("u").displayOrder(2)
                             .build()
             ));
 

@@ -17,6 +17,7 @@ public record BulkCreateCoreValuesCommand(
     public record CoreValueData(
             String value,
             String description,
+            String detailDescription,
             String imageUrl,
             Integer displayOrder
     ) {

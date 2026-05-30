@@ -15,6 +15,8 @@ import sopt.org.homepage.application.admin.dto.response.main.introduction.GetAdm
 import sopt.org.homepage.application.admin.dto.response.main.member.GetAdminMemberResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.news.GetAdminLatestNewsResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.curriculum.GetAdminRecruitPartCurriculumResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.activityschedule.GetAdminActivityScheduleResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.review.GetAdminReviewResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminRecruitQuestionResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
 
@@ -40,6 +42,9 @@ public class GetAdminResponseDto {
     @Schema(description = "헤더 이미지 링크", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://header.png")
     private String headerImage;
 
+    @Schema(description = "홈 헤더 이미지 링크", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://header.png")
+    private String homeHeaderImage;
+
     private List<GetAdminCoreValueResponseRecordDto> coreValue;
     private List<GetAdminPartCurriculumResponseRecordDto> partCurriculum;
     private List<GetAdminMemberResponseRecordDto> member;
@@ -49,6 +54,8 @@ public class GetAdminResponseDto {
 
     private List<GetAdminRecruitPartCurriculumResponseRecordDto> recruitPartCurriculum;
     private List<GetAdminRecruitQuestionResponseRecordDto> recruitQuestion;
+    private List<GetAdminReviewResponseRecordDto> review;
+    private List<GetAdminActivityScheduleResponseRecordDto> activitySchedule;
 }
 
 

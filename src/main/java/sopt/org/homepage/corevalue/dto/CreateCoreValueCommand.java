@@ -13,6 +13,7 @@ public record CreateCoreValueCommand(
         Integer generationId,
         String value,
         String description,
+        String detailDescription,
         String imageUrl,
         Integer displayOrder
 ) {
@@ -21,6 +22,7 @@ public record CreateCoreValueCommand(
                 .generationId(generationId)
                 .value(value)
                 .description(description)
+                .detailDescription(detailDescription)
                 .imageUrl(imageUrl)
                 .displayOrder(displayOrder)
                 .build();

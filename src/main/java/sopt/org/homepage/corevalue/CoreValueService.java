@@ -40,6 +40,7 @@ public class CoreValueService {
                         .generationId(command.generationId())
                         .value(data.value())
                         .description(data.description())
+                        .detailDescription(data.detailDescription())
                         .imageUrl(data.imageUrl())
                         .displayOrder(data.displayOrder())
                         .build())
