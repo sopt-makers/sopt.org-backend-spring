@@ -6,12 +6,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sopt.org.homepage.application.admin.dto.AddAdminAboutRequestDto;
+import sopt.org.homepage.application.admin.dto.AddAdminAboutResponseDto;
+import sopt.org.homepage.application.admin.dto.AddAdminCommonRequestDto;
+import sopt.org.homepage.application.admin.dto.AddAdminCommonResponseDto;
 import sopt.org.homepage.application.admin.dto.AddAdminConfirmRequestDto;
 import sopt.org.homepage.application.admin.dto.AddAdminConfirmResponseDto;
+import sopt.org.homepage.application.admin.dto.AddAdminHomeRequestDto;
+import sopt.org.homepage.application.admin.dto.AddAdminHomeResponseDto;
+import sopt.org.homepage.application.admin.dto.AddAdminRecruitRequestDto;
+import sopt.org.homepage.application.admin.dto.AddAdminRecruitResponseDto;
 import sopt.org.homepage.application.admin.dto.AddAdminRequestDto;
 import sopt.org.homepage.application.admin.dto.AddAdminResponseDto;
 import sopt.org.homepage.application.admin.dto.GetAdminRequestDto;
 import sopt.org.homepage.application.admin.dto.GetAdminResponseDto;
+import sopt.org.homepage.application.admin.dto.response.main.news.AddAdminNewsResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
@@ -20,6 +29,8 @@ import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.Add
 import sopt.org.homepage.activityschedule.ActivitySchedule;
 import sopt.org.homepage.activityschedule.ActivityScheduleService;
 import sopt.org.homepage.activityschedule.dto.BulkCreateActivitySchedulesCommand;
+import sopt.org.homepage.generation.vo.BrandingColor;
+import sopt.org.homepage.generation.vo.MainButton;
 import sopt.org.homepage.application.admin.dto.request.main.activityschedule.AddAdminActivityScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 import sopt.org.homepage.application.admin.dto.response.main.activityschedule.GetAdminActivityScheduleResponseRecordDto;
@@ -454,6 +465,524 @@ public class AdminServiceImpl implements AdminService {
                 .build();
     }
 
+    // =========================================================
+    // 탭별 배포 - 공통 탭
+    // =========================================================
+
+    @Override
+    @Transactional
+    public AddAdminCommonResponseDto addCommonData(AddAdminCommonRequestDto request) {
+        log.info("공통 탭 배포 1단계 - generation={}", request.getGeneration());
+
+        Integer generationId = request.getGeneration();
+
+        CachedCommonData cachedData = new CachedCommonData();
+        cachedData.setGenerationId(generationId);
+        cachedData.setName(request.getName());
+
+        var bc = request.getBrandingColor();
+        cachedData.setBrandingColorMain(bc.getMain());
+        cachedData.setBrandingColorLow(bc.getLow());
+        cachedData.setBrandingColorHigh(bc.getHigh());
+        cachedData.setBrandingColorPoint(bc.getPoint());
+
+        var mb = request.getMainButton();
+        cachedData.setMainButtonText(mb.getText());
+        cachedData.setMainButtonKeyColor(mb.getKeyColor());
+        cachedData.setMainButtonSubColor(mb.getSubColor());
+
+        if (request.getRecruitSchedule() != null) {
+            cachedData.setRecruitSchedules(new ArrayList<>(request.getRecruitSchedule()));
+        }
+
+        cacheService.put(CacheType.ADMIN_MAIN_DATA, "common_" + generationId, cachedData);
+        log.info("공통 탭 캐시 저장 완료 - generation={}", generationId);
+
+        return AddAdminCommonResponseDto.builder()
+                .generation(generationId)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public AddAdminConfirmResponseDto addCommonDataConfirm(AddAdminConfirmRequestDto request) {
+        log.info("공통 탭 배포 2단계 - generation={}", request.getGeneration());
+
+        Integer generationId = request.getGeneration();
+
+        CachedCommonData cachedData = cacheService.get(
+                CacheType.ADMIN_MAIN_DATA, "common_" + generationId, CachedCommonData.class);
+
+        if (cachedData == null) {
+            throw new ClientBadRequestException(
+                    "공통 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
+        }
+
+        // BrandingColor: VO는 # 없는 6자리 hex 요구 → # 제거 후 전달
+        BrandingColor brandingColor = BrandingColor.builder()
+                .main(stripHash(cachedData.getBrandingColorMain()))
+                .sub(stripHash(cachedData.getBrandingColorLow()))
+                .point(stripHash(cachedData.getBrandingColorHigh()))
+                .background(stripHash(cachedData.getBrandingColorPoint()))
+                .build();
+
+        MainButton mainButton = MainButton.builder()
+                .text(cachedData.getMainButtonText())
+                .keyColor(cachedData.getMainButtonKeyColor())
+                .subColor(cachedData.getMainButtonSubColor())
+                .build();
+
+        generationService.createOrUpdateCommon(generationId, cachedData.getName(), brandingColor, mainButton);
+
+        if (cachedData.getRecruitSchedules() != null && !cachedData.getRecruitSchedules().isEmpty()) {
+            recruitmentService.bulkCreate(
+                    BulkCreateRecruitmentsCommand.builder()
+                            .generationId(generationId)
+                            .recruitments(cachedData.getRecruitSchedules().stream()
+                                    .map(rs -> BulkCreateRecruitmentsCommand.RecruitmentData.builder()
+                                            .type(rs.getType())
+                                            .schedule(BulkCreateRecruitmentsCommand.ScheduleData.builder()
+                                                    .applicationStartTime(rs.getSchedule().getApplicationStartTime())
+                                                    .applicationEndTime(rs.getSchedule().getApplicationEndTime())
+                                                    .applicationResultTime(rs.getSchedule().getApplicationResultTime())
+                                                    .interviewStartTime(rs.getSchedule().getInterviewStartTime())
+                                                    .interviewEndTime(rs.getSchedule().getInterviewEndTime())
+                                                    .finalResultTime(rs.getSchedule().getFinalResultTime())
+                                                    .build())
+                                            .build())
+                                    .toList())
+                            .build()
+            );
+        }
+
+        cacheService.evict(CacheType.ADMIN_MAIN_DATA, "common_" + generationId);
+        log.info("공통 탭 배포 완료 - generation={}", generationId);
+
+        return AddAdminConfirmResponseDto.builder()
+                .message("공통 탭 배포 성공")
+                .build();
+    }
+
+    // =========================================================
+    // 탭별 배포 - 홈 탭
+    // =========================================================
+
+    @Override
+    @Transactional
+    public AddAdminHomeResponseDto addHomeData(AddAdminHomeRequestDto request) {
+        log.info("홈 탭 배포 1단계 - generation={}", request.getGeneration());
+
+        Integer generationId = request.getGeneration();
+        String baseDir = generationId + "/";
+
+        CachedHomeData cachedData = new CachedHomeData();
+        cachedData.setGenerationId(generationId);
+
+        String homeHeaderImageUrl = s3Service.generatePresignedUrl(
+                request.getHomeHeaderImageFileName(), baseDir);
+        cachedData.setHomeHeaderImageUrl(homeHeaderImageUrl);
+
+        List<CachedAdminData.NewsData> newsDataList = new ArrayList<>();
+        if (request.getNews() != null) {
+            for (var news : request.getNews()) {
+                String newsImageUrl = s3Service.generatePresignedUrl(
+                        news.getImageFileName(), baseDir + "news/");
+                newsDataList.add(CachedAdminData.NewsData.builder()
+                        .title(news.getTitle())
+                        .link(news.getLink())
+                        .imageUrl(newsImageUrl)
+                        .build());
+            }
+        }
+        cachedData.setNews(newsDataList);
+
+        if (request.getReview() != null) {
+            cachedData.setReviews(new ArrayList<>(request.getReview()));
+        }
+
+        cacheService.put(CacheType.ADMIN_MAIN_DATA, "home_" + generationId, cachedData);
+        log.info("홈 탭 캐시 저장 완료 - generation={}", generationId);
+
+        return AddAdminHomeResponseDto.builder()
+                .generation(generationId)
+                .homeHeaderImage(homeHeaderImageUrl)
+                .news(newsDataList.stream()
+                        .map(n -> AddAdminNewsResponseRecordDto.builder()
+                                .title(n.getTitle())
+                                .imagePresignedUrl(n.getImageUrl())
+                                .build())
+                        .toList())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public AddAdminConfirmResponseDto addHomeDataConfirm(AddAdminConfirmRequestDto request) {
+        log.info("홈 탭 배포 2단계 - generation={}", request.getGeneration());
+
+        Integer generationId = request.getGeneration();
+
+        CachedHomeData cachedData = cacheService.get(
+                CacheType.ADMIN_MAIN_DATA, "home_" + generationId, CachedHomeData.class);
+
+        if (cachedData == null) {
+            throw new ClientBadRequestException(
+                    "홈 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
+        }
+
+        String homeHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getHomeHeaderImageUrl());
+        generationService.updateHomeHeaderImage(generationId, homeHeaderImageUrl);
+
+        if (cachedData.getNews() != null && !cachedData.getNews().isEmpty()) {
+            newsService.bulkCreate(
+                    BulkCreateNewsCommand.builder()
+                            .news(cachedData.getNews().stream()
+                                    .map(n -> BulkCreateNewsCommand.NewsData.builder()
+                                            .title(n.getTitle())
+                                            .link(n.getLink())
+                                            .imageUrl(s3Service.getOriginalUrl(n.getImageUrl()))
+                                            .build())
+                                    .toList())
+                            .build()
+            );
+        }
+
+        if (cachedData.getReviews() != null && !cachedData.getReviews().isEmpty()) {
+            homepageReviewService.bulkCreate(
+                    BulkCreateHomepageReviewsCommand.builder()
+                            .reviews(cachedData.getReviews().stream()
+                                    .map(r -> BulkCreateHomepageReviewsCommand.ReviewData.builder()
+                                            .title(r.getTitle())
+                                            .content(r.getContent())
+                                            .authorInfo(r.getAuthorInfo())
+                                            .build())
+                                    .toList())
+                            .build()
+            );
+        }
+
+        cacheService.evict(CacheType.ADMIN_MAIN_DATA, "home_" + generationId);
+        log.info("홈 탭 배포 완료 - generation={}", generationId);
+
+        return AddAdminConfirmResponseDto.builder()
+                .message("홈 탭 배포 성공")
+                .build();
+    }
+
+    // =========================================================
+    // 탭별 배포 - 소개 탭
+    // =========================================================
+
+    @Override
+    @Transactional
+    public AddAdminAboutResponseDto addAboutData(AddAdminAboutRequestDto request) {
+        log.info("소개 탭 배포 1단계 - generation={}", request.getGeneration());
+
+        Integer generationId = request.getGeneration();
+        String baseDir = generationId + "/";
+
+        CachedAboutData cachedData = new CachedAboutData();
+        cachedData.setGenerationId(generationId);
+
+        String headerImageUrl = s3Service.generatePresignedUrl(
+                request.getHeaderImageFileName(), baseDir);
+        cachedData.setHeaderImageUrl(headerImageUrl);
+
+        List<CachedAdminData.CoreValueData> coreValueDataList = new ArrayList<>();
+        if (request.getCoreValue() != null) {
+            for (var cv : request.getCoreValue()) {
+                String imageUrl = s3Service.generatePresignedUrl(
+                        cv.getImageFileName(), baseDir + "coreValue/");
+                coreValueDataList.add(CachedAdminData.CoreValueData.builder()
+                        .value(cv.getValue())
+                        .description(cv.getDescription())
+                        .detailDescription(cv.getDetailDescription())
+                        .imageUrl(imageUrl)
+                        .build());
+            }
+        }
+        cachedData.setCoreValues(coreValueDataList);
+
+        List<CachedAdminData.MemberData> memberDataList = new ArrayList<>();
+        if (request.getMember() != null) {
+            for (var member : request.getMember()) {
+                String profileImageUrl = s3Service.generatePresignedUrl(
+                        member.getProfileImageFileName(), baseDir + "member/");
+                memberDataList.add(CachedAdminData.MemberData.builder()
+                        .role(member.getRole())
+                        .name(member.getName())
+                        .affiliation(member.getAffiliation())
+                        .introduction(member.getIntroduction())
+                        .profileImageUrl(profileImageUrl)
+                        .snsEmail(member.getSns() != null ? member.getSns().getEmail() : null)
+                        .snsLinkedin(member.getSns() != null ? member.getSns().getLinkedin() : null)
+                        .snsGithub(member.getSns() != null ? member.getSns().getGithub() : null)
+                        .snsBehance(member.getSns() != null ? member.getSns().getBehance() : null)
+                        .build());
+            }
+        }
+        cachedData.setMembers(memberDataList);
+
+        if (request.getActivitySchedule() != null) {
+            cachedData.setActivitySchedules(new ArrayList<>(request.getActivitySchedule()));
+        }
+
+        cacheService.put(CacheType.ADMIN_MAIN_DATA, "about_" + generationId, cachedData);
+        log.info("소개 탭 캐시 저장 완료 - generation={}", generationId);
+
+        return AddAdminAboutResponseDto.builder()
+                .generation(generationId)
+                .headerImage(headerImageUrl)
+                .coreValues(coreValueDataList.stream()
+                        .map(cv -> AddAdminCoreValueResponseRecordDto.builder()
+                                .value(cv.getValue())
+                                .image(cv.getImageUrl())
+                                .build())
+                        .toList())
+                .members(memberDataList.stream()
+                        .map(m -> AddAdminMemberResponseRecordDto.builder()
+                                .role(m.getRole())
+                                .name(m.getName())
+                                .profileImage(m.getProfileImageUrl())
+                                .build())
+                        .toList())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public AddAdminConfirmResponseDto addAboutDataConfirm(AddAdminConfirmRequestDto request) {
+        log.info("소개 탭 배포 2단계 - generation={}", request.getGeneration());
+
+        Integer generationId = request.getGeneration();
+
+        CachedAboutData cachedData = cacheService.get(
+                CacheType.ADMIN_MAIN_DATA, "about_" + generationId, CachedAboutData.class);
+
+        if (cachedData == null) {
+            throw new ClientBadRequestException(
+                    "소개 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
+        }
+
+        String headerImageUrl = s3Service.getOriginalUrl(cachedData.getHeaderImageUrl());
+        generationService.updateHeaderImage(generationId, headerImageUrl);
+
+        if (cachedData.getCoreValues() != null && !cachedData.getCoreValues().isEmpty()) {
+            List<String> coreValueImageUrls = cachedData.getCoreValues().stream()
+                    .map(cv -> s3Service.getOriginalUrl(cv.getImageUrl()))
+                    .toList();
+
+            List<BulkCreateCoreValuesCommand.CoreValueData> coreValueDataList = new ArrayList<>();
+            for (int i = 0; i < cachedData.getCoreValues().size(); i++) {
+                var cv = cachedData.getCoreValues().get(i);
+                coreValueDataList.add(BulkCreateCoreValuesCommand.CoreValueData.builder()
+                        .value(cv.getValue())
+                        .description(cv.getDescription())
+                        .detailDescription(cv.getDetailDescription())
+                        .imageUrl(coreValueImageUrls.get(i))
+                        .displayOrder(i)
+                        .build());
+            }
+            coreValueService.bulkCreate(
+                    BulkCreateCoreValuesCommand.builder()
+                            .generationId(generationId)
+                            .coreValues(coreValueDataList)
+                            .build()
+            );
+        }
+
+        if (cachedData.getMembers() != null && !cachedData.getMembers().isEmpty()) {
+            List<String> memberProfileImageUrls = cachedData.getMembers().stream()
+                    .map(m -> s3Service.getOriginalUrl(m.getProfileImageUrl()))
+                    .toList();
+
+            List<BulkCreateMembersCommand.MemberData> memberDataList = new ArrayList<>();
+            for (int i = 0; i < cachedData.getMembers().size(); i++) {
+                var m = cachedData.getMembers().get(i);
+                memberDataList.add(BulkCreateMembersCommand.MemberData.builder()
+                        .role(m.getRole())
+                        .name(m.getName())
+                        .affiliation(m.getAffiliation())
+                        .introduction(m.getIntroduction())
+                        .profileImageUrl(memberProfileImageUrls.get(i))
+                        .snsLinks(BulkCreateMembersCommand.SnsLinksData.builder()
+                                .email(m.getSnsEmail())
+                                .linkedin(m.getSnsLinkedin())
+                                .github(m.getSnsGithub())
+                                .behance(m.getSnsBehance())
+                                .build())
+                        .build());
+            }
+            memberService.bulkCreate(
+                    BulkCreateMembersCommand.builder()
+                            .generationId(generationId)
+                            .members(memberDataList)
+                            .build()
+            );
+        }
+
+        if (cachedData.getActivitySchedules() != null && !cachedData.getActivitySchedules().isEmpty()) {
+            activityScheduleService.bulkCreate(
+                    BulkCreateActivitySchedulesCommand.builder()
+                            .generationId(generationId)
+                            .activitySchedules(cachedData.getActivitySchedules().stream()
+                                    .map(s -> BulkCreateActivitySchedulesCommand.ActivityScheduleData.builder()
+                                            .name(s.getName())
+                                            .startDate(java.time.LocalDate.parse(s.getStartDate()))
+                                            .endDate(s.getEndDate() != null ? java.time.LocalDate.parse(s.getEndDate()) : null)
+                                            .build())
+                                    .toList())
+                            .build()
+            );
+        }
+
+        cacheService.evict(CacheType.ADMIN_MAIN_DATA, "about_" + generationId);
+        log.info("소개 탭 배포 완료 - generation={}", generationId);
+
+        return AddAdminConfirmResponseDto.builder()
+                .message("소개 탭 배포 성공")
+                .build();
+    }
+
+    // =========================================================
+    // 탭별 배포 - 모집안내 탭
+    // =========================================================
+
+    @Override
+    @Transactional
+    public AddAdminRecruitResponseDto addRecruitData(AddAdminRecruitRequestDto request) {
+        log.info("모집안내 탭 배포 1단계 - generation={}", request.getGeneration());
+
+        Integer generationId = request.getGeneration();
+        String baseDir = generationId + "/";
+
+        CachedRecruitData cachedData = new CachedRecruitData();
+        cachedData.setGenerationId(generationId);
+
+        String recruitHeaderImageUrl = s3Service.generatePresignedUrl(
+                request.getRecruitHeaderImageFileName(), baseDir);
+        cachedData.setRecruitHeaderImageUrl(recruitHeaderImageUrl);
+
+        if (request.getPartIntroduction() != null) {
+            cachedData.setPartIntroductions(new ArrayList<>(request.getPartIntroduction()));
+        }
+        if (request.getPartCurriculum() != null) {
+            cachedData.setPartCurriculums(new ArrayList<>(request.getPartCurriculum()));
+        }
+        if (request.getRecruitPartCurriculum() != null) {
+            cachedData.setRecruitPartCurriculums(new ArrayList<>(request.getRecruitPartCurriculum()));
+        }
+        if (request.getRecruitQuestion() != null) {
+            cachedData.setRecruitQuestions(new ArrayList<>(request.getRecruitQuestion()));
+        }
+
+        cacheService.put(CacheType.ADMIN_MAIN_DATA, "recruit_" + generationId, cachedData);
+        log.info("모집안내 탭 캐시 저장 완료 - generation={}", generationId);
+
+        return AddAdminRecruitResponseDto.builder()
+                .generation(generationId)
+                .recruitHeaderImage(recruitHeaderImageUrl)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public AddAdminConfirmResponseDto addRecruitDataConfirm(AddAdminConfirmRequestDto request) {
+        log.info("모집안내 탭 배포 2단계 - generation={}", request.getGeneration());
+
+        Integer generationId = request.getGeneration();
+
+        CachedRecruitData cachedData = cacheService.get(
+                CacheType.ADMIN_MAIN_DATA, "recruit_" + generationId, CachedRecruitData.class);
+
+        if (cachedData == null) {
+            throw new ClientBadRequestException(
+                    "모집안내 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
+        }
+
+        String recruitHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getRecruitHeaderImageUrl());
+        generationService.updateRecruitHeaderImage(generationId, recruitHeaderImageUrl);
+
+        if (cachedData.getPartIntroductions() != null || cachedData.getPartCurriculums() != null) {
+            partService.bulkCreate(
+                    BulkCreatePartsCommand.builder()
+                            .generationId(generationId)
+                            .partIntroductions(cachedData.getPartIntroductions() != null
+                                    ? cachedData.getPartIntroductions().stream()
+                                            .map(pi -> BulkCreatePartsCommand.PartData.builder()
+                                                    .part(pi.getPart())
+                                                    .description(pi.getDescription())
+                                                    .build())
+                                            .toList()
+                                    : List.of())
+                            .partCurriculums(cachedData.getPartCurriculums() != null
+                                    ? cachedData.getPartCurriculums().stream()
+                                            .map(pc -> BulkCreatePartsCommand.PartCurriculumData.builder()
+                                                    .part(pc.getPart())
+                                                    .curriculums(pc.getCurriculums())
+                                                    .build())
+                                            .toList()
+                                    : List.of())
+                            .build()
+            );
+        }
+
+        if (cachedData.getRecruitPartCurriculums() != null && !cachedData.getRecruitPartCurriculums().isEmpty()) {
+            recruitPartIntroductionService.bulkCreate(
+                    BulkCreateRecruitPartIntroductionsCommand.builder()
+                            .generationId(generationId)
+                            .partIntroductions(cachedData.getRecruitPartCurriculums().stream()
+                                    .map(rpc -> BulkCreateRecruitPartIntroductionsCommand.PartIntroductionData.builder()
+                                            .part(rpc.getPart())
+                                            .introduction(
+                                                    BulkCreateRecruitPartIntroductionsCommand.IntroductionData.builder()
+                                                            .content(rpc.getIntroduction().getContent())
+                                                            .preference(rpc.getIntroduction().getPreference())
+                                                            .build())
+                                            .build())
+                                    .toList())
+                            .build()
+            );
+        }
+
+        if (cachedData.getRecruitQuestions() != null && !cachedData.getRecruitQuestions().isEmpty()) {
+            faqService.bulkCreate(
+                    BulkCreateFAQsCommand.builder()
+                            .faqs(cachedData.getRecruitQuestions().stream()
+                                    .map(rq -> BulkCreateFAQsCommand.FAQData.builder()
+                                            .part(rq.getPart())
+                                            .question(rq.getQuestions().stream()
+                                                    .map(q -> BulkCreateFAQsCommand.QuestionData.builder()
+                                                            .question(q.getQuestion())
+                                                            .answer(q.getAnswer())
+                                                            .build())
+                                                    .toList())
+                                            .build())
+                                    .toList())
+                            .build()
+            );
+        }
+
+        cacheService.evict(CacheType.ADMIN_MAIN_DATA, "recruit_" + generationId);
+        log.info("모집안내 탭 배포 완료 - generation={}", generationId);
+
+        return AddAdminConfirmResponseDto.builder()
+                .message("모집안내 탭 배포 성공")
+                .build();
+    }
+
+    // =========================================================
+    // 유틸리티
+    // =========================================================
+
+    /** BrandingColor VO는 '#' 없는 6자리 hex 요구 → '#' 제거 */
+    private String stripHash(String hexColor) {
+        if (hexColor != null && hexColor.startsWith("#")) {
+            return hexColor.substring(1);
+        }
+        return hexColor;
+    }
+
     /**
      * Admin 메인 데이터 조회
      */
@@ -665,6 +1194,49 @@ public class AdminServiceImpl implements AdminService {
             private String link;
             private String imageUrl;
         }
+    }
+
+    // ===== 탭별 캐시 데이터 클래스 =====
+
+    @lombok.Data
+    public static class CachedCommonData implements java.io.Serializable {
+        private Integer generationId;
+        private String name;
+        private String brandingColorMain;
+        private String brandingColorLow;
+        private String brandingColorHigh;
+        private String brandingColorPoint;
+        private String mainButtonText;
+        private String mainButtonKeyColor;
+        private String mainButtonSubColor;
+        private List<AddAdminRecruitScheduleRequestDto> recruitSchedules;
+    }
+
+    @lombok.Data
+    public static class CachedHomeData implements java.io.Serializable {
+        private Integer generationId;
+        private String homeHeaderImageUrl;
+        private List<CachedAdminData.NewsData> news;
+        private List<AddAdminReviewRequestDto> reviews;
+    }
+
+    @lombok.Data
+    public static class CachedAboutData implements java.io.Serializable {
+        private Integer generationId;
+        private String headerImageUrl;
+        private List<CachedAdminData.CoreValueData> coreValues;
+        private List<CachedAdminData.MemberData> members;
+        private List<AddAdminActivityScheduleRequestDto> activitySchedules;
+    }
+
+    @lombok.Data
+    public static class CachedRecruitData implements java.io.Serializable {
+        private Integer generationId;
+        private String recruitHeaderImageUrl;
+        private List<AddAdminPartIntroductionRequestDto> partIntroductions;
+        private List<AddAdminPartCurriculumRequestDto> partCurriculums;
+        private List<AddAdminRecruitPartCurriculumRequestDto> recruitPartCurriculums;
+        private List<AddAdminRecruitQuestionRequestDto> recruitQuestions;
     }
 
 }
