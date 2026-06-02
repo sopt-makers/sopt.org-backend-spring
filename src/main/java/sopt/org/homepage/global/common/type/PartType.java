@@ -64,6 +64,7 @@ public enum PartType {
             case "서버", "Server", "SERVER" -> SERVER;
             case "기획", "Plan", "PLAN" -> PLAN;
             case "디자인", "Design", "DESIGN" -> DESIGN;
+            case "공통", "Common", "COMMON" -> COMMON;
             default -> throw new IllegalArgumentException("Unknown partType: " + partName);
         };
     }
