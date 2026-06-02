@@ -17,10 +17,11 @@ import sopt.org.homepage.application.admin.dto.GetAdminResponseDto;
 
 public interface AdminService {
 
-    // ===== 기존 통합 배포 (하위 호환) =====
+    GetAdminResponseDto getMain(GetAdminRequestDto getAdminRequestDto);
+
+    // ===== 기존 통합 배포 =====
     AddAdminResponseDto addMainData(AddAdminRequestDto addAdminRequestDto);
     AddAdminConfirmResponseDto addMainDataConfirm(AddAdminConfirmRequestDto addAdminConfirmRequestDto);
-    GetAdminResponseDto getMain(GetAdminRequestDto getAdminRequestDto);
 
     // ===== 탭별 배포 - 공통 =====
     AddAdminCommonResponseDto addCommonData(AddAdminCommonRequestDto request);
