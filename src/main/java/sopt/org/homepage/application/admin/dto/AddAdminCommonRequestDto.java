@@ -22,7 +22,7 @@ public class AddAdminCommonRequestDto {
     @Schema(description = "기수", requiredMode = Schema.RequiredMode.REQUIRED, example = "36")
     @NotNull(message = "generation must not be null")
     @Positive(message = "generation must be a positive number")
-    private int generation;
+    private Integer generation;
 
     @Schema(description = "기수명", requiredMode = Schema.RequiredMode.REQUIRED, example = "SOPT")
     @NotEmpty(message = "name must not be empty")

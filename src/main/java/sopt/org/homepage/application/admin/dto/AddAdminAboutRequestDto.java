@@ -22,7 +22,7 @@ public class AddAdminAboutRequestDto {
     @Schema(description = "기수", requiredMode = Schema.RequiredMode.REQUIRED, example = "36")
     @NotNull(message = "generation must not be null")
     @Positive(message = "generation must be a positive number")
-    private int generation;
+    private Integer generation;
 
     @Schema(description = "헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "header.png")
     @NotEmpty(message = "headerImageFileName must not be empty")

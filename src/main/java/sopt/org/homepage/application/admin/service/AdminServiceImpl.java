@@ -534,7 +534,7 @@ public class AdminServiceImpl implements AdminService {
 
         generationService.createOrUpdateCommon(generationId, cachedData.getName(), brandingColor, mainButton);
 
-        if (cachedData.getRecruitSchedules() != null && !cachedData.getRecruitSchedules().isEmpty()) {
+        if (cachedData.getRecruitSchedules() != null) {
             recruitmentService.bulkCreate(
                     BulkCreateRecruitmentsCommand.builder()
                             .generationId(generationId)
@@ -582,8 +582,9 @@ public class AdminServiceImpl implements AdminService {
                 request.getHomeHeaderImageFileName(), baseDir);
         cachedData.setHomeHeaderImageUrl(homeHeaderImageUrl);
 
-        List<CachedAdminData.NewsData> newsDataList = new ArrayList<>();
+        List<CachedAdminData.NewsData> newsDataList = null;
         if (request.getNews() != null) {
+            newsDataList = new ArrayList<>();
             for (var news : request.getNews()) {
                 String newsImageUrl = s3Service.generatePresignedUrl(
                         news.getImageFileName(), baseDir + "news/");
@@ -593,8 +594,8 @@ public class AdminServiceImpl implements AdminService {
                         .imageUrl(newsImageUrl)
                         .build());
             }
+            cachedData.setNews(newsDataList);
         }
-        cachedData.setNews(newsDataList);
 
         if (request.getReview() != null) {
             cachedData.setReviews(new ArrayList<>(request.getReview()));
@@ -606,12 +607,14 @@ public class AdminServiceImpl implements AdminService {
         return AddAdminHomeResponseDto.builder()
                 .generation(generationId)
                 .homeHeaderImage(homeHeaderImageUrl)
-                .news(newsDataList.stream()
-                        .map(n -> AddAdminNewsResponseRecordDto.builder()
-                                .title(n.getTitle())
-                                .imagePresignedUrl(n.getImageUrl())
-                                .build())
-                        .toList())
+                .news(newsDataList != null
+                        ? newsDataList.stream()
+                                .map(n -> AddAdminNewsResponseRecordDto.builder()
+                                        .title(n.getTitle())
+                                        .imagePresignedUrl(n.getImageUrl())
+                                        .build())
+                                .toList()
+                        : null)
                 .build();
     }
 
@@ -633,7 +636,7 @@ public class AdminServiceImpl implements AdminService {
         String homeHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getHomeHeaderImageUrl());
         generationService.updateHomeHeaderImage(generationId, homeHeaderImageUrl);
 
-        if (cachedData.getNews() != null && !cachedData.getNews().isEmpty()) {
+        if (cachedData.getNews() != null) {
             newsService.bulkCreate(
                     BulkCreateNewsCommand.builder()
                             .news(cachedData.getNews().stream()
@@ -647,7 +650,7 @@ public class AdminServiceImpl implements AdminService {
             );
         }
 
-        if (cachedData.getReviews() != null && !cachedData.getReviews().isEmpty()) {
+        if (cachedData.getReviews() != null) {
             homepageReviewService.bulkCreate(
                     BulkCreateHomepageReviewsCommand.builder()
                             .reviews(cachedData.getReviews().stream()
@@ -688,8 +691,9 @@ public class AdminServiceImpl implements AdminService {
                 request.getHeaderImageFileName(), baseDir);
         cachedData.setHeaderImageUrl(headerImageUrl);
 
-        List<CachedAdminData.CoreValueData> coreValueDataList = new ArrayList<>();
+        List<CachedAdminData.CoreValueData> coreValueDataList = null;
         if (request.getCoreValue() != null) {
+            coreValueDataList = new ArrayList<>();
             for (var cv : request.getCoreValue()) {
                 String imageUrl = s3Service.generatePresignedUrl(
                         cv.getImageFileName(), baseDir + "coreValue/");
@@ -700,11 +704,12 @@ public class AdminServiceImpl implements AdminService {
                         .imageUrl(imageUrl)
                         .build());
             }
+            cachedData.setCoreValues(coreValueDataList);
         }
-        cachedData.setCoreValues(coreValueDataList);
 
-        List<CachedAdminData.MemberData> memberDataList = new ArrayList<>();
+        List<CachedAdminData.MemberData> memberDataList = null;
         if (request.getMember() != null) {
+            memberDataList = new ArrayList<>();
             for (var member : request.getMember()) {
                 String profileImageUrl = s3Service.generatePresignedUrl(
                         member.getProfileImageFileName(), baseDir + "member/");
@@ -720,8 +725,8 @@ public class AdminServiceImpl implements AdminService {
                         .snsBehance(member.getSns() != null ? member.getSns().getBehance() : null)
                         .build());
             }
+            cachedData.setMembers(memberDataList);
         }
-        cachedData.setMembers(memberDataList);
 
         if (request.getActivitySchedule() != null) {
             cachedData.setActivitySchedules(new ArrayList<>(request.getActivitySchedule()));
@@ -733,19 +738,23 @@ public class AdminServiceImpl implements AdminService {
         return AddAdminAboutResponseDto.builder()
                 .generation(generationId)
                 .headerImage(headerImageUrl)
-                .coreValues(coreValueDataList.stream()
-                        .map(cv -> AddAdminCoreValueResponseRecordDto.builder()
-                                .value(cv.getValue())
-                                .image(cv.getImageUrl())
-                                .build())
-                        .toList())
-                .members(memberDataList.stream()
-                        .map(m -> AddAdminMemberResponseRecordDto.builder()
-                                .role(m.getRole())
-                                .name(m.getName())
-                                .profileImage(m.getProfileImageUrl())
-                                .build())
-                        .toList())
+                .coreValues(coreValueDataList != null
+                        ? coreValueDataList.stream()
+                                .map(cv -> AddAdminCoreValueResponseRecordDto.builder()
+                                        .value(cv.getValue())
+                                        .image(cv.getImageUrl())
+                                        .build())
+                                .toList()
+                        : null)
+                .members(memberDataList != null
+                        ? memberDataList.stream()
+                                .map(m -> AddAdminMemberResponseRecordDto.builder()
+                                        .role(m.getRole())
+                                        .name(m.getName())
+                                        .profileImage(m.getProfileImageUrl())
+                                        .build())
+                                .toList()
+                        : null)
                 .build();
     }
 
@@ -767,7 +776,7 @@ public class AdminServiceImpl implements AdminService {
         String headerImageUrl = s3Service.getOriginalUrl(cachedData.getHeaderImageUrl());
         generationService.updateHeaderImage(generationId, headerImageUrl);
 
-        if (cachedData.getCoreValues() != null && !cachedData.getCoreValues().isEmpty()) {
+        if (cachedData.getCoreValues() != null) {
             List<String> coreValueImageUrls = cachedData.getCoreValues().stream()
                     .map(cv -> s3Service.getOriginalUrl(cv.getImageUrl()))
                     .toList();
@@ -791,7 +800,7 @@ public class AdminServiceImpl implements AdminService {
             );
         }
 
-        if (cachedData.getMembers() != null && !cachedData.getMembers().isEmpty()) {
+        if (cachedData.getMembers() != null) {
             List<String> memberProfileImageUrls = cachedData.getMembers().stream()
                     .map(m -> s3Service.getOriginalUrl(m.getProfileImageUrl()))
                     .toList();
@@ -821,7 +830,7 @@ public class AdminServiceImpl implements AdminService {
             );
         }
 
-        if (cachedData.getActivitySchedules() != null && !cachedData.getActivitySchedules().isEmpty()) {
+        if (cachedData.getActivitySchedules() != null) {
             activityScheduleService.bulkCreate(
                     BulkCreateActivitySchedulesCommand.builder()
                             .generationId(generationId)
@@ -927,7 +936,7 @@ public class AdminServiceImpl implements AdminService {
             );
         }
 
-        if (cachedData.getRecruitPartCurriculums() != null && !cachedData.getRecruitPartCurriculums().isEmpty()) {
+        if (cachedData.getRecruitPartCurriculums() != null) {
             recruitPartIntroductionService.bulkCreate(
                     BulkCreateRecruitPartIntroductionsCommand.builder()
                             .generationId(generationId)
@@ -945,7 +954,7 @@ public class AdminServiceImpl implements AdminService {
             );
         }
 
-        if (cachedData.getRecruitQuestions() != null && !cachedData.getRecruitQuestions().isEmpty()) {
+        if (cachedData.getRecruitQuestions() != null) {
             faqService.bulkCreate(
                     BulkCreateFAQsCommand.builder()
                             .faqs(cachedData.getRecruitQuestions().stream()

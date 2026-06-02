@@ -21,7 +21,7 @@ public class AddAdminHomeRequestDto {
     @Schema(description = "기수", requiredMode = Schema.RequiredMode.REQUIRED, example = "36")
     @NotNull(message = "generation must not be null")
     @Positive(message = "generation must be a positive number")
-    private int generation;
+    private Integer generation;
 
     @Schema(description = "홈 헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "home_header.png")
     @NotEmpty(message = "homeHeaderImageFileName must not be empty")
