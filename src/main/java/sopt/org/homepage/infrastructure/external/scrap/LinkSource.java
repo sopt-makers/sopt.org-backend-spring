@@ -9,6 +9,7 @@ public enum LinkSource {
     NAVER("https://blog.naver.com/", ""),
     BRUNCH("https://brunch.co.kr/", ""),
     VELOG_MAIN("https://velog.io/", "/posts"),
+    MEDIUM("https://medium.com/sopt-makers/", ""),
     BASIC("basic", ""),
     ;
 
