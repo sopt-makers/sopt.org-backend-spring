@@ -24,7 +24,7 @@ public class MediumLinkCrawler implements LinkCrawler {
 
     private static final String SOPT_MAKERS_RSS_URL = "https://medium.com/feed/sopt-makers";
     private static final int TIMEOUT_MILLISECONDS = 10000;
-    private static final Pattern ARTICLE_ID_PATTERN = Pattern.compile("([0-9a-f]{12})(?:\\?.*)?$");
+    private static final Pattern ARTICLE_ID_PATTERN = Pattern.compile("([0-9a-f]{12})/?(?:\\?.*)?$");
 
     @Override
     public LinkSource supportSource() {
@@ -55,8 +55,10 @@ public class MediumLinkCrawler implements LinkCrawler {
     }
 
     private String extractArticleId(String link) throws IOException {
-        String cleanLink = link.contains("?") ? link.substring(0, link.indexOf("?")) : link;
-        Matcher matcher = ARTICLE_ID_PATTERN.matcher(cleanLink);
+        if (link == null || link.isBlank()) {
+            throw new IOException("Link cannot be null or empty");
+        }
+        Matcher matcher = ARTICLE_ID_PATTERN.matcher(link.trim());
         if (!matcher.find()) {
             throw new IOException("Cannot extract article ID from URL: " + link);
         }
