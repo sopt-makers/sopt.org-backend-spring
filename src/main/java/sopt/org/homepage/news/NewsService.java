@@ -8,11 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.infrastructure.aws.s3.S3Service;
 import sopt.org.homepage.news.dto.AddAdminNewsRequestDto;
-import sopt.org.homepage.news.dto.BulkCreateNewsCommand;
 import sopt.org.homepage.news.dto.AddAdminNewsResponseDto;
 import sopt.org.homepage.news.dto.AddAdminNewsV2RequestDto;
+import sopt.org.homepage.news.dto.BulkCreateNewsCommand;
 import sopt.org.homepage.news.dto.DeleteAdminNewsRequestDto;
 import sopt.org.homepage.news.dto.DeleteAdminNewsResponseDto;
+import sopt.org.homepage.news.dto.EditAdminNewsRequestDto;
+import sopt.org.homepage.news.dto.EditAdminNewsResponseDto;
+import sopt.org.homepage.news.dto.EditAdminNewsV2RequestDto;
 import sopt.org.homepage.news.dto.GetAdminNewsRequestDto;
 import sopt.org.homepage.news.dto.GetAdminNewsResponseDto;
 
@@ -79,6 +82,60 @@ public class NewsService {
 
         return AddAdminNewsResponseDto.builder()
                 .message("최신소식 추가 성공")
+                .build();
+    }
+
+    /**
+     * 최신소식 수정 (파일 업로드 방식)
+     */
+    @Transactional
+    public EditAdminNewsResponseDto editMainNews(int id, EditAdminNewsRequestDto request) {
+        log.info("최신소식 수정 - id={}", id);
+
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new ClientBadRequestException(
+                        "News not found with id: " + id
+                ));
+
+        String imageUrl = null;
+        if (request.getImage() != null && !request.getImage().isEmpty()) {
+            s3Service.deleteFile(news.getImage());
+            imageUrl = s3Service.uploadFile(request.getImage(), "news/");
+        }
+
+        news.update(imageUrl, request.getTitle(), request.getLink());
+
+        log.info("최신소식 수정 완료 - id={}", id);
+
+        return EditAdminNewsResponseDto.builder()
+                .message("최신소식 수정 성공")
+                .build();
+    }
+
+    /**
+     * 최신소식 수정 (Presigned URL 방식)
+     * <p>
+     * Lambda 환경에서 10MB 페이로드 제한을 우회하기 위해 사용
+     */
+    @Transactional
+    public EditAdminNewsResponseDto editMainNewsV2(int id, EditAdminNewsV2RequestDto request) {
+        log.info("최신소식 수정 (Presigned URL) - id={}", id);
+
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new ClientBadRequestException(
+                        "News not found with id: " + id
+                ));
+
+        if (!request.getImageUrl().equals(news.getImage())) {
+            s3Service.deleteFile(news.getImage());
+        }
+
+        news.update(request.getImageUrl(), request.getTitle(), request.getLink());
+
+        log.info("최신소식 수정 완료 (Presigned URL) - id={}", id);
+
+        return EditAdminNewsResponseDto.builder()
+                .message("최신소식 수정 성공")
                 .build();
     }
 
