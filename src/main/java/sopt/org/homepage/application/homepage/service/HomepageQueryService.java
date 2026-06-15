@@ -1,5 +1,6 @@
 package sopt.org.homepage.application.homepage.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -299,7 +300,8 @@ public class HomepageQueryService {
             // Study 개수 조회 (Crew API)
             int studyCount = crewService.getStudyCount(generationId);
 
-            final int OPERATION_PERIOD = 37;
+            final int ORGANIZATION_YEAR = 2008;
+            int OPERATION_PERIOD = LocalDate.now().getYear() - ORGANIZATION_YEAR + 1;
 
             return MainPageResponse.ActivitiesRecords.builder()
                     .activitiesMemberCount((int) activitiesMemberCount)
