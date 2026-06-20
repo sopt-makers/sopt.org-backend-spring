@@ -25,7 +25,7 @@ import sopt.org.homepage.global.common.constants.SecurityConstants;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("admin/homepage-reviews")
+@RequestMapping("homepage-reviews")
 @Tag(name = "Admin - HomepageReview", description = "홈페이지 리뷰 관리 API")
 public class HomepageReviewController {
 
