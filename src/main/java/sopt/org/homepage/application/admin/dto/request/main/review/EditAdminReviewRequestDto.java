@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class AddAdminReviewRequestDto {
+public class EditAdminReviewRequestDto {
 
     @Schema(description = "리뷰 제목 (공백 포함 최대 10자)", example = "후회없는 활동")
     @NotBlank

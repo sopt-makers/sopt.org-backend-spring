@@ -44,4 +44,10 @@ public class HomepageReview {
     @UpdateTimestamp
     @Column(name = "\"updatedAt\"", nullable = false)
     private LocalDateTime updatedAt;
+
+    public void update(String title, String content, String authorInfo) {
+        this.title = title;
+        this.content = content;
+        this.authorInfo = authorInfo;
+    }
 }
