@@ -9,20 +9,20 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class AddAdminBrandingColorRequestDto {
-    @Schema(description = "메인 컬러", example = "FF0000", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "다크모드 키 컬러", example = "#FF0000", requiredMode = Schema.RequiredMode.REQUIRED)
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
-    private String main;
+    private String darkModeKeyColor;
 
-    @Schema(description = "로우 톤 컬러", example = "CC0000", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
-    private String low;
+    @Schema(description = "다크모드 텍스트 컬러", example = "white", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Pattern(regexp = "^(white|black)$", message = "텍스트 컬러는 white 또는 black이어야 합니다")
+    private String darkModeTextColor;
 
-    @Schema(description = "하이 톤 컬러", example = "FF3333", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "라이트모드 키 컬러", example = "#FF0000", requiredMode = Schema.RequiredMode.REQUIRED)
     @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
-    private String high;
+    private String lightModeKeyColor;
 
-    @Schema(description = "포인트 컬러", example = "FF9999", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
-    private String point;
+    @Schema(description = "라이트모드 텍스트 컬러", example = "black", requiredMode = Schema.RequiredMode.REQUIRED)
+    @Pattern(regexp = "^(white|black)$", message = "텍스트 컬러는 white 또는 black이어야 합니다")
+    private String lightModeTextColor;
 
 }

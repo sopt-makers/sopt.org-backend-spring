@@ -28,10 +28,10 @@ public record RecruitPageResponse(
 ) {
     @Builder
     public record BrandingColor(
-            String main,
-            String high,
-            String low,
-            String point
+            String darkModeKeyColor,
+            String darkModeTextColor,
+            String lightModeKeyColor,
+            String lightModeTextColor
     ) {
     }
 
