@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AddAdminBrandingColorRequestDto {
     @Schema(description = "다크모드 키 컬러", example = "#FF0000", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
+    @Pattern(regexp = "^#[A-Fa-f0-9]{6}$", message = "올바른 HEX 컬러 코드를 입력해주세요 (예: #FF0000)")
     private String darkModeKeyColor;
 
     @Schema(description = "다크모드 텍스트 컬러", example = "white", requiredMode = Schema.RequiredMode.REQUIRED)
@@ -18,7 +18,7 @@ public class AddAdminBrandingColorRequestDto {
     private String darkModeTextColor;
 
     @Schema(description = "라이트모드 키 컬러", example = "#FF0000", requiredMode = Schema.RequiredMode.REQUIRED)
-    @Pattern(regexp = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$", message = "올바른 HEX 컬러 코드를 입력해주세요")
+    @Pattern(regexp = "^#[A-Fa-f0-9]{6}$", message = "올바른 HEX 컬러 코드를 입력해주세요 (예: #FF0000)")
     private String lightModeKeyColor;
 
     @Schema(description = "라이트모드 텍스트 컬러", example = "black", requiredMode = Schema.RequiredMode.REQUIRED)
