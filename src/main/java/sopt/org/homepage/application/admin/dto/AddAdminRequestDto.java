@@ -14,7 +14,7 @@ import sopt.org.homepage.application.admin.dto.request.main.core.AddAdminCoreVal
 import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.member.AddAdminMemberRequestDto;
-import sopt.org.homepage.application.admin.dto.request.main.news.AddAdminNewsRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.news.AddAdminNewsPresignedRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
@@ -28,7 +28,7 @@ import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminRevie
 @AllArgsConstructor
 public class AddAdminRequestDto {
 
-    @Schema(description = "기수", requiredMode = Schema.RequiredMode.REQUIRED, example = "34")
+    @Schema(description = "기수", requiredMode = Schema.RequiredMode.REQUIRED, example = "39")
     @NotEmpty(message = "generation must not be empty")
     @Positive(message = "generation must be a positive number")
     private int generation;
@@ -51,7 +51,7 @@ public class AddAdminRequestDto {
 
     private List<AddAdminReviewRequestDto> review;
 
-    private List<AddAdminNewsRequestDto> news;
+    private List<AddAdminNewsPresignedRequestDto> news;
 
     @Schema(description = "헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "header.png")
     @NotEmpty(message = "headerImageFileName must not be empty")

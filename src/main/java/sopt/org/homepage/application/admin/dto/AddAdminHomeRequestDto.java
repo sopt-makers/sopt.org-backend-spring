@@ -9,7 +9,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import sopt.org.homepage.application.admin.dto.request.main.news.AddAdminNewsRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.news.AddAdminNewsPresignedRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 
 @Validated
@@ -18,7 +18,7 @@ import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminRevie
 @NoArgsConstructor
 public class AddAdminHomeRequestDto {
 
-    @Schema(description = "기수", requiredMode = Schema.RequiredMode.REQUIRED, example = "36")
+    @Schema(description = "기수", requiredMode = Schema.RequiredMode.REQUIRED, example = "39")
     @NotNull(message = "generation must not be null")
     @Positive(message = "generation must be a positive number")
     private Integer generation;
@@ -33,5 +33,5 @@ public class AddAdminHomeRequestDto {
 
     @Schema(description = "최신소식 목록")
     @Valid
-    private List<AddAdminNewsRequestDto> news;
+    private List<AddAdminNewsPresignedRequestDto> news;
 }
