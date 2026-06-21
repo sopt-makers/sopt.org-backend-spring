@@ -39,22 +39,17 @@ public record GenerationDetailView(
 
     @Builder
     public record BrandingColorView(
-            String main,
-            String sub,
-            String point,
-            String background,
-            // 레거시 호환용
-            String low,
-            String high
+            String darkModeKeyColor,
+            String darkModeTextColor,
+            String lightModeKeyColor,
+            String lightModeTextColor
     ) {
         public static BrandingColorView from(BrandingColor brandingColor) {
             return BrandingColorView.builder()
-                    .main(brandingColor.getMain())
-                    .sub(brandingColor.getSub())
-                    .point(brandingColor.getPoint())
-                    .background(brandingColor.getBackground())
-                    .low(brandingColor.getLow())    // sub와 동일
-                    .high(brandingColor.getHigh())  // point와 동일
+                    .darkModeKeyColor(brandingColor.getDarkModeKeyColor())
+                    .darkModeTextColor(brandingColor.getDarkModeTextColor())
+                    .lightModeKeyColor(brandingColor.getLightModeKeyColor())
+                    .lightModeTextColor(brandingColor.getLightModeTextColor())
                     .build();
         }
     }

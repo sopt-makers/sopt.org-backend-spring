@@ -54,4 +54,10 @@ public class News {
         this.link = link;
     }
 
+    public void update(String image, String title, String link) {
+        if (image != null) this.image = image;
+        this.title = title;
+        this.link = link;
+    }
+
 }

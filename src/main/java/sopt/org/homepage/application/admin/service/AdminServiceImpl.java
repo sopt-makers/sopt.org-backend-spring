@@ -142,10 +142,10 @@ public class AdminServiceImpl implements AdminService {
 
         // BrandingColor
         var brandingColorDto = request.getBrandingColor();
-        cachedData.setBrandingColorMain(brandingColorDto.getMain());
-        cachedData.setBrandingColorLow(brandingColorDto.getLow());
-        cachedData.setBrandingColorHigh(brandingColorDto.getHigh());
-        cachedData.setBrandingColorPoint(brandingColorDto.getPoint());
+        cachedData.setDarkModeKeyColor(brandingColorDto.getDarkModeKeyColor());
+        cachedData.setDarkModeTextColor(brandingColorDto.getDarkModeTextColor());
+        cachedData.setLightModeKeyColor(brandingColorDto.getLightModeKeyColor());
+        cachedData.setLightModeTextColor(brandingColorDto.getLightModeTextColor());
 
         // MainButton
         var mainButtonDto = request.getMainButton();
@@ -284,10 +284,10 @@ public class AdminServiceImpl implements AdminService {
                         .recruitHeaderImage(recruitHeaderImageUrl)
                         .homeHeaderImage(homeHeaderImageUrl)
                         .brandingColor(CreateGenerationCommand.BrandingColorCommand.builder()
-                                .main(cachedData.getBrandingColorMain())
-                                .sub(cachedData.getBrandingColorLow())
-                                .point(cachedData.getBrandingColorHigh())
-                                .background(cachedData.getBrandingColorPoint())
+                                .darkModeKeyColor(stripHash(cachedData.getDarkModeKeyColor()))
+                                .darkModeTextColor(cachedData.getDarkModeTextColor())
+                                .lightModeKeyColor(stripHash(cachedData.getLightModeKeyColor()))
+                                .lightModeTextColor(cachedData.getLightModeTextColor())
                                 .build())
                         .mainButton(CreateGenerationCommand.MainButtonCommand.builder()
                                 .text(cachedData.getMainButtonText())
@@ -481,10 +481,10 @@ public class AdminServiceImpl implements AdminService {
         cachedData.setName(request.getName());
 
         var bc = request.getBrandingColor();
-        cachedData.setBrandingColorMain(bc.getMain());
-        cachedData.setBrandingColorLow(bc.getLow());
-        cachedData.setBrandingColorHigh(bc.getHigh());
-        cachedData.setBrandingColorPoint(bc.getPoint());
+        cachedData.setDarkModeKeyColor(bc.getDarkModeKeyColor());
+        cachedData.setDarkModeTextColor(bc.getDarkModeTextColor());
+        cachedData.setLightModeKeyColor(bc.getLightModeKeyColor());
+        cachedData.setLightModeTextColor(bc.getLightModeTextColor());
 
         var mb = request.getMainButton();
         cachedData.setMainButtonText(mb.getText());
@@ -518,12 +518,12 @@ public class AdminServiceImpl implements AdminService {
                     "공통 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
         }
 
-        // BrandingColor: VO는 # 없는 6자리 hex 요구 → # 제거 후 전달
+        // BrandingColor: keyColor VO는 # 없는 6자리 hex 요구 → # 제거 후 전달
         BrandingColor brandingColor = BrandingColor.builder()
-                .main(stripHash(cachedData.getBrandingColorMain()))
-                .sub(stripHash(cachedData.getBrandingColorLow()))
-                .point(stripHash(cachedData.getBrandingColorHigh()))
-                .background(stripHash(cachedData.getBrandingColorPoint()))
+                .darkModeKeyColor(stripHash(cachedData.getDarkModeKeyColor()))
+                .darkModeTextColor(cachedData.getDarkModeTextColor())
+                .lightModeKeyColor(stripHash(cachedData.getLightModeKeyColor()))
+                .lightModeTextColor(cachedData.getLightModeTextColor())
                 .build();
 
         MainButton mainButton = MainButton.builder()
@@ -1033,10 +1033,10 @@ public class AdminServiceImpl implements AdminService {
                                 .build())
                         .toList())
                 .brandingColor(GetAdminBrandingColorResponseRecordDto.builder()
-                        .main(generation.brandingColor().main())
-                        .high(generation.brandingColor().high())
-                        .low(generation.brandingColor().low())
-                        .point(generation.brandingColor().background())
+                        .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
+                        .darkModeTextColor(generation.brandingColor().darkModeTextColor())
+                        .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
+                        .lightModeTextColor(generation.brandingColor().lightModeTextColor())
                         .build())
                 .mainButton(GetAdminMainButtonResponseRecordDto.builder()
                         .text(generation.mainButton().text())
@@ -1137,10 +1137,10 @@ public class AdminServiceImpl implements AdminService {
         private String homeHeaderImageUrl;
 
         // BrandingColor
-        private String brandingColorMain;
-        private String brandingColorLow;
-        private String brandingColorHigh;
-        private String brandingColorPoint;
+        private String darkModeKeyColor;
+        private String darkModeTextColor;
+        private String lightModeKeyColor;
+        private String lightModeTextColor;
 
         // MainButton
         private String mainButtonText;
@@ -1211,10 +1211,10 @@ public class AdminServiceImpl implements AdminService {
     public static class CachedCommonData implements java.io.Serializable {
         private Integer generationId;
         private String name;
-        private String brandingColorMain;
-        private String brandingColorLow;
-        private String brandingColorHigh;
-        private String brandingColorPoint;
+        private String darkModeKeyColor;
+        private String darkModeTextColor;
+        private String lightModeKeyColor;
+        private String lightModeTextColor;
         private String mainButtonText;
         private String mainButtonKeyColor;
         private String mainButtonSubColor;

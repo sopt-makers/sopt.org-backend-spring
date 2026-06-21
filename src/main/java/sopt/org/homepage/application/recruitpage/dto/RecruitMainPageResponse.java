@@ -53,10 +53,10 @@ public record RecruitMainPageResponse(
 
     @Builder
     public record BrandingColor(
-            String main,
-            String high,
-            String low,
-            String point
+            String darkModeKeyColor,
+            String darkModeTextColor,
+            String lightModeKeyColor,
+            String lightModeTextColor
     ) {
     }
 
@@ -80,10 +80,10 @@ public record RecruitMainPageResponse(
         return RecruitMainPageResponse.builder()
                 .recruitHeaderImage(generation.headerImage())
                 .brandingColor(BrandingColor.builder()
-                        .main(generation.brandingColor().main())
-                        .high(generation.brandingColor().high())
-                        .low(generation.brandingColor().low())
-                        .point(generation.brandingColor().background())
+                        .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
+                        .darkModeTextColor(generation.brandingColor().darkModeTextColor())
+                        .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
+                        .lightModeTextColor(generation.brandingColor().lightModeTextColor())
                         .build())
                 .partIntroduction(partIntroductions.stream()
                         .map(pi -> PartIntroduction.builder()

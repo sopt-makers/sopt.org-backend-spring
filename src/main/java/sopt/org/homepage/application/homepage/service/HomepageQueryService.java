@@ -1,5 +1,6 @@
 package sopt.org.homepage.application.homepage.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -90,10 +91,10 @@ public class HomepageQueryService {
                 .generation(generation.id())
                 .name(generation.name())
                 .brandingColor(MainPageResponse.BrandingColor.builder()
-                        .main(generation.brandingColor().main())
-                        .high(generation.brandingColor().high())
-                        .low(generation.brandingColor().low())
-                        .point(generation.brandingColor().background())
+                        .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
+                        .darkModeTextColor(generation.brandingColor().darkModeTextColor())
+                        .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
+                        .lightModeTextColor(generation.brandingColor().lightModeTextColor())
                         .build())
                 .mainButton(MainPageResponse.MainButton.builder()
                         .text(generation.mainButton().text())
@@ -165,10 +166,10 @@ public class HomepageQueryService {
                 .name(generation.name())
                 .headerImage(generation.headerImage())
                 .brandingColor(AboutPageResponse.BrandingColor.builder()
-                        .main(generation.brandingColor().main())
-                        .high(generation.brandingColor().high())
-                        .low(generation.brandingColor().low())
-                        .point(generation.brandingColor().background())
+                        .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
+                        .darkModeTextColor(generation.brandingColor().darkModeTextColor())
+                        .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
+                        .lightModeTextColor(generation.brandingColor().lightModeTextColor())
                         .build())
                 .coreValue(coreValues.stream()
                         .map(cv -> AboutPageResponse.CoreValue.builder()
@@ -237,10 +238,10 @@ public class HomepageQueryService {
                 .name(generation.name())
                 .recruitHeaderImage(generation.recruitHeaderImage())
                 .brandingColor(RecruitPageResponse.BrandingColor.builder()
-                        .main(generation.brandingColor().main())
-                        .high(generation.brandingColor().high())
-                        .low(generation.brandingColor().low())
-                        .point(generation.brandingColor().background())
+                        .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
+                        .darkModeTextColor(generation.brandingColor().darkModeTextColor())
+                        .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
+                        .lightModeTextColor(generation.brandingColor().lightModeTextColor())
                         .build())
                 .recruitSchedule(recruitments.stream()
                         .map(r -> RecruitPageResponse.RecruitSchedule.builder()
@@ -299,7 +300,8 @@ public class HomepageQueryService {
             // Study 개수 조회 (Crew API)
             int studyCount = crewService.getStudyCount(generationId);
 
-            final int OPERATION_PERIOD = 37;
+            final int ORGANIZATION_YEAR = 2008;
+            int OPERATION_PERIOD = LocalDate.now().getYear() - ORGANIZATION_YEAR + 1;
 
             return MainPageResponse.ActivitiesRecords.builder()
                     .activitiesMemberCount((int) activitiesMemberCount)

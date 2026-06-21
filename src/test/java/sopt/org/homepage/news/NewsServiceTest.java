@@ -17,6 +17,7 @@ import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.infrastructure.aws.s3.S3Service;
 import sopt.org.homepage.news.dto.AddAdminNewsV2RequestDto;
 import sopt.org.homepage.news.dto.DeleteAdminNewsRequestDto;
+import sopt.org.homepage.news.dto.EditAdminNewsV2RequestDto;
 import sopt.org.homepage.news.dto.GetAdminNewsRequestDto;
 import sopt.org.homepage.news.dto.GetAdminNewsResponseDto;
 
@@ -66,6 +67,68 @@ class NewsServiceTest extends IntegrationTestBase {
             assertThat(all).hasSize(1);
             assertThat(all.get(0).getTitle()).isEqualTo("SOPT 35기 모집");
             assertThat(all.get(0).getImage()).isEqualTo("https://s3.amazonaws.com/bucket/image.jpg");
+        }
+    }
+
+    // ===== 수정 시나리오 =====
+
+    @Nested
+    @DisplayName("최신소식 수정")
+    class Edit {
+
+        @Test
+        @DisplayName("✅ 정상: 제목과 링크 수정 (이미지 동일)")
+        void editMainNewsV2_UpdateTitleAndLink_Success() {
+            // given
+            News saved = newsRepository.save(createEntity("원본 뉴스"));
+            EditAdminNewsV2RequestDto request = EditAdminNewsV2RequestDto.builder()
+                    .imageUrl(saved.getImage())
+                    .title("수정된 뉴스")
+                    .link("https://updated.com")
+                    .build();
+
+            // when
+            newsService.editMainNewsV2(saved.getId(), request);
+
+            // then
+            News updated = newsRepository.findById(saved.getId()).orElseThrow();
+            assertThat(updated.getTitle()).isEqualTo("수정된 뉴스");
+            assertThat(updated.getLink()).isEqualTo("https://updated.com");
+            assertThat(updated.getImage()).isEqualTo(saved.getImage());
+        }
+
+        @Test
+        @DisplayName("✅ 정상: 이미지 URL 수정 시 기존 S3 이미지 삭제")
+        void editMainNewsV2_UpdateImage_DeletesOldImage() {
+            // given
+            News saved = newsRepository.save(createEntity("뉴스"));
+            doNothing().when(s3Service).deleteFile(anyString());
+            EditAdminNewsV2RequestDto request = EditAdminNewsV2RequestDto.builder()
+                    .imageUrl("https://s3.amazonaws.com/bucket/new_image.jpg")
+                    .title(saved.getTitle())
+                    .link(saved.getLink())
+                    .build();
+
+            // when
+            newsService.editMainNewsV2(saved.getId(), request);
+
+            // then
+            News updated = newsRepository.findById(saved.getId()).orElseThrow();
+            assertThat(updated.getImage()).isEqualTo("https://s3.amazonaws.com/bucket/new_image.jpg");
+        }
+
+        @Test
+        @DisplayName("❌ 실패: 존재하지 않는 뉴스 수정")
+        void editMainNewsV2_NotFound_ThrowsException() {
+            // given
+            EditAdminNewsV2RequestDto request = EditAdminNewsV2RequestDto.builder()
+                    .title("수정 시도")
+                    .build();
+
+            // when & then
+            assertThatThrownBy(() -> newsService.editMainNewsV2(999, request))
+                    .isInstanceOf(ClientBadRequestException.class)
+                    .hasMessageContaining("not found");
         }
     }
 

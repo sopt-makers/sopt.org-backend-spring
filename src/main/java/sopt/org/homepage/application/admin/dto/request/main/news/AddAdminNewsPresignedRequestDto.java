@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class AddAdminNewsRequestDto {
+public class AddAdminNewsPresignedRequestDto {
     @Schema(description = "이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "news.png")
     @NotNull(message = "imageFileName must not be null")
     private final String imageFileName;

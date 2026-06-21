@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,9 @@ import sopt.org.homepage.news.dto.AddAdminNewsResponseDto;
 import sopt.org.homepage.news.dto.AddAdminNewsV2RequestDto;
 import sopt.org.homepage.news.dto.DeleteAdminNewsRequestDto;
 import sopt.org.homepage.news.dto.DeleteAdminNewsResponseDto;
+import sopt.org.homepage.news.dto.EditAdminNewsRequestDto;
+import sopt.org.homepage.news.dto.EditAdminNewsResponseDto;
+import sopt.org.homepage.news.dto.EditAdminNewsV2RequestDto;
 import sopt.org.homepage.news.dto.GetAdminNewsRequestDto;
 import sopt.org.homepage.news.dto.GetAdminNewsResponseDto;
 
@@ -59,6 +64,29 @@ public class NewsController {
     ) {
         AddAdminNewsResponseDto result = newsService.addMainNewsV2(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    }
+
+    @Operation(summary = "최신소식 수정", description = "최신소식을 수정합니다")
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<EditAdminNewsResponseDto> editMainNews(
+            @PathVariable int id,
+            @ModelAttribute EditAdminNewsRequestDto request
+    ) {
+        EditAdminNewsResponseDto result = newsService.editMainNews(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(
+            summary = "최신소식 수정 (Presigned URL)",
+            description = "람다 전용"
+    )
+    @PatchMapping("/{id}/v2")
+    public ResponseEntity<EditAdminNewsResponseDto> editMainNewsV2(
+            @PathVariable int id,
+            @RequestBody @Valid EditAdminNewsV2RequestDto request
+    ) {
+        EditAdminNewsResponseDto result = newsService.editMainNewsV2(id, request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary = "최신소식 삭제", description = "최신소식을 삭제합니다")

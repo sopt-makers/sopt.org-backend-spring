@@ -34,17 +34,17 @@ public record CreateGenerationCommand(
 
     @Builder
     public record BrandingColorCommand(
-            String main,
-            String sub,
-            String point,
-            String background
+            String darkModeKeyColor,
+            String darkModeTextColor,
+            String lightModeKeyColor,
+            String lightModeTextColor
     ) {
         public BrandingColor toVO() {
             return BrandingColor.builder()
-                    .main(main)
-                    .sub(sub)
-                    .point(point)
-                    .background(background)
+                    .darkModeKeyColor(darkModeKeyColor)
+                    .darkModeTextColor(darkModeTextColor)
+                    .lightModeKeyColor(lightModeKeyColor)
+                    .lightModeTextColor(lightModeTextColor)
                     .build();
         }
     }
