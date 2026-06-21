@@ -56,7 +56,7 @@ class GenerationServiceTest extends IntegrationTestBase {
 
             GenerationDetailView saved = generationService.findById(id);
             assertThat(saved.name()).isEqualTo("SOPT 35기");
-            assertThat(saved.brandingColor().main()).isEqualTo("FF6B35");
+            assertThat(saved.brandingColor().darkModeKeyColor()).isEqualTo("FF6B35");
             assertThat(saved.mainButton().text()).isEqualTo("지원하기");
         }
 
@@ -143,13 +143,27 @@ class GenerationServiceTest extends IntegrationTestBase {
         void brandingColor_InvalidHex_ThrowsException() {
             // when & then
             assertThatThrownBy(() -> BrandingColor.builder()
-                    .main("GGGGGG")  // 잘못된 Hex
-                    .sub("111111")
-                    .point("222222")
-                    .background("333333")
+                    .darkModeKeyColor("GGGGGG")  // 잘못된 Hex
+                    .darkModeTextColor("white")
+                    .lightModeKeyColor("111111")
+                    .lightModeTextColor("black")
                     .build())
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("hex color");
+        }
+
+        @Test
+        @DisplayName("📌 BrandingColor: 잘못된 텍스트 컬러")
+        void brandingColor_InvalidTextColor_ThrowsException() {
+            // when & then
+            assertThatThrownBy(() -> BrandingColor.builder()
+                    .darkModeKeyColor("FF0000")
+                    .darkModeTextColor("red")  // white 또는 black만 허용
+                    .lightModeKeyColor("FF0000")
+                    .lightModeTextColor("black")
+                    .build())
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("white");
         }
 
         @Test
@@ -164,22 +178,6 @@ class GenerationServiceTest extends IntegrationTestBase {
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessageContaining("blank");
         }
-
-        @Test
-        @DisplayName("📌 BrandingColor: 레거시 호환 - low/high 메서드")
-        void brandingColor_LegacyMethods() {
-            // given
-            BrandingColor color = BrandingColor.builder()
-                    .main("FF0000")
-                    .sub("00FF00")
-                    .point("0000FF")
-                    .background("FFFFFF")
-                    .build();
-
-            // then
-            assertThat(color.getLow()).isEqualTo(color.getSub());
-            assertThat(color.getHigh()).isEqualTo(color.getPoint());
-        }
     }
 
     // ===== Helper Methods =====
@@ -192,10 +190,10 @@ class GenerationServiceTest extends IntegrationTestBase {
                 .recruitHeaderImage("https://example.com/recruit-header-" + id + ".jpg")
                 .homeHeaderImage("https://example.com/home-header-" + id + ".jpg")
                 .brandingColor(CreateGenerationCommand.BrandingColorCommand.builder()
-                        .main("FF6B35")
-                        .sub("FF8C5A")
-                        .point("FFB347")
-                        .background("FFE4C4")
+                        .darkModeKeyColor("FF6B35")
+                        .darkModeTextColor("white")
+                        .lightModeKeyColor("FF6B35")
+                        .lightModeTextColor("black")
                         .build())
                 .mainButton(CreateGenerationCommand.MainButtonCommand.builder()
                         .text("지원하기")
@@ -213,10 +211,10 @@ class GenerationServiceTest extends IntegrationTestBase {
                 .recruitHeaderImage("https://example.com/recruit-header-" + id + ".jpg")
                 .homeHeaderImage("https://example.com/home-header-" + id + ".jpg")
                 .brandingColor(BrandingColor.builder()
-                        .main("FF6B35")
-                        .sub("FF8C5A")
-                        .point("FFB347")
-                        .background("FFE4C4")
+                        .darkModeKeyColor("FF6B35")
+                        .darkModeTextColor("white")
+                        .lightModeKeyColor("FF6B35")
+                        .lightModeTextColor("black")
                         .build())
                 .mainButton(MainButton.builder()
                         .text("지원하기")
