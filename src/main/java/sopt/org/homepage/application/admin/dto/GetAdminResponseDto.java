@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.application.admin.dto.response.main.branding.GetAdminBrandingColorResponseRecordDto;
-import sopt.org.homepage.application.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.core.GetAdminCoreValueResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.curriculum.GetAdminPartCurriculumResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.introduction.GetAdminPartIntroductionResponseRecordDto;
@@ -35,7 +34,6 @@ public class GetAdminResponseDto {
 
     private List<GetAdminRecruitScheduleResponseRecordDto> recruitSchedule;
     private GetAdminBrandingColorResponseRecordDto brandingColor;
-    private GetAdminMainButtonResponseRecordDto mainButton;
     private List<GetAdminPartIntroductionResponseRecordDto> partIntroduction;
     private List<GetAdminLatestNewsResponseRecordDto> latestNews;
 

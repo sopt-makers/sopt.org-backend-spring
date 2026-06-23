@@ -3,7 +3,6 @@ package sopt.org.homepage.generation.dto;
 import lombok.Builder;
 import sopt.org.homepage.generation.Generation;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 
 /**
  * CreateGenerationCommand
@@ -17,8 +16,7 @@ public record CreateGenerationCommand(
         String headerImage,
         String recruitHeaderImage,
         String homeHeaderImage,
-        BrandingColorCommand brandingColor,
-        MainButtonCommand mainButton
+        BrandingColorCommand brandingColor
 ) {
     public Generation toEntity() {
         return Generation.builder()
@@ -28,7 +26,6 @@ public record CreateGenerationCommand(
                 .recruitHeaderImage(recruitHeaderImage)
                 .homeHeaderImage(homeHeaderImage)
                 .brandingColor(brandingColor.toVO())
-                .mainButton(mainButton.toVO())
                 .build();
     }
 
@@ -49,18 +46,4 @@ public record CreateGenerationCommand(
         }
     }
 
-    @Builder
-    public record MainButtonCommand(
-            String text,
-            String keyColor,
-            String subColor
-    ) {
-        public MainButton toVO() {
-            return MainButton.builder()
-                    .text(text)
-                    .keyColor(keyColor)
-                    .subColor(subColor)
-                    .build();
-        }
-    }
 }

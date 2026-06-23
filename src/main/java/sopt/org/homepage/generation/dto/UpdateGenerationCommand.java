@@ -2,7 +2,6 @@ package sopt.org.homepage.generation.dto;
 
 import lombok.Builder;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 
 /**
  * UpdateGenerationCommand
@@ -16,8 +15,7 @@ public record UpdateGenerationCommand(
         String headerImage,
         String recruitHeaderImage,
         String homeHeaderImage,
-        BrandingColorCommand brandingColor,
-        MainButtonCommand mainButton
+        BrandingColorCommand brandingColor
 ) {
     @Builder
     public record BrandingColorCommand(
@@ -36,18 +34,4 @@ public record UpdateGenerationCommand(
         }
     }
 
-    @Builder
-    public record MainButtonCommand(
-            String text,
-            String keyColor,
-            String subColor
-    ) {
-        public MainButton toVO() {
-            return MainButton.builder()
-                    .text(text)
-                    .keyColor(keyColor)
-                    .subColor(subColor)
-                    .build();
-        }
-    }
 }

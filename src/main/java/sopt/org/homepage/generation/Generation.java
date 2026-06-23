@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 
 /**
  * Generation (기수) 애그리거트 루트
@@ -45,9 +44,6 @@ public class Generation {
     @Embedded
     private BrandingColor brandingColor;  // 브랜딩 컬러 (VO)
 
-    @Embedded
-    private MainButton mainButton;  // 메인 버튼 설정 (VO)
-
     @CreationTimestamp
     @Column(name = "\"createdAt\"", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -63,8 +59,7 @@ public class Generation {
             String headerImage,
             String recruitHeaderImage,
             String homeHeaderImage,
-            BrandingColor brandingColor,
-            MainButton mainButton
+            BrandingColor brandingColor
     ) {
         this.id = id;
         this.name = name;
@@ -72,7 +67,6 @@ public class Generation {
         this.recruitHeaderImage = recruitHeaderImage;
         this.homeHeaderImage = homeHeaderImage;
         this.brandingColor = brandingColor;
-        this.mainButton = mainButton;
     }
 
     // === 비즈니스 메서드 ===
@@ -85,15 +79,13 @@ public class Generation {
             String headerImage,
             String recruitHeaderImage,
             String homeHeaderImage,
-            BrandingColor brandingColor,
-            MainButton mainButton
+            BrandingColor brandingColor
     ) {
         this.name = name;
         this.headerImage = headerImage;
         this.recruitHeaderImage = recruitHeaderImage;
         this.homeHeaderImage = homeHeaderImage;
         this.brandingColor = brandingColor;
-        this.mainButton = mainButton;
     }
 
     /**
@@ -124,10 +116,4 @@ public class Generation {
         this.brandingColor = brandingColor;
     }
 
-    /**
-     * 메인 버튼 설정 변경
-     */
-    public void updateMainButton(MainButton mainButton) {
-        this.mainButton = mainButton;
-    }
 }

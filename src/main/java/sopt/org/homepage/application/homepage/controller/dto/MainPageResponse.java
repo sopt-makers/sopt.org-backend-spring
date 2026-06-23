@@ -19,7 +19,6 @@ public record MainPageResponse(
         String name,
 
         BrandingColor brandingColor,
-        MainButton mainButton,
         List<PartIntroduction> partIntroduction,
         List<LatestNews> latestNews,
         List<RecruitSchedule> recruitSchedule,
@@ -33,14 +32,6 @@ public record MainPageResponse(
             String darkModeTextColor,
             String lightModeKeyColor,
             String lightModeTextColor
-    ) {
-    }
-
-    @Builder
-    public record MainButton(
-            String text,
-            String keyColor,
-            String subColor
     ) {
     }
 

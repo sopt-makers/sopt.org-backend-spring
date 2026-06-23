@@ -8,12 +8,10 @@ import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.application.admin.dto.request.main.activityschedule.AddAdminActivityScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.core.AddAdminCoreValueRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.member.AddAdminMemberRequestDto;
 
-@Validated
 @Schema(description = "어드민 소개 탭 배포")
 @Getter
 @NoArgsConstructor

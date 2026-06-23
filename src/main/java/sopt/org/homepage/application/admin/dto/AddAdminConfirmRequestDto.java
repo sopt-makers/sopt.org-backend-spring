@@ -5,9 +5,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 
-@Validated
 @Schema(description = "어드민 배포 확인")
 @Getter
 @RequiredArgsConstructor
