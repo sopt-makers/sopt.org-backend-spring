@@ -63,6 +63,14 @@ public class GlobalExceptionHandler {
                 .body("잘못된 파라미터 값입니다: " + ex.getName() + "=" + ex.getValue());
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException ex) {
+        log.warn("[Bad Request] 잘못된 인자 - message={}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> entityNotfoundException(EntityNotFoundException ex) {
         log.error(ex.getMessage());

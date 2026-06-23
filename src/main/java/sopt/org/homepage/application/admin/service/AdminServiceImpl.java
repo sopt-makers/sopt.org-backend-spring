@@ -468,6 +468,13 @@ public class AdminServiceImpl implements AdminService {
         cachedData.setName(request.getName());
 
         var bc = request.getBrandingColor();
+        BrandingColor.builder()
+                .darkModeKeyColor(stripHash(bc.getDarkModeKeyColor()))
+                .darkModeTextColor(bc.getDarkModeTextColor())
+                .lightModeKeyColor(stripHash(bc.getLightModeKeyColor()))
+                .lightModeTextColor(bc.getLightModeTextColor())
+                .build();
+
         cachedData.setDarkModeKeyColor(bc.getDarkModeKeyColor());
         cachedData.setDarkModeTextColor(bc.getDarkModeTextColor());
         cachedData.setLightModeKeyColor(bc.getLightModeKeyColor());
