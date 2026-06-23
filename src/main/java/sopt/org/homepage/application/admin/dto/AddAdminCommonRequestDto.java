@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.application.admin.dto.request.main.branding.AddAdminBrandingColorRequestDto;
-import sopt.org.homepage.application.admin.dto.request.main.button.AddAdminMainButtonRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
 
 @Validated
@@ -37,8 +36,4 @@ public class AddAdminCommonRequestDto {
     @Valid
     private AddAdminBrandingColorRequestDto brandingColor;
 
-    @Schema(description = "메인 버튼", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "mainButton must not be null")
-    @Valid
-    private AddAdminMainButtonRequestDto mainButton;
 }

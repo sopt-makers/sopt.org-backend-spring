@@ -30,12 +30,10 @@ import sopt.org.homepage.activityschedule.ActivitySchedule;
 import sopt.org.homepage.activityschedule.ActivityScheduleService;
 import sopt.org.homepage.activityschedule.dto.BulkCreateActivitySchedulesCommand;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 import sopt.org.homepage.application.admin.dto.request.main.activityschedule.AddAdminActivityScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 import sopt.org.homepage.application.admin.dto.response.main.activityschedule.GetAdminActivityScheduleResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.branding.GetAdminBrandingColorResponseRecordDto;
-import sopt.org.homepage.application.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.core.GetAdminCoreValueResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.curriculum.GetAdminPartCurriculumResponseRecordDto;
@@ -146,12 +144,6 @@ public class AdminServiceImpl implements AdminService {
         cachedData.setDarkModeTextColor(brandingColorDto.getDarkModeTextColor());
         cachedData.setLightModeKeyColor(brandingColorDto.getLightModeKeyColor());
         cachedData.setLightModeTextColor(brandingColorDto.getLightModeTextColor());
-
-        // MainButton
-        var mainButtonDto = request.getMainButton();
-        cachedData.setMainButtonText(mainButtonDto.getText());
-        cachedData.setMainButtonKeyColor(mainButtonDto.getKeyColor());
-        cachedData.setMainButtonSubColor(mainButtonDto.getSubColor());
 
         // ===== 2. CoreValue Presigned URLs =====
         List<CachedAdminData.CoreValueData> coreValueDataList = new ArrayList<>();
@@ -288,11 +280,6 @@ public class AdminServiceImpl implements AdminService {
                                 .darkModeTextColor(cachedData.getDarkModeTextColor())
                                 .lightModeKeyColor(stripHash(cachedData.getLightModeKeyColor()))
                                 .lightModeTextColor(cachedData.getLightModeTextColor())
-                                .build())
-                        .mainButton(CreateGenerationCommand.MainButtonCommand.builder()
-                                .text(cachedData.getMainButtonText())
-                                .keyColor(cachedData.getMainButtonKeyColor())
-                                .subColor(cachedData.getMainButtonSubColor())
                                 .build())
                         .build()
         );
@@ -486,11 +473,6 @@ public class AdminServiceImpl implements AdminService {
         cachedData.setLightModeKeyColor(bc.getLightModeKeyColor());
         cachedData.setLightModeTextColor(bc.getLightModeTextColor());
 
-        var mb = request.getMainButton();
-        cachedData.setMainButtonText(mb.getText());
-        cachedData.setMainButtonKeyColor(mb.getKeyColor());
-        cachedData.setMainButtonSubColor(mb.getSubColor());
-
         if (request.getRecruitSchedule() != null) {
             cachedData.setRecruitSchedules(new ArrayList<>(request.getRecruitSchedule()));
         }
@@ -526,13 +508,7 @@ public class AdminServiceImpl implements AdminService {
                 .lightModeTextColor(cachedData.getLightModeTextColor())
                 .build();
 
-        MainButton mainButton = MainButton.builder()
-                .text(cachedData.getMainButtonText())
-                .keyColor(cachedData.getMainButtonKeyColor())
-                .subColor(cachedData.getMainButtonSubColor())
-                .build();
-
-        generationService.createOrUpdateCommon(generationId, cachedData.getName(), brandingColor, mainButton);
+        generationService.createOrUpdateCommon(generationId, cachedData.getName(), brandingColor);
 
         if (cachedData.getRecruitSchedules() != null) {
             recruitmentService.bulkCreate(
@@ -1038,11 +1014,6 @@ public class AdminServiceImpl implements AdminService {
                         .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
                         .lightModeTextColor(generation.brandingColor().lightModeTextColor())
                         .build())
-                .mainButton(GetAdminMainButtonResponseRecordDto.builder()
-                        .text(generation.mainButton().text())
-                        .keyColor(generation.mainButton().keyColor())
-                        .subColor(generation.mainButton().subColor())
-                        .build())
                 .partIntroduction(parts.stream()
                         .map(p -> GetAdminPartIntroductionResponseRecordDto.builder()
                                 .part(p.part())
@@ -1142,11 +1113,6 @@ public class AdminServiceImpl implements AdminService {
         private String lightModeKeyColor;
         private String lightModeTextColor;
 
-        // MainButton
-        private String mainButtonText;
-        private String mainButtonKeyColor;
-        private String mainButtonSubColor;
-
         // CoreValue
         private List<CoreValueData> coreValues;
 
@@ -1215,9 +1181,6 @@ public class AdminServiceImpl implements AdminService {
         private String darkModeTextColor;
         private String lightModeKeyColor;
         private String lightModeTextColor;
-        private String mainButtonText;
-        private String mainButtonKeyColor;
-        private String mainButtonSubColor;
         private List<AddAdminRecruitScheduleRequestDto> recruitSchedules;
     }
 
