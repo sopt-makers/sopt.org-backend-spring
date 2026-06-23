@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import lombok.Builder;
 import sopt.org.homepage.generation.Generation;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 
 /**
  * GenerationDetailView
@@ -19,7 +18,6 @@ public record GenerationDetailView(
         String recruitHeaderImage,
         String homeHeaderImage,
         BrandingColorView brandingColor,
-        MainButtonView mainButton,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
@@ -31,7 +29,6 @@ public record GenerationDetailView(
                 .recruitHeaderImage(generation.getRecruitHeaderImage())
                 .homeHeaderImage(generation.getHomeHeaderImage())
                 .brandingColor(BrandingColorView.from(generation.getBrandingColor()))
-                .mainButton(MainButtonView.from(generation.getMainButton()))
                 .createdAt(generation.getCreatedAt())
                 .updatedAt(generation.getUpdatedAt())
                 .build();
@@ -54,18 +51,4 @@ public record GenerationDetailView(
         }
     }
 
-    @Builder
-    public record MainButtonView(
-            String text,
-            String keyColor,
-            String subColor
-    ) {
-        public static MainButtonView from(MainButton mainButton) {
-            return MainButtonView.builder()
-                    .text(mainButton.getText())
-                    .keyColor(mainButton.getKeyColor())
-                    .subColor(mainButton.getSubColor())
-                    .build();
-        }
-    }
 }
