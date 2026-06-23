@@ -8,11 +8,9 @@ import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.application.admin.dto.request.main.branding.AddAdminBrandingColorRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
 
-@Validated
 @Schema(description = "어드민 공통 탭 배포")
 @Getter
 @NoArgsConstructor

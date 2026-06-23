@@ -7,7 +7,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.application.admin.dto.request.main.branding.AddAdminBrandingColorRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.core.AddAdminCoreValueRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
@@ -20,7 +19,6 @@ import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.Add
 import sopt.org.homepage.application.admin.dto.request.main.activityschedule.AddAdminActivityScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 
-@Validated
 @Schema(description = "어드민 배포하기")
 @Getter
 @NoArgsConstructor

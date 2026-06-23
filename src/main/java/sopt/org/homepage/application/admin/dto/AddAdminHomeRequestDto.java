@@ -8,11 +8,9 @@ import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.application.admin.dto.request.main.news.AddAdminNewsPresignedRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 
-@Validated
 @Schema(description = "어드민 홈 탭 배포")
 @Getter
 @NoArgsConstructor
