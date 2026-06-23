@@ -28,6 +28,8 @@ import sopt.org.homepage.part.PartService;
 import sopt.org.homepage.part.dto.PartCurriculumView;
 import sopt.org.homepage.part.dto.PartIntroductionView;
 import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
+import sopt.org.homepage.application.homepage.review.domain.HomepageReview;
+import sopt.org.homepage.application.homepage.review.service.HomepageReviewService;
 import sopt.org.homepage.recruitment.RecruitmentService;
 import sopt.org.homepage.recruitment.dto.RecruitmentView;
 import sopt.org.homepage.recruitpartintroduction.RecruitPartIntroductionService;
@@ -52,6 +54,8 @@ public class HomepageQueryService {
     private final RecruitmentService recruitmentService;
     private final RecruitPartIntroductionService recruitPartIntroductionService;
 
+
+    private final HomepageReviewService homepageReviewService;
 
     // Legacy Repositories & Services
     private final NewsService newsService;
@@ -86,7 +90,10 @@ public class HomepageQueryService {
         MainPageResponse.ActivitiesRecords activitiesRecords =
                 getActivitiesRecords(generationId - 1);
 
-        // 6. Response 조합
+        // 6. Reviews 조회
+        List<HomepageReview> reviews = homepageReviewService.findAll();
+
+        // 7. Response 조합
         return MainPageResponse.builder()
                 .generation(generation.id())
                 .name(generation.name())
@@ -129,6 +136,14 @@ public class HomepageQueryService {
                                 .build())
                         .toList())
                 .activitiesRecords(activitiesRecords)
+                .reviews(reviews.stream()
+                        .map(r -> MainPageResponse.Review.builder()
+                                .id(r.getId().intValue())
+                                .title(r.getTitle())
+                                .content(r.getContent())
+                                .authorInfo(r.getAuthorInfo())
+                                .build())
+                        .toList())
                 .build();
     }
 

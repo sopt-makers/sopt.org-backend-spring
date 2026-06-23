@@ -23,7 +23,8 @@ public record MainPageResponse(
         List<PartIntroduction> partIntroduction,
         List<LatestNews> latestNews,
         List<RecruitSchedule> recruitSchedule,
-        ActivitiesRecords activitiesRecords // ✅ 추가
+        ActivitiesRecords activitiesRecords,
+        List<Review> reviews
 ) {
 
     @Builder
@@ -92,5 +93,21 @@ public record MainPageResponse(
             @Schema(description = "운영 기간", example = "37")
             int operationPeriod
     ) {
+    }
+
+    @Builder
+    public record Review(
+            @Schema(description = "ID", example = "1")
+            int id,
+
+            @Schema(description = "제목", example = "후회없는 활동")
+            String title,
+
+            @Schema(description = "내용", example = "후회없는 활동이었어요")
+            String content,
+
+            @Schema(description = "작성자 정보", example = "김솝트 | 36, 37기 활동 | 서버")
+            String authorInfo
+    ){
     }
 }
