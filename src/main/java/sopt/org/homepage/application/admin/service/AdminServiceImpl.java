@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -563,7 +564,7 @@ public class AdminServiceImpl implements AdminService {
         CachedHomeData cachedData = new CachedHomeData();
         cachedData.setGenerationId(generationId);
 
-        String homeHeaderImageUrl = request.getHomeHeaderImageFileName() != null
+        String homeHeaderImageUrl = StringUtils.hasText(request.getHomeHeaderImageFileName())
                 ? s3Service.generatePresignedUrl(request.getHomeHeaderImageFileName(), baseDir)
                 : null;
         cachedData.setHomeHeaderImageUrl(homeHeaderImageUrl);
@@ -675,7 +676,7 @@ public class AdminServiceImpl implements AdminService {
         CachedAboutData cachedData = new CachedAboutData();
         cachedData.setGenerationId(generationId);
 
-        String headerImageUrl = request.getHeaderImageFileName() != null
+        String headerImageUrl = StringUtils.hasText(request.getHeaderImageFileName())
                 ? s3Service.generatePresignedUrl(request.getHeaderImageFileName(), baseDir)
                 : null;
         cachedData.setHeaderImageUrl(headerImageUrl);
@@ -684,7 +685,7 @@ public class AdminServiceImpl implements AdminService {
         if (request.getCoreValue() != null) {
             coreValueDataList = new ArrayList<>();
             for (var cv : request.getCoreValue()) {
-                String imageUrl = cv.getImageFileName() != null
+                String imageUrl = StringUtils.hasText(cv.getImageFileName())
                         ? s3Service.generatePresignedUrl(cv.getImageFileName(), baseDir + "coreValue/")
                         : null;
                 coreValueDataList.add(CachedAdminData.CoreValueData.builder()
@@ -701,7 +702,7 @@ public class AdminServiceImpl implements AdminService {
         if (request.getMember() != null) {
             memberDataList = new ArrayList<>();
             for (var member : request.getMember()) {
-                String profileImageUrl = member.getProfileImageFileName() != null
+                String profileImageUrl = StringUtils.hasText(member.getProfileImageFileName())
                         ? s3Service.generatePresignedUrl(member.getProfileImageFileName(), baseDir + "member/")
                         : null;
                 memberDataList.add(CachedAdminData.MemberData.builder()
@@ -873,7 +874,7 @@ public class AdminServiceImpl implements AdminService {
         CachedRecruitData cachedData = new CachedRecruitData();
         cachedData.setGenerationId(generationId);
 
-        String recruitHeaderImageUrl = request.getRecruitHeaderImageFileName() != null
+        String recruitHeaderImageUrl = StringUtils.hasText(request.getRecruitHeaderImageFileName())
                 ? s3Service.generatePresignedUrl(request.getRecruitHeaderImageFileName(), baseDir)
                 : null;
         cachedData.setRecruitHeaderImageUrl(recruitHeaderImageUrl);
