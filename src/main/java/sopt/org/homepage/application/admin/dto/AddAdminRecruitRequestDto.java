@@ -2,7 +2,6 @@ package sopt.org.homepage.application.admin.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
@@ -23,8 +22,7 @@ public class AddAdminRecruitRequestDto {
     @Positive(message = "generation must be a positive number")
     private Integer generation;
 
-    @Schema(description = "지원하기 헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "recruit_header.png")
-    @NotEmpty(message = "recruitHeaderImageFileName must not be empty")
+    @Schema(description = "지원하기 헤더 이미지 파일명 (생략 시 기존 이미지 유지)", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "recruit_header.png")
     private String recruitHeaderImageFileName;
 
     @Schema(description = "파트별 소개 목록 (한 줄 소개 + 이런 걸 배워요)")
