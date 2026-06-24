@@ -2,6 +2,8 @@ package sopt.org.homepage.application.admin.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -561,8 +563,9 @@ public class AdminServiceImpl implements AdminService {
         CachedHomeData cachedData = new CachedHomeData();
         cachedData.setGenerationId(generationId);
 
-        String homeHeaderImageUrl = s3Service.generatePresignedUrl(
-                request.getHomeHeaderImageFileName(), baseDir);
+        String homeHeaderImageUrl = request.getHomeHeaderImageFileName() != null
+                ? s3Service.generatePresignedUrl(request.getHomeHeaderImageFileName(), baseDir)
+                : null;
         cachedData.setHomeHeaderImageUrl(homeHeaderImageUrl);
 
         List<CachedAdminData.NewsData> newsDataList = null;
@@ -616,8 +619,10 @@ public class AdminServiceImpl implements AdminService {
                     "홈 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
         }
 
-        String homeHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getHomeHeaderImageUrl());
-        generationService.updateHomeHeaderImage(generationId, homeHeaderImageUrl);
+        if (cachedData.getHomeHeaderImageUrl() != null) {
+            String homeHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getHomeHeaderImageUrl());
+            generationService.updateHomeHeaderImage(generationId, homeHeaderImageUrl);
+        }
 
         if (cachedData.getNews() != null) {
             newsService.bulkCreate(
@@ -670,16 +675,18 @@ public class AdminServiceImpl implements AdminService {
         CachedAboutData cachedData = new CachedAboutData();
         cachedData.setGenerationId(generationId);
 
-        String headerImageUrl = s3Service.generatePresignedUrl(
-                request.getHeaderImageFileName(), baseDir);
+        String headerImageUrl = request.getHeaderImageFileName() != null
+                ? s3Service.generatePresignedUrl(request.getHeaderImageFileName(), baseDir)
+                : null;
         cachedData.setHeaderImageUrl(headerImageUrl);
 
         List<CachedAdminData.CoreValueData> coreValueDataList = null;
         if (request.getCoreValue() != null) {
             coreValueDataList = new ArrayList<>();
             for (var cv : request.getCoreValue()) {
-                String imageUrl = s3Service.generatePresignedUrl(
-                        cv.getImageFileName(), baseDir + "coreValue/");
+                String imageUrl = cv.getImageFileName() != null
+                        ? s3Service.generatePresignedUrl(cv.getImageFileName(), baseDir + "coreValue/")
+                        : null;
                 coreValueDataList.add(CachedAdminData.CoreValueData.builder()
                         .value(cv.getValue())
                         .description(cv.getDescription())
@@ -694,8 +701,9 @@ public class AdminServiceImpl implements AdminService {
         if (request.getMember() != null) {
             memberDataList = new ArrayList<>();
             for (var member : request.getMember()) {
-                String profileImageUrl = s3Service.generatePresignedUrl(
-                        member.getProfileImageFileName(), baseDir + "member/");
+                String profileImageUrl = member.getProfileImageFileName() != null
+                        ? s3Service.generatePresignedUrl(member.getProfileImageFileName(), baseDir + "member/")
+                        : null;
                 memberDataList.add(CachedAdminData.MemberData.builder()
                         .role(member.getRole())
                         .name(member.getName())
@@ -756,22 +764,30 @@ public class AdminServiceImpl implements AdminService {
                     "소개 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
         }
 
-        String headerImageUrl = s3Service.getOriginalUrl(cachedData.getHeaderImageUrl());
-        generationService.updateHeaderImage(generationId, headerImageUrl);
+        if (cachedData.getHeaderImageUrl() != null) {
+            String headerImageUrl = s3Service.getOriginalUrl(cachedData.getHeaderImageUrl());
+            generationService.updateHeaderImage(generationId, headerImageUrl);
+        }
 
         if (cachedData.getCoreValues() != null) {
-            List<String> coreValueImageUrls = cachedData.getCoreValues().stream()
-                    .map(cv -> s3Service.getOriginalUrl(cv.getImageUrl()))
-                    .toList();
+            boolean hasNullCvImage = cachedData.getCoreValues().stream()
+                    .anyMatch(cv -> cv.getImageUrl() == null);
+            Map<String, String> existingCvImageByValue = hasNullCvImage
+                    ? coreValueService.findByGeneration(generationId).stream()
+                            .collect(Collectors.toMap(CoreValueView::value, CoreValueView::imageUrl))
+                    : null;
 
             List<BulkCreateCoreValuesCommand.CoreValueData> coreValueDataList = new ArrayList<>();
             for (int i = 0; i < cachedData.getCoreValues().size(); i++) {
                 var cv = cachedData.getCoreValues().get(i);
+                String imageUrl = cv.getImageUrl() != null
+                        ? s3Service.getOriginalUrl(cv.getImageUrl())
+                        : (existingCvImageByValue != null ? existingCvImageByValue.get(cv.getValue()) : null);
                 coreValueDataList.add(BulkCreateCoreValuesCommand.CoreValueData.builder()
                         .value(cv.getValue())
                         .description(cv.getDescription())
                         .detailDescription(cv.getDetailDescription())
-                        .imageUrl(coreValueImageUrls.get(i))
+                        .imageUrl(imageUrl)
                         .displayOrder(i)
                         .build());
             }
@@ -784,19 +800,25 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (cachedData.getMembers() != null) {
-            List<String> memberProfileImageUrls = cachedData.getMembers().stream()
-                    .map(m -> s3Service.getOriginalUrl(m.getProfileImageUrl()))
-                    .toList();
+            boolean hasNullMemberImage = cachedData.getMembers().stream()
+                    .anyMatch(m -> m.getProfileImageUrl() == null);
+            Map<String, String> existingMemberImageByName = hasNullMemberImage
+                    ? memberService.findByGeneration(generationId).stream()
+                            .collect(Collectors.toMap(MemberDetailView::name, MemberDetailView::profileImageUrl))
+                    : null;
 
             List<BulkCreateMembersCommand.MemberData> memberDataList = new ArrayList<>();
             for (int i = 0; i < cachedData.getMembers().size(); i++) {
                 var m = cachedData.getMembers().get(i);
+                String profileImageUrl = m.getProfileImageUrl() != null
+                        ? s3Service.getOriginalUrl(m.getProfileImageUrl())
+                        : (existingMemberImageByName != null ? existingMemberImageByName.get(m.getName()) : null);
                 memberDataList.add(BulkCreateMembersCommand.MemberData.builder()
                         .role(m.getRole())
                         .name(m.getName())
                         .affiliation(m.getAffiliation())
                         .introduction(m.getIntroduction())
-                        .profileImageUrl(memberProfileImageUrls.get(i))
+                        .profileImageUrl(profileImageUrl)
                         .snsLinks(BulkCreateMembersCommand.SnsLinksData.builder()
                                 .email(m.getSnsEmail())
                                 .linkedin(m.getSnsLinkedin())
@@ -851,8 +873,9 @@ public class AdminServiceImpl implements AdminService {
         CachedRecruitData cachedData = new CachedRecruitData();
         cachedData.setGenerationId(generationId);
 
-        String recruitHeaderImageUrl = s3Service.generatePresignedUrl(
-                request.getRecruitHeaderImageFileName(), baseDir);
+        String recruitHeaderImageUrl = request.getRecruitHeaderImageFileName() != null
+                ? s3Service.generatePresignedUrl(request.getRecruitHeaderImageFileName(), baseDir)
+                : null;
         cachedData.setRecruitHeaderImageUrl(recruitHeaderImageUrl);
 
         if (request.getPartIntroduction() != null) {
@@ -892,8 +915,10 @@ public class AdminServiceImpl implements AdminService {
                     "모집안내 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
         }
 
-        String recruitHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getRecruitHeaderImageUrl());
-        generationService.updateRecruitHeaderImage(generationId, recruitHeaderImageUrl);
+        if (cachedData.getRecruitHeaderImageUrl() != null) {
+            String recruitHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getRecruitHeaderImageUrl());
+            generationService.updateRecruitHeaderImage(generationId, recruitHeaderImageUrl);
+        }
 
         if (cachedData.getPartIntroductions() != null || cachedData.getPartCurriculums() != null) {
             partService.bulkCreate(
