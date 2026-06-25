@@ -803,9 +803,12 @@ public class AdminServiceImpl implements AdminService {
         if (cachedData.getMembers() != null) {
             boolean hasNullMemberImage = cachedData.getMembers().stream()
                     .anyMatch(m -> m.getProfileImageUrl() == null);
-            Map<String, String> existingMemberImageByName = hasNullMemberImage
+            Map<String, String> existingMemberImageByRoleAndName = hasNullMemberImage
                     ? memberService.findByGeneration(generationId).stream()
-                            .collect(Collectors.toMap(MemberDetailView::name, MemberDetailView::profileImageUrl))
+                            .collect(Collectors.toMap(
+                                    m -> m.role() + "_" + m.name(),
+                                    MemberDetailView::profileImageUrl,
+                                    (existing, replacement) -> existing))
                     : null;
 
             List<BulkCreateMembersCommand.MemberData> memberDataList = new ArrayList<>();
@@ -813,7 +816,7 @@ public class AdminServiceImpl implements AdminService {
                 var m = cachedData.getMembers().get(i);
                 String profileImageUrl = m.getProfileImageUrl() != null
                         ? s3Service.getOriginalUrl(m.getProfileImageUrl())
-                        : (existingMemberImageByName != null ? existingMemberImageByName.get(m.getName()) : null);
+                        : (existingMemberImageByRoleAndName != null ? existingMemberImageByRoleAndName.get(m.getRole() + "_" + m.getName()) : null);
                 memberDataList.add(BulkCreateMembersCommand.MemberData.builder()
                         .role(m.getRole())
                         .name(m.getName())
