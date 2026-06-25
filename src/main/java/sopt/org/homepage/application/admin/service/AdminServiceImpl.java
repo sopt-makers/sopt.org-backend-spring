@@ -70,6 +70,7 @@ import sopt.org.homepage.member.dto.MemberDetailView;
 import sopt.org.homepage.news.News;
 import sopt.org.homepage.news.NewsService;
 import sopt.org.homepage.news.dto.BulkCreateNewsCommand;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.part.PartService;
 import sopt.org.homepage.part.dto.BulkCreatePartsCommand;
 import sopt.org.homepage.part.dto.PartDetailView;
@@ -803,9 +804,12 @@ public class AdminServiceImpl implements AdminService {
         if (cachedData.getMembers() != null) {
             boolean hasNullMemberImage = cachedData.getMembers().stream()
                     .anyMatch(m -> m.getProfileImageUrl() == null);
-            Map<String, String> existingMemberImageByName = hasNullMemberImage
+            Map<String, String> existingMemberImageByRoleAndName = hasNullMemberImage
                     ? memberService.findByGeneration(generationId).stream()
-                            .collect(Collectors.toMap(MemberDetailView::name, MemberDetailView::profileImageUrl))
+                            .collect(Collectors.toMap(
+                                    m -> m.role() + "_" + m.name(),
+                                    MemberDetailView::profileImageUrl,
+                                    (existing, replacement) -> existing))
                     : null;
 
             List<BulkCreateMembersCommand.MemberData> memberDataList = new ArrayList<>();
@@ -813,7 +817,7 @@ public class AdminServiceImpl implements AdminService {
                 var m = cachedData.getMembers().get(i);
                 String profileImageUrl = m.getProfileImageUrl() != null
                         ? s3Service.getOriginalUrl(m.getProfileImageUrl())
-                        : (existingMemberImageByName != null ? existingMemberImageByName.get(m.getName()) : null);
+                        : (existingMemberImageByRoleAndName != null ? existingMemberImageByRoleAndName.get(m.getRole() + "_" + m.getName()) : null);
                 memberDataList.add(BulkCreateMembersCommand.MemberData.builder()
                         .role(m.getRole())
                         .name(m.getName())
@@ -922,6 +926,26 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (cachedData.getPartIntroductions() != null || cachedData.getPartCurriculums() != null) {
+            Map<PartType, String> existingDescriptions = null;
+            Map<PartType, List<String>> existingCurriculums = null;
+
+            if (cachedData.getPartIntroductions() == null || cachedData.getPartCurriculums() == null) {
+                List<PartDetailView> existingParts = partService.findByGeneration(generationId);
+                existingDescriptions = existingParts.stream()
+                        .collect(Collectors.toMap(
+                                v -> PartType.fromString(v.part()),
+                                PartDetailView::description
+                        ));
+                existingCurriculums = existingParts.stream()
+                        .collect(Collectors.toMap(
+                                v -> PartType.fromString(v.part()),
+                                PartDetailView::curriculums
+                        ));
+            }
+
+            final Map<PartType, String> finalDescriptions = existingDescriptions;
+            final Map<PartType, List<String>> finalCurriculums = existingCurriculums;
+
             partService.bulkCreate(
                     BulkCreatePartsCommand.builder()
                             .generationId(generationId)
@@ -932,7 +956,14 @@ public class AdminServiceImpl implements AdminService {
                                                     .description(pi.getDescription())
                                                     .build())
                                             .toList()
-                                    : List.of())
+                                    : cachedData.getPartCurriculums().stream()
+                                            .map(pc -> BulkCreatePartsCommand.PartData.builder()
+                                                    .part(pc.getPart())
+                                                    .description(finalDescriptions.getOrDefault(
+                                                            PartType.fromString(pc.getPart()),
+                                                            PartType.fromString(pc.getPart()).getValue() + " 파트입니다."))
+                                                    .build())
+                                            .toList())
                             .partCurriculums(cachedData.getPartCurriculums() != null
                                     ? cachedData.getPartCurriculums().stream()
                                             .map(pc -> BulkCreatePartsCommand.PartCurriculumData.builder()
@@ -940,7 +971,14 @@ public class AdminServiceImpl implements AdminService {
                                                     .curriculums(pc.getCurriculums())
                                                     .build())
                                             .toList()
-                                    : List.of())
+                                    : cachedData.getPartIntroductions().stream()
+                                            .map(pi -> BulkCreatePartsCommand.PartCurriculumData.builder()
+                                                    .part(pi.getPart())
+                                                    .curriculums(finalCurriculums.getOrDefault(
+                                                            PartType.fromString(pi.getPart()),
+                                                            List.of()))
+                                                    .build())
+                                            .toList())
                             .build()
             );
         }

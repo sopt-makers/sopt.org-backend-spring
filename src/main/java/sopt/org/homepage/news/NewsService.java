@@ -167,6 +167,7 @@ public class NewsService {
 
     @Transactional
     public void bulkCreate(BulkCreateNewsCommand command) {
+        newsRepository.deleteAll();
         List<News> newsList = command.news().stream()
                 .map(n -> News.builder()
                         .title(n.title())
