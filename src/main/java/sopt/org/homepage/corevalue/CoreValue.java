@@ -20,40 +20,40 @@ import org.hibernate.annotations.UpdateTimestamp;
  * 책임: - SOPT 핵심 가치 관리 - 기수별 핵심 가치 정의 - 순서(displayOrder) 관리
  */
 @Entity
-@Table(name = "\"CoreValue\"")
+@Table(name = "core_value")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CoreValue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "\"generationId\"", nullable = false)
+    @Column(name = "generation_id", nullable = false)
     private Integer generationId;  // Generation FK
 
-    @Column(name = "\"value\"", nullable = false, length = 50)
+    @Column(name = "value", nullable = false, length = 50)
     private String value;  // 핵심 가치 제목 (예: "도전", "성장", "협력")
 
-    @Column(name = "\"description\"", nullable = false, length = 500)
+    @Column(name = "description", nullable = false, length = 500)
     private String description;  // 핵심 가치 설명
 
-    @Column(name = "\"detailDescription\"", nullable = false, length = 100)
+    @Column(name = "detail_description", nullable = false, length = 100)
     private String detailDescription; // 핵심 가치 세부 설명
 
-    @Column(name = "\"imageUrl\"", nullable = false, length = 500)
+    @Column(name = "image_url", nullable = false, length = 500)
     private String imageUrl;  // 이미지 URL
 
-    @Column(name = "\"displayOrder\"", nullable = false)
+    @Column(name = "display_order", nullable = false)
     private Integer displayOrder;  // 표시 순서 (1, 2, 3, ...)
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder

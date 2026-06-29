@@ -25,32 +25,32 @@ import sopt.org.homepage.recruitment.vo.Schedule;
  * 책임: - 기수별 모집 일정 관리 - OB/YB 구분 - 모집 프로세스 일정 관리
  */
 @Entity
-@Table(name = "\"Recruitment\"")
+@Table(name = "recruitment")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Recruitment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "\"generationId\"", nullable = false)
+    @Column(name = "generation_id", nullable = false)
     private Integer generationId;  // Generation FK
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"recruitType\"", nullable = false, length = 10)
+    @Column(name = "recruit_type", nullable = false, length = 10)
     private RecruitType recruitType;  // OB, YB
 
     @Embedded
     private Schedule schedule;  // 모집 일정 (VO)
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder

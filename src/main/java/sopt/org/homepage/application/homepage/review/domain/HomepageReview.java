@@ -10,14 +10,14 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "\"HomepageReview\"")
+@Table(name = "homepage_review")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class HomepageReview {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     public static HomepageReview create(String title, String content, String authorInfo) {
@@ -28,21 +28,21 @@ public class HomepageReview {
         return review;
     }
 
-    @Column(name = "\"title\"", nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "\"content\"", nullable = false, length = 200)
+    @Column(name = "content", nullable = false, length = 200)
     private String content;
 
-    @Column(name = "\"authorInfo\"", nullable = false)
+    @Column(name = "author_info", nullable = false)
     private String authorInfo;
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     public void update(String title, String content, String authorInfo) {

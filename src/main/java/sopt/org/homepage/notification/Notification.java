@@ -18,25 +18,25 @@ import org.hibernate.annotations.CreationTimestamp;
  * 비즈니스 규칙: - 이메일 형식 검증 (@Email) - 기수는 1 이상의 양수 (@Min) - 동일 이메일+기수 조합 중복 불가 (Service에서 검증)
  */
 @Entity
-@Table(name = "\"Notification\"")
+@Table(name = "notification")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"")
+    @Column(name = "id")
     private Long id;
 
 
-    @Column(name = "\"email\"", nullable = false)
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "\"generation\"", nullable = false)
+    @Column(name = "generation", nullable = false)
     private Integer generation;
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public static Notification of(String email, Integer generation) {
