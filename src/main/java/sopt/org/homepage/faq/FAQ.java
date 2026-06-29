@@ -27,30 +27,30 @@ import sopt.org.homepage.global.common.type.PartType;
  * 책임: - 파트별 FAQ 관리 - 질문과 답변 관리 - Generation과 독립적으로 관리
  */
 @Entity
-@Table(name = "\"FAQ\"")
+@Table(name = "faq")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FAQ {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"part\"", nullable = false, length = 20)
+    @Column(name = "part", nullable = false, length = 20)
     private PartType part;  // ANDROID, IOS, WEB, SERVER, PLAN, DESIGN, COMMON
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "\"questions\"", nullable = false, columnDefinition = "text")
+    @Column(name = "questions", nullable = false, columnDefinition = "text")
     private List<QuestionAnswer> questions = new ArrayList<>();
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder

@@ -23,16 +23,16 @@ import sopt.org.homepage.review.exception.InvalidReviewContentException;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA 전용
 public class ReviewContent {
 
-    @Column(name = "\"title\"", nullable = false, length = 1000)
+    @Column(name = "title", nullable = false, length = 1000)
     private String title;
 
-    @Column(name = "\"description\"", nullable = false, length = 2000)
+    @Column(name = "description", nullable = false, length = 2000)
     private String description;
 
-    @Column(name = "\"thumbnailUrl\"", nullable = true, length = 500)
+    @Column(name = "thumbnail_url", nullable = true, length = 500)
     private String thumbnailUrl;
 
-    @Column(name = "\"platform\"", nullable = false, length = 50)
+    @Column(name = "platform", nullable = false, length = 50)
     private String platform;
 
     public ReviewContent(String title, String description, String thumbnailUrl, String platform) {

@@ -21,10 +21,10 @@ import sopt.org.homepage.review.exception.InvalidReviewAuthorException;
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA 전용
 public class ReviewAuthor {
 
-    @Column(name = "\"author\"", nullable = false, length = 20)
+    @Column(name = "author", nullable = false, length = 20)
     private String name;
 
-    @Column(name = "\"authorProfileImageUrl\"", nullable = true, length = 500)
+    @Column(name = "author_profile_image_url", nullable = true, length = 500)
     private String profileImageUrl;
 
     public ReviewAuthor(String name, String profileImageUrl) {

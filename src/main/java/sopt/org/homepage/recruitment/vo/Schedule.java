@@ -33,22 +33,22 @@ public class Schedule {
             DateTimeFormatter.ISO_LOCAL_DATE_TIME                 // 다양한 ISO 형식
     };
 
-    @Column(name = "\"applicationStartTime\"", nullable = false, length = 50)
+    @Column(name = "application_start_time", nullable = false, length = 50)
     private String applicationStartTime;
 
-    @Column(name = "\"applicationEndTime\"", nullable = false, length = 50)
+    @Column(name = "application_end_time", nullable = false, length = 50)
     private String applicationEndTime;
 
-    @Column(name = "\"applicationResultTime\"", nullable = false, length = 50)
+    @Column(name = "application_result_time", nullable = false, length = 50)
     private String applicationResultTime;
 
-    @Column(name = "\"interviewStartTime\"", nullable = false, length = 50)
+    @Column(name = "interview_start_time", nullable = false, length = 50)
     private String interviewStartTime;
 
-    @Column(name = "\"interviewEndTime\"", nullable = false, length = 50)
+    @Column(name = "interview_end_time", nullable = false, length = 50)
     private String interviewEndTime;
 
-    @Column(name = "\"finalResultTime\"", nullable = false, length = 50)
+    @Column(name = "final_result_time", nullable = false, length = 50)
     private String finalResultTime;
 
     @Builder

@@ -17,16 +17,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SnsLinks {
 
-    @Column(name = "\"snsEmail\"", length = 100)
+    @Column(name = "sns_email", length = 100)
     private String email;
 
-    @Column(name = "\"snsLinkedin\"", length = 200)
+    @Column(name = "sns_linkedin", length = 200)
     private String linkedin;
 
-    @Column(name = "\"snsGithub\"", length = 200)
+    @Column(name = "sns_github", length = 200)
     private String github;
 
-    @Column(name = "\"snsBehance\"", length = 200)
+    @Column(name = "sns_behance", length = 200)
     private String behance;
 
     @Builder

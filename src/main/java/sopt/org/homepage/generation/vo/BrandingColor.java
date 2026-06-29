@@ -12,16 +12,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BrandingColor {
 
-    @Column(name = "\"darkModeKeyColor\"", nullable = true, length = 7)
+    @Column(name = "dark_mode_key_color", nullable = true, length = 7)
     private String darkModeKeyColor;
 
-    @Column(name = "\"darkModeTextColor\"", nullable = true, length = 5)
+    @Column(name = "dark_mode_text_color", nullable = true, length = 5)
     private String darkModeTextColor;
 
-    @Column(name = "\"lightModeKeyColor\"", nullable = true, length = 7)
+    @Column(name = "light_mode_key_color", nullable = true, length = 7)
     private String lightModeKeyColor;
 
-    @Column(name = "\"lightModeTextColor\"", nullable = true, length = 5)
+    @Column(name = "light_mode_text_color", nullable = true, length = 5)
     private String lightModeTextColor;
 
     @Builder

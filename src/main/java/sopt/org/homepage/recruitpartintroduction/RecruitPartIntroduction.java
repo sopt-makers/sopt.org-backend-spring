@@ -25,32 +25,32 @@ import sopt.org.homepage.recruitpartintroduction.vo.PartIntroduction;
  * 책임: - 모집 시 파트별 소개 관리 - 파트별 선호 사항 관리
  */
 @Entity
-@Table(name = "\"RecruitPartIntroduction\"")
+@Table(name = "recruit_part_introduction")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RecruitPartIntroduction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "\"generationId\"", nullable = false)
+    @Column(name = "generation_id", nullable = false)
     private Integer generationId;  // Generation FK
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"part\"", nullable = false, length = 20)
+    @Column(name = "part", nullable = false, length = 20)
     private PartType part;
 
     @Embedded
     private PartIntroduction introduction;  // 소개 및 선호사항 (VO)
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder

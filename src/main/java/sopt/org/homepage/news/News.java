@@ -20,31 +20,31 @@ import org.hibernate.annotations.UpdateTimestamp;
  * 테이블: MainNews
  */
 @Entity
-@Table(name = "\"MainNews\"")
+@Table(name = "main_news")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class News {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "\"image\"", nullable = false)
+    @Column(name = "image", nullable = false)
     private String image;
 
-    @Column(name = "\"title\"", nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "\"link\"", nullable = false)
+    @Column(name = "link", nullable = false)
     private String link;
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder

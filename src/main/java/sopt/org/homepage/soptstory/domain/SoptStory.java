@@ -22,33 +22,33 @@ import org.hibernate.annotations.CreationTimestamp;
  * 비즈니스 규칙: - 좋아요 증가/감소 (음수 불가) - URL 중복 방지 (Service에서 검증)
  */
 @Entity
-@Table(name = "\"SoptStory\"")
+@Table(name = "sopt_story")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SoptStory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "\"title\"", nullable = false, length = 100)
+    @Column(name = "title", nullable = false, length = 100)
     private String title;
 
-    @Column(name = "\"description\"", nullable = false, length = 600)
+    @Column(name = "description", nullable = false, length = 600)
     private String description;
 
-    @Column(name = "\"thumbnailUrl\"", length = 500)
+    @Column(name = "thumbnail_url", length = 500)
     private String thumbnailUrl;
 
-    @Column(name = "\"soptStoryUrl\"", nullable = false, length = 500)
+    @Column(name = "sopt_story_url", nullable = false, length = 500)
     private String url;
 
-    @Column(name = "\"likeCount\"", nullable = false)
+    @Column(name = "like_count", nullable = false)
     private int likeCount;
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "soptStory", cascade = CascadeType.ALL, orphanRemoval = true)

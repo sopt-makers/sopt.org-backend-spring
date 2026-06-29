@@ -27,36 +27,36 @@ import sopt.org.homepage.global.common.type.PartType;
  * 책임: - SOPT 파트 정보 관리 - 파트별 소개글 관리 - 파트별 커리큘럼 관리
  */
 @Entity
-@Table(name = "\"PartType\"")
+@Table(name = "part_type")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Part {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "\"generationId\"", nullable = false)
+    @Column(name = "generation_id", nullable = false)
     private Integer generationId;  // Generation FK
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"partType\"", nullable = false, length = 20)
+    @Column(name = "part_type", nullable = false, length = 20)
     private PartType partType;  // ANDROID, IOS, WEB, SERVER, PLAN, DESIGN
 
-    @Column(name = "\"description\"", nullable = false, length = 1000)
+    @Column(name = "description", nullable = false, length = 1000)
     private String description;  // 파트 소개글 (Main 페이지용)
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "\"curriculums\"", nullable = false, columnDefinition = "text")
+    @Column(name = "curriculums", nullable = false, columnDefinition = "text")
     private List<String> curriculums = new ArrayList<>();  // 주차별 커리큘럼 (About 페이지용)
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder
