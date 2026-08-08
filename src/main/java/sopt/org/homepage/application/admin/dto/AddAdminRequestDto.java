@@ -7,9 +7,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.application.admin.dto.request.main.branding.AddAdminBrandingColorRequestDto;
-import sopt.org.homepage.application.admin.dto.request.main.button.AddAdminMainButtonRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.core.AddAdminCoreValueRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
@@ -21,7 +19,6 @@ import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.Add
 import sopt.org.homepage.application.admin.dto.request.main.activityschedule.AddAdminActivityScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 
-@Validated
 @Schema(description = "어드민 배포하기")
 @Getter
 @NoArgsConstructor
@@ -40,8 +37,6 @@ public class AddAdminRequestDto {
     private List<AddAdminRecruitScheduleRequestDto> recruitSchedule;
 
     private AddAdminBrandingColorRequestDto brandingColor;
-
-    private AddAdminMainButtonRequestDto mainButton;
 
     @Schema(description = "홈 헤더 이미지 파일명", requiredMode = Schema.RequiredMode.REQUIRED, example = "header.png")
     @NotEmpty(message = "homeHeaderImageFileName must not be empty")

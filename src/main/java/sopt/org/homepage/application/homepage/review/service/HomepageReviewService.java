@@ -53,6 +53,7 @@ public class HomepageReviewService {
 
     @Transactional
     public void bulkCreate(BulkCreateHomepageReviewsCommand command) {
+        homepageReviewRepository.deleteAll();
         List<HomepageReview> reviews = command.reviews().stream()
                 .map(r -> HomepageReview.create(r.title(), r.content(), r.authorInfo()))
                 .toList();

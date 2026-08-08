@@ -25,44 +25,44 @@ import sopt.org.homepage.member.vo.SnsLinks;
  * 책임: - SOPT 운영진 정보 관리 - 기수별 운영진 구성 - SNS 링크 관리
  */
 @Entity
-@Table(name = "\"Member\"")
+@Table(name = "member")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "\"generationId\"", nullable = false)
+    @Column(name = "generation_id", nullable = false)
     private Integer generationId;  // Generation FK
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"role\"", nullable = false, length = 50)
+    @Column(name = "role", nullable = false, length = 50)
     private MemberRole role;  // 회장, 부회장, 운영팀장, ...
 
-    @Column(name = "\"name\"", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;  // 이름
 
-    @Column(name = "\"affiliation\"", nullable = false, length = 100)
+    @Column(name = "affiliation", nullable = false, length = 100)
     private String affiliation;  // 소속 (학교/회사)
 
-    @Column(name = "\"introduction\"", nullable = false, length = 500)
+    @Column(name = "introduction", nullable = false, length = 500)
     private String introduction;  // 한 줄 소개
 
-    @Column(name = "\"profileImageUrl\"", nullable = false, length = 500)
+    @Column(name = "profile_image_url", nullable = false, length = 500)
     private String profileImageUrl;  // 프로필 이미지 URL
 
     @Embedded
     private SnsLinks snsLinks;  // SNS 링크 (VO)
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder

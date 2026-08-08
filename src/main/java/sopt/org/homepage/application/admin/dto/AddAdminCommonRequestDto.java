@@ -8,12 +8,9 @@ import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import sopt.org.homepage.application.admin.dto.request.main.branding.AddAdminBrandingColorRequestDto;
-import sopt.org.homepage.application.admin.dto.request.main.button.AddAdminMainButtonRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
 
-@Validated
 @Schema(description = "어드민 공통 탭 배포")
 @Getter
 @NoArgsConstructor
@@ -37,8 +34,4 @@ public class AddAdminCommonRequestDto {
     @Valid
     private AddAdminBrandingColorRequestDto brandingColor;
 
-    @Schema(description = "메인 버튼", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "mainButton must not be null")
-    @Valid
-    private AddAdminMainButtonRequestDto mainButton;
 }

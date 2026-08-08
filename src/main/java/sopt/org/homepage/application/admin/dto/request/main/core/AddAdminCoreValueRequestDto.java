@@ -21,8 +21,7 @@ public class AddAdminCoreValueRequestDto {
     @NotBlank(message = "핵심 가치 세부 설명을 입력해주세요")
     private String detailDescription;
 
-    @Schema(description = "핵심 가치 이미지 파일명", example = "image.png", requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "핵심 가치 이미지 파일명을 입력해주세요")
+    @Schema(description = "핵심 가치 이미지 파일명 (생략 시 기존 이미지 유지)", example = "image.png", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String imageFileName;
 
 

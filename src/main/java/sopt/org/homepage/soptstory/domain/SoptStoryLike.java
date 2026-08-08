@@ -21,11 +21,11 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(
-        name = "\"SoptStoryLike\"",
+        name = "sopt_story_like",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_soptstory_like_ip",
-                        columnNames = {"\"soptStoryId\"", "\"ip\""}
+                        name = "uk_sopt_story_like_ip",
+                        columnNames = {"sopt_story_id", "ip"}
                 )
         }
 )
@@ -35,14 +35,14 @@ public class SoptStoryLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "\"soptStoryId\"", nullable = false)
+    @JoinColumn(name = "sopt_story_id", nullable = false)
     private SoptStory soptStory;
 
-    @Column(name = "\"ip\"", nullable = false, length = 45)
+    @Column(name = "ip", nullable = false, length = 45)
     private String ip;
 
     public static SoptStoryLike of(SoptStory soptStory, String ip) {

@@ -2,6 +2,9 @@ package sopt.org.homepage.application.admin.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import org.springframework.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,12 +33,10 @@ import sopt.org.homepage.activityschedule.ActivitySchedule;
 import sopt.org.homepage.activityschedule.ActivityScheduleService;
 import sopt.org.homepage.activityschedule.dto.BulkCreateActivitySchedulesCommand;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 import sopt.org.homepage.application.admin.dto.request.main.activityschedule.AddAdminActivityScheduleRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.review.AddAdminReviewRequestDto;
 import sopt.org.homepage.application.admin.dto.response.main.activityschedule.GetAdminActivityScheduleResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.branding.GetAdminBrandingColorResponseRecordDto;
-import sopt.org.homepage.application.admin.dto.response.main.button.GetAdminMainButtonResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.core.AddAdminCoreValueResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.core.GetAdminCoreValueResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.curriculum.GetAdminPartCurriculumResponseRecordDto;
@@ -69,6 +70,7 @@ import sopt.org.homepage.member.dto.MemberDetailView;
 import sopt.org.homepage.news.News;
 import sopt.org.homepage.news.NewsService;
 import sopt.org.homepage.news.dto.BulkCreateNewsCommand;
+import sopt.org.homepage.global.common.type.PartType;
 import sopt.org.homepage.part.PartService;
 import sopt.org.homepage.part.dto.BulkCreatePartsCommand;
 import sopt.org.homepage.part.dto.PartDetailView;
@@ -146,12 +148,6 @@ public class AdminServiceImpl implements AdminService {
         cachedData.setDarkModeTextColor(brandingColorDto.getDarkModeTextColor());
         cachedData.setLightModeKeyColor(brandingColorDto.getLightModeKeyColor());
         cachedData.setLightModeTextColor(brandingColorDto.getLightModeTextColor());
-
-        // MainButton
-        var mainButtonDto = request.getMainButton();
-        cachedData.setMainButtonText(mainButtonDto.getText());
-        cachedData.setMainButtonKeyColor(mainButtonDto.getKeyColor());
-        cachedData.setMainButtonSubColor(mainButtonDto.getSubColor());
 
         // ===== 2. CoreValue Presigned URLs =====
         List<CachedAdminData.CoreValueData> coreValueDataList = new ArrayList<>();
@@ -288,11 +284,6 @@ public class AdminServiceImpl implements AdminService {
                                 .darkModeTextColor(cachedData.getDarkModeTextColor())
                                 .lightModeKeyColor(stripHash(cachedData.getLightModeKeyColor()))
                                 .lightModeTextColor(cachedData.getLightModeTextColor())
-                                .build())
-                        .mainButton(CreateGenerationCommand.MainButtonCommand.builder()
-                                .text(cachedData.getMainButtonText())
-                                .keyColor(cachedData.getMainButtonKeyColor())
-                                .subColor(cachedData.getMainButtonSubColor())
                                 .build())
                         .build()
         );
@@ -481,15 +472,17 @@ public class AdminServiceImpl implements AdminService {
         cachedData.setName(request.getName());
 
         var bc = request.getBrandingColor();
+        BrandingColor.builder()
+                .darkModeKeyColor(stripHash(bc.getDarkModeKeyColor()))
+                .darkModeTextColor(bc.getDarkModeTextColor())
+                .lightModeKeyColor(stripHash(bc.getLightModeKeyColor()))
+                .lightModeTextColor(bc.getLightModeTextColor())
+                .build();
+
         cachedData.setDarkModeKeyColor(bc.getDarkModeKeyColor());
         cachedData.setDarkModeTextColor(bc.getDarkModeTextColor());
         cachedData.setLightModeKeyColor(bc.getLightModeKeyColor());
         cachedData.setLightModeTextColor(bc.getLightModeTextColor());
-
-        var mb = request.getMainButton();
-        cachedData.setMainButtonText(mb.getText());
-        cachedData.setMainButtonKeyColor(mb.getKeyColor());
-        cachedData.setMainButtonSubColor(mb.getSubColor());
 
         if (request.getRecruitSchedule() != null) {
             cachedData.setRecruitSchedules(new ArrayList<>(request.getRecruitSchedule()));
@@ -526,13 +519,7 @@ public class AdminServiceImpl implements AdminService {
                 .lightModeTextColor(cachedData.getLightModeTextColor())
                 .build();
 
-        MainButton mainButton = MainButton.builder()
-                .text(cachedData.getMainButtonText())
-                .keyColor(cachedData.getMainButtonKeyColor())
-                .subColor(cachedData.getMainButtonSubColor())
-                .build();
-
-        generationService.createOrUpdateCommon(generationId, cachedData.getName(), brandingColor, mainButton);
+        generationService.createOrUpdateCommon(generationId, cachedData.getName(), brandingColor);
 
         if (cachedData.getRecruitSchedules() != null) {
             recruitmentService.bulkCreate(
@@ -578,8 +565,9 @@ public class AdminServiceImpl implements AdminService {
         CachedHomeData cachedData = new CachedHomeData();
         cachedData.setGenerationId(generationId);
 
-        String homeHeaderImageUrl = s3Service.generatePresignedUrl(
-                request.getHomeHeaderImageFileName(), baseDir);
+        String homeHeaderImageUrl = StringUtils.hasText(request.getHomeHeaderImageFileName())
+                ? s3Service.generatePresignedUrl(request.getHomeHeaderImageFileName(), baseDir)
+                : null;
         cachedData.setHomeHeaderImageUrl(homeHeaderImageUrl);
 
         List<CachedAdminData.NewsData> newsDataList = null;
@@ -633,8 +621,10 @@ public class AdminServiceImpl implements AdminService {
                     "홈 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
         }
 
-        String homeHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getHomeHeaderImageUrl());
-        generationService.updateHomeHeaderImage(generationId, homeHeaderImageUrl);
+        if (cachedData.getHomeHeaderImageUrl() != null) {
+            String homeHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getHomeHeaderImageUrl());
+            generationService.updateHomeHeaderImage(generationId, homeHeaderImageUrl);
+        }
 
         if (cachedData.getNews() != null) {
             newsService.bulkCreate(
@@ -687,16 +677,18 @@ public class AdminServiceImpl implements AdminService {
         CachedAboutData cachedData = new CachedAboutData();
         cachedData.setGenerationId(generationId);
 
-        String headerImageUrl = s3Service.generatePresignedUrl(
-                request.getHeaderImageFileName(), baseDir);
+        String headerImageUrl = StringUtils.hasText(request.getHeaderImageFileName())
+                ? s3Service.generatePresignedUrl(request.getHeaderImageFileName(), baseDir)
+                : null;
         cachedData.setHeaderImageUrl(headerImageUrl);
 
         List<CachedAdminData.CoreValueData> coreValueDataList = null;
         if (request.getCoreValue() != null) {
             coreValueDataList = new ArrayList<>();
             for (var cv : request.getCoreValue()) {
-                String imageUrl = s3Service.generatePresignedUrl(
-                        cv.getImageFileName(), baseDir + "coreValue/");
+                String imageUrl = StringUtils.hasText(cv.getImageFileName())
+                        ? s3Service.generatePresignedUrl(cv.getImageFileName(), baseDir + "coreValue/")
+                        : null;
                 coreValueDataList.add(CachedAdminData.CoreValueData.builder()
                         .value(cv.getValue())
                         .description(cv.getDescription())
@@ -711,8 +703,9 @@ public class AdminServiceImpl implements AdminService {
         if (request.getMember() != null) {
             memberDataList = new ArrayList<>();
             for (var member : request.getMember()) {
-                String profileImageUrl = s3Service.generatePresignedUrl(
-                        member.getProfileImageFileName(), baseDir + "member/");
+                String profileImageUrl = StringUtils.hasText(member.getProfileImageFileName())
+                        ? s3Service.generatePresignedUrl(member.getProfileImageFileName(), baseDir + "member/")
+                        : null;
                 memberDataList.add(CachedAdminData.MemberData.builder()
                         .role(member.getRole())
                         .name(member.getName())
@@ -773,22 +766,30 @@ public class AdminServiceImpl implements AdminService {
                     "소개 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
         }
 
-        String headerImageUrl = s3Service.getOriginalUrl(cachedData.getHeaderImageUrl());
-        generationService.updateHeaderImage(generationId, headerImageUrl);
+        if (cachedData.getHeaderImageUrl() != null) {
+            String headerImageUrl = s3Service.getOriginalUrl(cachedData.getHeaderImageUrl());
+            generationService.updateHeaderImage(generationId, headerImageUrl);
+        }
 
         if (cachedData.getCoreValues() != null) {
-            List<String> coreValueImageUrls = cachedData.getCoreValues().stream()
-                    .map(cv -> s3Service.getOriginalUrl(cv.getImageUrl()))
-                    .toList();
+            boolean hasNullCvImage = cachedData.getCoreValues().stream()
+                    .anyMatch(cv -> cv.getImageUrl() == null);
+            Map<String, String> existingCvImageByValue = hasNullCvImage
+                    ? coreValueService.findByGeneration(generationId).stream()
+                            .collect(Collectors.toMap(CoreValueView::value, CoreValueView::imageUrl))
+                    : null;
 
             List<BulkCreateCoreValuesCommand.CoreValueData> coreValueDataList = new ArrayList<>();
             for (int i = 0; i < cachedData.getCoreValues().size(); i++) {
                 var cv = cachedData.getCoreValues().get(i);
+                String imageUrl = cv.getImageUrl() != null
+                        ? s3Service.getOriginalUrl(cv.getImageUrl())
+                        : (existingCvImageByValue != null ? existingCvImageByValue.get(cv.getValue()) : null);
                 coreValueDataList.add(BulkCreateCoreValuesCommand.CoreValueData.builder()
                         .value(cv.getValue())
                         .description(cv.getDescription())
                         .detailDescription(cv.getDetailDescription())
-                        .imageUrl(coreValueImageUrls.get(i))
+                        .imageUrl(imageUrl)
                         .displayOrder(i)
                         .build());
             }
@@ -801,19 +802,28 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (cachedData.getMembers() != null) {
-            List<String> memberProfileImageUrls = cachedData.getMembers().stream()
-                    .map(m -> s3Service.getOriginalUrl(m.getProfileImageUrl()))
-                    .toList();
+            boolean hasNullMemberImage = cachedData.getMembers().stream()
+                    .anyMatch(m -> m.getProfileImageUrl() == null);
+            Map<String, String> existingMemberImageByRoleAndName = hasNullMemberImage
+                    ? memberService.findByGeneration(generationId).stream()
+                            .collect(Collectors.toMap(
+                                    m -> m.role() + "_" + m.name(),
+                                    MemberDetailView::profileImageUrl,
+                                    (existing, replacement) -> existing))
+                    : null;
 
             List<BulkCreateMembersCommand.MemberData> memberDataList = new ArrayList<>();
             for (int i = 0; i < cachedData.getMembers().size(); i++) {
                 var m = cachedData.getMembers().get(i);
+                String profileImageUrl = m.getProfileImageUrl() != null
+                        ? s3Service.getOriginalUrl(m.getProfileImageUrl())
+                        : (existingMemberImageByRoleAndName != null ? existingMemberImageByRoleAndName.get(m.getRole() + "_" + m.getName()) : null);
                 memberDataList.add(BulkCreateMembersCommand.MemberData.builder()
                         .role(m.getRole())
                         .name(m.getName())
                         .affiliation(m.getAffiliation())
                         .introduction(m.getIntroduction())
-                        .profileImageUrl(memberProfileImageUrls.get(i))
+                        .profileImageUrl(profileImageUrl)
                         .snsLinks(BulkCreateMembersCommand.SnsLinksData.builder()
                                 .email(m.getSnsEmail())
                                 .linkedin(m.getSnsLinkedin())
@@ -868,8 +878,9 @@ public class AdminServiceImpl implements AdminService {
         CachedRecruitData cachedData = new CachedRecruitData();
         cachedData.setGenerationId(generationId);
 
-        String recruitHeaderImageUrl = s3Service.generatePresignedUrl(
-                request.getRecruitHeaderImageFileName(), baseDir);
+        String recruitHeaderImageUrl = StringUtils.hasText(request.getRecruitHeaderImageFileName())
+                ? s3Service.generatePresignedUrl(request.getRecruitHeaderImageFileName(), baseDir)
+                : null;
         cachedData.setRecruitHeaderImageUrl(recruitHeaderImageUrl);
 
         if (request.getPartIntroduction() != null) {
@@ -909,10 +920,32 @@ public class AdminServiceImpl implements AdminService {
                     "모집안내 탭 캐시 데이터 없음. 배포 1단계를 먼저 호출하세요. generation=" + generationId);
         }
 
-        String recruitHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getRecruitHeaderImageUrl());
-        generationService.updateRecruitHeaderImage(generationId, recruitHeaderImageUrl);
+        if (cachedData.getRecruitHeaderImageUrl() != null) {
+            String recruitHeaderImageUrl = s3Service.getOriginalUrl(cachedData.getRecruitHeaderImageUrl());
+            generationService.updateRecruitHeaderImage(generationId, recruitHeaderImageUrl);
+        }
 
         if (cachedData.getPartIntroductions() != null || cachedData.getPartCurriculums() != null) {
+            Map<PartType, String> existingDescriptions = null;
+            Map<PartType, List<String>> existingCurriculums = null;
+
+            if (cachedData.getPartIntroductions() == null || cachedData.getPartCurriculums() == null) {
+                List<PartDetailView> existingParts = partService.findByGeneration(generationId);
+                existingDescriptions = existingParts.stream()
+                        .collect(Collectors.toMap(
+                                v -> PartType.fromString(v.part()),
+                                PartDetailView::description
+                        ));
+                existingCurriculums = existingParts.stream()
+                        .collect(Collectors.toMap(
+                                v -> PartType.fromString(v.part()),
+                                PartDetailView::curriculums
+                        ));
+            }
+
+            final Map<PartType, String> finalDescriptions = existingDescriptions;
+            final Map<PartType, List<String>> finalCurriculums = existingCurriculums;
+
             partService.bulkCreate(
                     BulkCreatePartsCommand.builder()
                             .generationId(generationId)
@@ -923,7 +956,14 @@ public class AdminServiceImpl implements AdminService {
                                                     .description(pi.getDescription())
                                                     .build())
                                             .toList()
-                                    : List.of())
+                                    : cachedData.getPartCurriculums().stream()
+                                            .map(pc -> BulkCreatePartsCommand.PartData.builder()
+                                                    .part(pc.getPart())
+                                                    .description(finalDescriptions.getOrDefault(
+                                                            PartType.fromString(pc.getPart()),
+                                                            PartType.fromString(pc.getPart()).getValue() + " 파트입니다."))
+                                                    .build())
+                                            .toList())
                             .partCurriculums(cachedData.getPartCurriculums() != null
                                     ? cachedData.getPartCurriculums().stream()
                                             .map(pc -> BulkCreatePartsCommand.PartCurriculumData.builder()
@@ -931,7 +971,14 @@ public class AdminServiceImpl implements AdminService {
                                                     .curriculums(pc.getCurriculums())
                                                     .build())
                                             .toList()
-                                    : List.of())
+                                    : cachedData.getPartIntroductions().stream()
+                                            .map(pi -> BulkCreatePartsCommand.PartCurriculumData.builder()
+                                                    .part(pi.getPart())
+                                                    .curriculums(finalCurriculums.getOrDefault(
+                                                            PartType.fromString(pi.getPart()),
+                                                            List.of()))
+                                                    .build())
+                                            .toList())
                             .build()
             );
         }
@@ -1038,11 +1085,6 @@ public class AdminServiceImpl implements AdminService {
                         .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
                         .lightModeTextColor(generation.brandingColor().lightModeTextColor())
                         .build())
-                .mainButton(GetAdminMainButtonResponseRecordDto.builder()
-                        .text(generation.mainButton().text())
-                        .keyColor(generation.mainButton().keyColor())
-                        .subColor(generation.mainButton().subColor())
-                        .build())
                 .partIntroduction(parts.stream()
                         .map(p -> GetAdminPartIntroductionResponseRecordDto.builder()
                                 .part(p.part())
@@ -1142,11 +1184,6 @@ public class AdminServiceImpl implements AdminService {
         private String lightModeKeyColor;
         private String lightModeTextColor;
 
-        // MainButton
-        private String mainButtonText;
-        private String mainButtonKeyColor;
-        private String mainButtonSubColor;
-
         // CoreValue
         private List<CoreValueData> coreValues;
 
@@ -1215,9 +1252,6 @@ public class AdminServiceImpl implements AdminService {
         private String darkModeTextColor;
         private String lightModeKeyColor;
         private String lightModeTextColor;
-        private String mainButtonText;
-        private String mainButtonKeyColor;
-        private String mainButtonSubColor;
         private List<AddAdminRecruitScheduleRequestDto> recruitSchedules;
     }
 

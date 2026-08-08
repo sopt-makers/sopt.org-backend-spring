@@ -31,14 +31,14 @@ import sopt.org.homepage.review.exception.DuplicateReviewUrlException;
  * 책임: - 리뷰 생성 시 비즈니스 규칙 검증 - 리뷰 데이터의 일관성 유지
  */
 @Entity
-@Table(name = "\"Review\"")
+@Table(name = "review")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED) // JPA 전용
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Embedded
@@ -47,11 +47,11 @@ public class Review {
     @Embedded
     private ReviewAuthor author;
 
-    @Column(name = "\"generation\"", nullable = false)
+    @Column(name = "generation", nullable = false)
     private Integer generation;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "\"part\"", nullable = false, length = 10)
+    @Column(name = "part", nullable = false, length = 10)
     private PartType partType;
 
     @Embedded
@@ -64,11 +64,11 @@ public class Review {
     private ReviewUrl url;
 
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     /**

@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 
 /**
  * Generation (기수) 애그리거트 루트
@@ -21,39 +20,36 @@ import sopt.org.homepage.generation.vo.MainButton;
  * 책임: - 기수 기본 정보 관리 (번호, 이름) - 브랜딩 설정 관리 (컬러, 버튼) - 이미지 리소스 관리 (헤더 이미지)
  */
 @Entity
-@Table(name = "\"Generation\"")
+@Table(name = "generation")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Generation {
 
     @Id
-    @Column(name = "\"id\"", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;  // generation number (35, 36, ...)
 
-    @Column(name = "\"name\"", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;  // "35기", "SOPT 35기"
 
-    @Column(name = "\"headerImage\"", nullable = false, length = 500)
+    @Column(name = "header_image", nullable = false, length = 500)
     private String headerImage;  // Main 페이지 헤더 이미지 URL
 
-    @Column(name = "\"recruitHeaderImage\"", nullable = false, length = 500)
+    @Column(name = "recruit_header_image", nullable = false, length = 500)
     private String recruitHeaderImage;  // Recruiting 페이지 헤더 이미지 URL
 
-    @Column(name = "\"homeHeaderImage\"", nullable = false, length = 500)
+    @Column(name = "home_header_image", nullable = false, length = 500)
     private String homeHeaderImage;  // Home 페이지 헤더 이미지 URL
 
     @Embedded
     private BrandingColor brandingColor;  // 브랜딩 컬러 (VO)
 
-    @Embedded
-    private MainButton mainButton;  // 메인 버튼 설정 (VO)
-
     @CreationTimestamp
-    @Column(name = "\"createdAt\"", nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
-    @Column(name = "\"updatedAt\"", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Builder
@@ -63,8 +59,7 @@ public class Generation {
             String headerImage,
             String recruitHeaderImage,
             String homeHeaderImage,
-            BrandingColor brandingColor,
-            MainButton mainButton
+            BrandingColor brandingColor
     ) {
         this.id = id;
         this.name = name;
@@ -72,7 +67,6 @@ public class Generation {
         this.recruitHeaderImage = recruitHeaderImage;
         this.homeHeaderImage = homeHeaderImage;
         this.brandingColor = brandingColor;
-        this.mainButton = mainButton;
     }
 
     // === 비즈니스 메서드 ===
@@ -85,15 +79,13 @@ public class Generation {
             String headerImage,
             String recruitHeaderImage,
             String homeHeaderImage,
-            BrandingColor brandingColor,
-            MainButton mainButton
+            BrandingColor brandingColor
     ) {
         this.name = name;
         this.headerImage = headerImage;
         this.recruitHeaderImage = recruitHeaderImage;
         this.homeHeaderImage = homeHeaderImage;
         this.brandingColor = brandingColor;
-        this.mainButton = mainButton;
     }
 
     /**
@@ -124,10 +116,4 @@ public class Generation {
         this.brandingColor = brandingColor;
     }
 
-    /**
-     * 메인 버튼 설정 변경
-     */
-    public void updateMainButton(MainButton mainButton) {
-        this.mainButton = mainButton;
-    }
 }

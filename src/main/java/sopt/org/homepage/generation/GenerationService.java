@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.generation.dto.CreateGenerationCommand;
 import sopt.org.homepage.generation.dto.GenerationDetailView;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
@@ -50,7 +49,7 @@ public class GenerationService {
      * 공통 탭 배포: Generation 없으면 생성(이미지 공란), 있으면 공통 필드만 업데이트
      */
     @Transactional
-    public void createOrUpdateCommon(Integer id, String name, BrandingColor brandingColor, MainButton mainButton) {
+    public void createOrUpdateCommon(Integer id, String name, BrandingColor brandingColor) {
         log.info("공통 탭 Generation createOrUpdate - id={}", id);
 
         Optional<Generation> opt = generationRepository.findById(id);
@@ -62,13 +61,12 @@ public class GenerationService {
                     .recruitHeaderImage("")
                     .homeHeaderImage("")
                     .brandingColor(brandingColor)
-                    .mainButton(mainButton)
                     .build();
             generationRepository.save(gen);
         } else {
             Generation gen = opt.get();
             gen.update(name, gen.getHeaderImage(), gen.getRecruitHeaderImage(),
-                    gen.getHomeHeaderImage(), brandingColor, mainButton);
+                    gen.getHomeHeaderImage(), brandingColor);
         }
     }
 

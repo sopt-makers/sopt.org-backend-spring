@@ -17,10 +17,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PartIntroduction {
 
-    @Column(name = "\"introductionContent\"", nullable = false, length = 2000)
+    @Column(name = "introduction_content", nullable = false, length = 2000)
     private String content;  // 파트 소개 내용
 
-    @Column(name = "\"introductionPreference\"", nullable = false, length = 1000)
+    @Column(name = "introduction_preference", nullable = false, length = 1000)
     private String preference;  // 선호하는 지원자 특성
 
     @Builder

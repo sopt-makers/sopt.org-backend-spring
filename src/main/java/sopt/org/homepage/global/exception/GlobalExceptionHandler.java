@@ -9,6 +9,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.server.ResponseStatusException;
 import sopt.org.homepage.notification.exception.NotificationDomainException;
@@ -49,6 +50,22 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<String> methodArgumentNotValidException(MethodArgumentNotValidException ex) {
         log.error(ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<String> methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
+        log.warn("[Bad Request] 파라미터 타입 오류 - name={}, value={}", ex.getName(), ex.getValue());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("잘못된 파라미터 값입니다: " + ex.getName() + "=" + ex.getValue());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException ex) {
+        log.warn("[Bad Request] 잘못된 인자 - message={}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage());

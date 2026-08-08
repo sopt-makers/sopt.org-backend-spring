@@ -13,13 +13,12 @@ import sopt.org.homepage.common.IntegrationTestBase;
 import sopt.org.homepage.generation.dto.CreateGenerationCommand;
 import sopt.org.homepage.generation.dto.GenerationDetailView;
 import sopt.org.homepage.generation.vo.BrandingColor;
-import sopt.org.homepage.generation.vo.MainButton;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
  * Generation 통합 테스트
  * <p>
- * 인수인계 목적: - Generation은 SOPT 기수를 나타냄 (35기, 36기 등) - PK(id)는 자동 생성이 아닌 기수 번호를 직접 사용 - BrandingColor, MainButton은 VO로
+ * 인수인계 목적: - Generation은 SOPT 기수를 나타냄 (35기, 36기 등) - PK(id)는 자동 생성이 아닌 기수 번호를 직접 사용 - BrandingColor는 VO로
  * 관리
  */
 @DisplayName("Generation 서비스 통합 테스트")
@@ -57,7 +56,6 @@ class GenerationServiceTest extends IntegrationTestBase {
             GenerationDetailView saved = generationService.findById(id);
             assertThat(saved.name()).isEqualTo("SOPT 35기");
             assertThat(saved.brandingColor().darkModeKeyColor()).isEqualTo("FF6B35");
-            assertThat(saved.mainButton().text()).isEqualTo("지원하기");
         }
 
         @Test
@@ -166,18 +164,6 @@ class GenerationServiceTest extends IntegrationTestBase {
                     .hasMessageContaining("white");
         }
 
-        @Test
-        @DisplayName("📌 MainButton: 빈 텍스트")
-        void mainButton_BlankText_ThrowsException() {
-            // when & then
-            assertThatThrownBy(() -> MainButton.builder()
-                    .text("")
-                    .keyColor("#FF0000")
-                    .subColor("#00FF00")
-                    .build())
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("blank");
-        }
     }
 
     // ===== Helper Methods =====
@@ -195,11 +181,6 @@ class GenerationServiceTest extends IntegrationTestBase {
                         .lightModeKeyColor("FF6B35")
                         .lightModeTextColor("black")
                         .build())
-                .mainButton(CreateGenerationCommand.MainButtonCommand.builder()
-                        .text("지원하기")
-                        .keyColor("#FF6B35")
-                        .subColor("#FFFFFF")
-                        .build())
                 .build();
     }
 
@@ -215,11 +196,6 @@ class GenerationServiceTest extends IntegrationTestBase {
                         .darkModeTextColor("white")
                         .lightModeKeyColor("FF6B35")
                         .lightModeTextColor("black")
-                        .build())
-                .mainButton(MainButton.builder()
-                        .text("지원하기")
-                        .keyColor("#FF6B35")
-                        .subColor("#FFFFFF")
                         .build())
                 .build();
     }
