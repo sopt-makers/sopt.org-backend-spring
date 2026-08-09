@@ -13,6 +13,7 @@ import sopt.org.homepage.application.admin.dto.response.main.review.GetAdminRevi
 import sopt.org.homepage.application.homepage.review.domain.HomepageReview;
 import sopt.org.homepage.application.homepage.review.dto.BulkCreateHomepageReviewsCommand;
 import sopt.org.homepage.application.homepage.review.repository.HomepageReviewRepository;
+import sopt.org.homepage.global.exception.BusinessLogicException;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 @Slf4j
@@ -22,6 +23,8 @@ public class HomepageReviewService {
 
     private final HomepageReviewRepository homepageReviewRepository;
 
+    private final int MAX_REVIEW = 7;
+
     @Transactional(readOnly = true)
     public List<HomepageReview> findAll() {
         return homepageReviewRepository.findAll();
@@ -29,7 +32,14 @@ public class HomepageReviewService {
 
     @Transactional(readOnly = true)
     public List<GetAdminReviewResponseRecordDto> getReviews() {
-        return homepageReviewRepository.findAllByOrderByIdAsc().stream()
+
+        List<HomepageReview> reviews = homepageReviewRepository.findAllByOrderByIdAsc();
+
+        if(reviews.size() > MAX_REVIEW){
+            throw new BusinessLogicException("HomepageReview 개수가 최대 허용치를 초과했습니다. count=" + reviews.size());
+        }
+
+        return reviews.stream()
                 .map(GetAdminReviewResponseRecordDto::from)
                 .toList();
     }
