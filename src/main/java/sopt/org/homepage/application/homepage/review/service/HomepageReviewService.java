@@ -39,7 +39,7 @@ public class HomepageReviewService {
             throw new BusinessLogicException("HomepageReview 개수가 최대 허용치를 초과했습니다. count=" + reviews.size());
         }
 
-        return homepageReviewRepository.findAllByOrderByIdAsc().stream()
+        return reviews.stream()
                 .map(GetAdminReviewResponseRecordDto::from)
                 .toList();
     }
