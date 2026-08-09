@@ -78,7 +78,7 @@ public record RecruitMainPageResponse(
                                                List<FAQView> faqs){
 
         return RecruitMainPageResponse.builder()
-                .recruitHeaderImage(generation.headerImage())
+                .recruitHeaderImage(generation.recruitHeaderImage())
                 .brandingColor(BrandingColor.builder()
                         .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
                         .darkModeTextColor(generation.brandingColor().darkModeTextColor())
