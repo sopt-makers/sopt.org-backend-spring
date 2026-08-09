@@ -18,6 +18,9 @@ public record MainPageResponse(
         @Schema(description = "기수명", example = "35기")
         String name,
 
+        @Schema(description = "홈 헤더 이미지")
+        String homeHeaderImage,
+
         BrandingColor brandingColor,
         List<PartIntroduction> partIntroduction,
         List<LatestNews> latestNews,

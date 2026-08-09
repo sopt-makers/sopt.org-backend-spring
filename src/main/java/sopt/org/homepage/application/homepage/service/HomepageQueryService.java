@@ -74,6 +74,7 @@ public class HomepageQueryService {
         // 1. Generation 정보 조회
         GenerationDetailView generation = generationService.findLatest();
         Integer generationId = generation.id();
+        String homeHeaderImage = generation.homeHeaderImage();
 
         // 2. Part Introduction 조회
         List<PartIntroductionView> partIntroductions =
@@ -97,6 +98,7 @@ public class HomepageQueryService {
         return MainPageResponse.builder()
                 .generation(generation.id())
                 .name(generation.name())
+                .homeHeaderImage(homeHeaderImage)
                 .brandingColor(MainPageResponse.BrandingColor.builder()
                         .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
                         .darkModeTextColor(generation.brandingColor().darkModeTextColor())
