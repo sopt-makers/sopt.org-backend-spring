@@ -53,8 +53,10 @@ public enum MemberRole {
             case "미디어 팀장" -> MEDIA_TEAM_LEADER;
             case "메이커스 팀장" -> MAKERS_TEAM_LEADER;
             case "아트디렉터" -> ART_DIRECTOR;
-            case "기획", "기획 파트장" -> PLANNING_TEAM_LEADER;
-            case "디자인", "디자인 팀장", "디자인 파트장" -> DESIGN_TEAM_LEADER;
+            case "기획" -> PLANNING_TEAM_LEADER;
+            case "기획 파트장" -> PLAN_LEADER;
+            case "디자인", "디자인 팀장" -> DESIGN_TEAM_LEADER;
+            case "디자인 파트장" -> DESIGN_LEADER;
             case "안드로이드", "안드로이드 파트장" -> ANDROID_LEADER;
             case "iOS", "iOS 파트장" -> IOS_LEADER;
             case "웹", "웹 파트장" -> WEB_LEADER;

@@ -22,6 +22,7 @@ public record MainPageResponse(
         String homeHeaderImage,
 
         BrandingColor brandingColor,
+        List<CoreValue> coreValue,
         List<PartIntroduction> partIntroduction,
         List<LatestNews> latestNews,
         List<RecruitSchedule> recruitSchedule,
@@ -35,6 +36,14 @@ public record MainPageResponse(
             String darkModeTextColor,
             String lightModeKeyColor,
             String lightModeTextColor
+    ) {
+    }
+
+    @Builder
+    public record CoreValue(
+            String value,
+            String description,
+            String detailDescription
     ) {
     }
 
