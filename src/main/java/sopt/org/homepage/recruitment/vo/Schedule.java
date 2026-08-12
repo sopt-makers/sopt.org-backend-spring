@@ -101,6 +101,10 @@ public class Schedule {
      * 현재 모집 중인지 확인
      */
     public boolean isRecruitingNow() {
+        if (finalResultTime == null) {
+            return false;
+        }
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = parseDateTime(applicationStartTime);
         LocalDateTime end = parseDateTime(finalResultTime);
@@ -123,6 +127,10 @@ public class Schedule {
      * 면접 기간인지 확인
      */
     public boolean isInterviewPeriod() {
+        if (interviewStartTime == null || interviewEndTime == null) {
+            return false;
+        }
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = parseDateTime(interviewStartTime);
         LocalDateTime end = parseDateTime(interviewEndTime);
