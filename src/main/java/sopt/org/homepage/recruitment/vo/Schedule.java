@@ -39,16 +39,16 @@ public class Schedule {
     @Column(name = "application_end_time", nullable = false, length = 50)
     private String applicationEndTime;
 
-    @Column(name = "application_result_time", nullable = false, length = 50)
+    @Column(name = "application_result_time", length = 50)
     private String applicationResultTime;
 
-    @Column(name = "interview_start_time", nullable = false, length = 50)
+    @Column(name = "interview_start_time", length = 50)
     private String interviewStartTime;
 
-    @Column(name = "interview_end_time", nullable = false, length = 50)
+    @Column(name = "interview_end_time", length = 50)
     private String interviewEndTime;
 
-    @Column(name = "final_result_time", nullable = false, length = 50)
+    @Column(name = "final_result_time", length = 50)
     private String finalResultTime;
 
     @Builder
@@ -63,10 +63,10 @@ public class Schedule {
         // 어떤 형식이든 받아서 → 레거시 형식(yyyy-MM-ddTHH:mm)으로 저장
         this.applicationStartTime = normalizeToLegacyFormat(applicationStartTime, "Application start time");
         this.applicationEndTime = normalizeToLegacyFormat(applicationEndTime, "Application end time");
-        this.applicationResultTime = normalizeToLegacyFormat(applicationResultTime, "Application result time");
-        this.interviewStartTime = normalizeToLegacyFormat(interviewStartTime, "Interview start time");
-        this.interviewEndTime = normalizeToLegacyFormat(interviewEndTime, "Interview end time");
-        this.finalResultTime = normalizeToLegacyFormat(finalResultTime, "Final result time");
+        this.applicationResultTime = normalizeOptionalToLegacyFormat(applicationResultTime, "Application result time");
+        this.interviewStartTime = normalizeOptionalToLegacyFormat(interviewStartTime, "Interview start time");
+        this.interviewEndTime = normalizeOptionalToLegacyFormat(interviewEndTime, "Interview end time");
+        this.finalResultTime = normalizeOptionalToLegacyFormat(finalResultTime, "Final result time");
     }
 
     /**
@@ -101,6 +101,10 @@ public class Schedule {
      * 현재 모집 중인지 확인
      */
     public boolean isRecruitingNow() {
+        if (finalResultTime == null) {
+            return false;
+        }
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = parseDateTime(applicationStartTime);
         LocalDateTime end = parseDateTime(finalResultTime);
@@ -123,6 +127,10 @@ public class Schedule {
      * 면접 기간인지 확인
      */
     public boolean isInterviewPeriod() {
+        if (interviewStartTime == null || interviewEndTime == null) {
+            return false;
+        }
+
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime start = parseDateTime(interviewStartTime);
         LocalDateTime end = parseDateTime(interviewEndTime);
@@ -156,6 +164,14 @@ public class Schedule {
         // 여러 형식으로 파싱 후 → 레거시 형식으로 변환
         LocalDateTime parsed = parseFlexibleDateTime(dateTime, fieldName);
         return parsed.format(LEGACY_FORMATTER);  // yyyy-MM-ddTHH:mm
+    }
+
+    private String normalizeOptionalToLegacyFormat(String dateTime, String fieldName) {
+        if (dateTime == null || dateTime.isBlank()) {
+            return null;
+        }
+
+        return normalizeToLegacyFormat(dateTime, fieldName);
     }
 
     /**
