@@ -76,25 +76,29 @@ public class HomepageQueryService {
         Integer generationId = generation.id();
         String homeHeaderImage = generation.homeHeaderImage();
 
-        // 2. Part Introduction 조회
+        // 2. Core Values 조회
+        List<CoreValueView> coreValues =
+                coreValueService.findByGeneration(generationId);
+
+        // 3. Part Introduction 조회
         List<PartIntroductionView> partIntroductions =
                 partService.findIntroductionsByGeneration(generationId);
 
-        // 3. Latest News 조회
+        // 4. Latest News 조회
         List<News> newsEntities = newsService.findAll();
 
-        // 4. Recruitment Schedule 조회
+        // 5. Recruitment Schedule 조회
         List<RecruitmentView> recruitments =
                 recruitmentService.findByGeneration(generationId);
 
-        // 5. Activities Records 조회 (Playground API)
+        // 6. Activities Records 조회 (Playground API)
         MainPageResponse.ActivitiesRecords activitiesRecords =
                 getActivitiesRecords(generationId - 1);
 
-        // 6. Reviews 조회
+        // 7. Reviews 조회
         List<HomepageReview> reviews = homepageReviewService.findAll();
 
-        // 7. Response 조합
+        // 8. Response 조합
         return MainPageResponse.builder()
                 .generation(generation.id())
                 .name(generation.name())
@@ -105,6 +109,13 @@ public class HomepageQueryService {
                         .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
                         .lightModeTextColor(generation.brandingColor().lightModeTextColor())
                         .build())
+                .coreValue(coreValues.stream()
+                        .map(cv -> MainPageResponse.CoreValue.builder()
+                                .value(cv.value())
+                                .description(cv.description())
+                                .detailDescription(cv.detailDescription())
+                                .build())
+                        .toList())
                 .partIntroduction(partIntroductions.stream()
                         .map(pi -> MainPageResponse.PartIntroduction.builder()
                                 .part(pi.part())
