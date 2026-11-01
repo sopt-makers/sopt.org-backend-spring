@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import sopt.org.homepage.infrastructure.external.playground.PlaygroundService;
 import sopt.org.homepage.project.dto.request.GetProjectsRequestDto;
 import sopt.org.homepage.project.dto.response.ProjectDetailResponseDto;
 import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
+import sopt.org.homepage.project.dto.type.ProjectType;
 
 @ExtendWith(MockitoExtension.class) // Mockito(Mock 라이브러리) 활성화
 @DisplayName("Project 서비스 테스트")
@@ -52,7 +54,24 @@ class ProjectServiceTest {
         assertThat(request.getValue().getSortBy()).isEqualTo(GetProjectsRequestDto.SortBy.NAME);
         assertThat(request.getValue().getSortDirection()).isEqualTo(GetProjectsRequestDto.SortDirection.ASC);
         assertThat(request.getValue().getLimit()).isEqualTo(5);
-        assertThat(request.getValue().getFilter()).isEqualTo(sopt.org.homepage.project.dto.type.ProjectType.APPJAM);
+        assertThat(request.getValue().getFilter()).isEqualTo(ProjectType.APPJAM);
+    }
+
+    @Test
+    @DisplayName("❌ 잘못된 조회 파라미터는 내부 구현 정보 없이 반환한다")
+    void rejectsInvalidParametersWithoutInternalDetails() throws Exception {
+        var mvc = MockMvcBuilders.standaloneSetup(new ProjectController(mock(ProjectService.class))).build();
+        for (String field : List.of("sortBy", "sortDirection", "generation")) {
+            mvc.perform(get("/projects").param(field, "invalid"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(content().string("Invalid parameter: " + field));
+        }
+        mvc.perform(get("/projects").param("sortBy", "name"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid parameter: sortBy"));
+        mvc.perform(get("/projects").param("sortDirection", "asc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("Invalid parameter: sortDirection"));
     }
 
     @Mock
@@ -76,7 +95,8 @@ class ProjectServiceTest {
                     ProjectsResponseDto.builder().id(3L).name("다").generation(39).isAvailable(true).isFounding(true).build(),
                     ProjectsResponseDto.builder().id(1L).name("가").generation(39).isAvailable(true).isFounding(true).build(),
                     ProjectsResponseDto.builder().id(2L).name("나").generation(39).isAvailable(false).isFounding(true).build(),
-                    ProjectsResponseDto.builder().id(4L).name("라").generation(38).isAvailable(true).isFounding(true).build()
+                    ProjectsResponseDto.builder().id(4L).name("라").generation(38).isAvailable(true).isFounding(true).build(),
+                    ProjectsResponseDto.builder().id(5L).name("마").generation(39).isAvailable(true).isFounding(false).build()
             ));
             var request = new GetProjectsRequestDto(1, 1, null, null);
             request.setGeneration(39);
@@ -92,7 +112,25 @@ class ProjectServiceTest {
         }
 
         @Test
-        @DisplayName("✅ 같은 기수는 ID순이며 null 기수는 오름차순에서도 마지막")
+        @DisplayName("✅ 운영 중이 아닌 프로젝트를 이름 내림차순으로 조회한다")
+        void filtersUnavailableAndSortsNameDescending() {
+            var service = new ProjectService(playgroundService, new ArrayUtil());
+            when(playgroundService.getAllProjects(any())).thenReturn(List.of(
+                    ProjectsResponseDto.builder().id(1L).name("가").isAvailable(false).build(),
+                    ProjectsResponseDto.builder().id(2L).name("나").isAvailable(false).build(),
+                    ProjectsResponseDto.builder().id(3L).name("다").isAvailable(true).build()));
+            var request = new GetProjectsRequestDto(1, 10, null, null);
+            request.setIsAvailable(false);
+            request.setSortBy(GetProjectsRequestDto.SortBy.NAME);
+            request.setSortDirection(GetProjectsRequestDto.SortDirection.DESC);
+
+            var result = service.paginateProjects(request);
+            assertThat(result.getData()).extracting(ProjectsResponseDto::getName).containsExactly("나", "가");
+            assertThat(result.getTotalCount()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("✅ 같은 기수는 원본 순서를 유지하며 null 기수는 오름차순에서도 마지막")
         void stableAscendingOrderWithNullGeneration() {
             var service = new ProjectService(playgroundService, new ArrayUtil());
             when(playgroundService.getAllProjects(any())).thenReturn(List.of(
@@ -102,7 +140,20 @@ class ProjectServiceTest {
             request.setSortDirection(GetProjectsRequestDto.SortDirection.ASC);
 
             assertThat(service.paginateProjects(request).getData())
-                    .extracting(ProjectsResponseDto::getId).containsExactly(4L, 1L, 2L, 3L);
+                    .extracting(ProjectsResponseDto::getId).containsExactly(4L, 2L, 1L, 3L);
+        }
+
+        @Test
+        @DisplayName("✅ 기본 정렬에서 같은 기수는 Playground 순서를 유지한다")
+        void defaultSortPreservesOrderForSameGeneration() {
+            var service = new ProjectService(playgroundService, new ArrayUtil());
+            when(playgroundService.getAllProjects(any())).thenReturn(List.of(
+                    createProject(3L, "C", 39), createProject(2L, "B", 39),
+                    createProject(1L, "A", 39)));
+
+            var request = new GetProjectsRequestDto(1, 10, null, null);
+            assertThat(service.paginateProjects(request).getData())
+                    .extracting(ProjectsResponseDto::getId).containsExactly(3L, 2L, 1L);
         }
 
         @Test

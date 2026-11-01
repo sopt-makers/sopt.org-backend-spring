@@ -27,9 +27,6 @@ public class ProjectService {
                     Comparator.nullsLast(dto.getSortDirection() == GetProjectsRequestDto.SortDirection.ASC
                             ? Comparator.<String>naturalOrder() : Comparator.<String>reverseOrder()));
         };
-        comparator = comparator.thenComparing(ProjectsResponseDto::getId,
-                Comparator.nullsLast(Comparator.naturalOrder()));
-
         List<ProjectsResponseDto> allProjects = playgroundService.getAllProjects(dto).stream()
                 .filter(p -> dto.getGeneration() == null || Objects.equals(dto.getGeneration(), p.getGeneration()))
                 .filter(p -> dto.getIsAvailable() == null || Objects.equals(dto.getIsAvailable(), p.getIsAvailable()))
