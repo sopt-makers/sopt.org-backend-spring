@@ -320,6 +320,13 @@ public class HomepageQueryService {
                             project.getGeneration().equals(generationId))
                     .toList().size();
 
+            int foundingTeamCount = (int) allProjects.stream()
+                    .filter(project -> Boolean.TRUE.equals(project.getIsFounding()))
+                    .count();
+            int availableServiceCount = (int) allProjects.stream()
+                    .filter(project -> Boolean.TRUE.equals(project.getIsAvailable()))
+                    .count();
+
             // Study 개수 조회 (Crew API)
             int studyCount = crewService.getStudyCount(generationId);
 
@@ -330,6 +337,8 @@ public class HomepageQueryService {
                     .activitiesMemberCount((int) activitiesMemberCount)
                     .projectCounts(projectCount)
                     .studyCounts(studyCount)
+                    .foundingTeamCount(foundingTeamCount)
+                    .availableServiceCount(availableServiceCount)
                     .operationPeriod(OPERATION_PERIOD)
                     .build();
 
