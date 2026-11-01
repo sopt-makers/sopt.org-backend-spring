@@ -5,6 +5,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import sopt.org.homepage.global.common.dto.PaginateResponseDto;
 import sopt.org.homepage.global.common.util.ArrayUtil;
 import sopt.org.homepage.infrastructure.external.playground.PlaygroundService;
@@ -25,6 +31,29 @@ import sopt.org.homepage.project.dto.response.ProjectsResponseDto;
 @ExtendWith(MockitoExtension.class) // Mockito(Mock 라이브러리) 활성화
 @DisplayName("Project 서비스 테스트")
 class ProjectServiceTest {
+
+    @Test
+    @DisplayName("✅ 프로젝트 조회 파라미터가 요청 객체에 바인딩된다")
+    void bindsQueryParameters() throws Exception {
+        ProjectService service = mock(ProjectService.class);
+        when(service.paginateProjects(any())).thenReturn(new PaginateResponseDto<>(List.of(), 0, 5, 1));
+        var mvc = MockMvcBuilders.standaloneSetup(new ProjectController(service)).build();
+
+        mvc.perform(get("/projects").param("filter", "APPJAM").param("generation", "39")
+                .param("isAvailable", "true").param("isFounding", "false")
+                .param("sortBy", "NAME").param("sortDirection", "ASC").param("limit", "5"))
+                .andExpect(status().isOk());
+
+        var request = ArgumentCaptor.forClass(GetProjectsRequestDto.class);
+        verify(service).paginateProjects(request.capture());
+        assertThat(request.getValue().getGeneration()).isEqualTo(39);
+        assertThat(request.getValue().getIsAvailable()).isTrue();
+        assertThat(request.getValue().getIsFounding()).isFalse();
+        assertThat(request.getValue().getSortBy()).isEqualTo(GetProjectsRequestDto.SortBy.NAME);
+        assertThat(request.getValue().getSortDirection()).isEqualTo(GetProjectsRequestDto.SortDirection.ASC);
+        assertThat(request.getValue().getLimit()).isEqualTo(5);
+        assertThat(request.getValue().getFilter()).isEqualTo(sopt.org.homepage.project.dto.type.ProjectType.APPJAM);
+    }
 
     @Mock
     private PlaygroundService playgroundService; // 가짜 PlaygroundService
@@ -38,6 +67,43 @@ class ProjectServiceTest {
     @Nested
     @DisplayName("프로젝트 목록 조회")
     class PaginateProjects {
+
+        @Test
+        @DisplayName("✅ 필터와 정렬을 적용한 뒤 요청한 개수만 반환")
+        void filtersAndSortsBeforePagination() {
+            var service = new ProjectService(playgroundService, new ArrayUtil());
+            when(playgroundService.getAllProjects(any())).thenReturn(List.of(
+                    ProjectsResponseDto.builder().id(3L).name("다").generation(39).isAvailable(true).isFounding(true).build(),
+                    ProjectsResponseDto.builder().id(1L).name("가").generation(39).isAvailable(true).isFounding(true).build(),
+                    ProjectsResponseDto.builder().id(2L).name("나").generation(39).isAvailable(false).isFounding(true).build(),
+                    ProjectsResponseDto.builder().id(4L).name("라").generation(38).isAvailable(true).isFounding(true).build()
+            ));
+            var request = new GetProjectsRequestDto(1, 1, null, null);
+            request.setGeneration(39);
+            request.setIsAvailable(true);
+            request.setIsFounding(true);
+            request.setSortBy(GetProjectsRequestDto.SortBy.NAME);
+            request.setSortDirection(GetProjectsRequestDto.SortDirection.ASC);
+
+            var result = service.paginateProjects(request);
+
+            assertThat(result.getData()).extracting(ProjectsResponseDto::getName).containsExactly("가");
+            assertThat(result.getTotalCount()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("✅ 같은 기수는 ID순이며 null 기수는 오름차순에서도 마지막")
+        void stableAscendingOrderWithNullGeneration() {
+            var service = new ProjectService(playgroundService, new ArrayUtil());
+            when(playgroundService.getAllProjects(any())).thenReturn(List.of(
+                    createProject(3L, "C", null), createProject(2L, "B", 39),
+                    createProject(1L, "A", 39), createProject(4L, "D", 38)));
+            var request = new GetProjectsRequestDto(1, 10, null, null);
+            request.setSortDirection(GetProjectsRequestDto.SortDirection.ASC);
+
+            assertThat(service.paginateProjects(request).getData())
+                    .extracting(ProjectsResponseDto::getId).containsExactly(4L, 1L, 2L, 3L);
+        }
 
         @Test
         @DisplayName("✅ 정상: generation 내림차순 정렬 후 페이지네이션")
