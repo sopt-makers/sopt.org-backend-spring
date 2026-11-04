@@ -385,11 +385,11 @@ public class AdminServiceImpl implements AdminService {
         );
 
         // ===== 9. FAQ 일괄 생성 =====
-        faqService.bulkCreate(
+        faqService.replaceLegacyPartFAQs(
                 BulkCreateFAQsCommand.builder()
                         .faqs(cachedData.getRecruitQuestions().stream()
                                 .map(rq -> BulkCreateFAQsCommand.FAQData.builder()
-                                        .part(rq.getPart())
+                                        .category(rq.getPart())
                                         .question(rq.getQuestions().stream()
                                                 .map(q -> BulkCreateFAQsCommand.QuestionData.builder()
                                                         .question(q.getQuestion())
@@ -994,11 +994,11 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (cachedData.getRecruitQuestions() != null) {
-            faqService.bulkCreate(
+            faqService.replaceLegacyPartFAQs(
                     BulkCreateFAQsCommand.builder()
                             .faqs(cachedData.getRecruitQuestions().stream()
                                     .map(rq -> BulkCreateFAQsCommand.FAQData.builder()
-                                            .part(rq.getPart())
+                                            .category(rq.getPart())
                                             .question(rq.getQuestions().stream()
                                                     .map(q -> BulkCreateFAQsCommand.QuestionData.builder()
                                                             .question(q.getQuestion())
@@ -1049,7 +1049,7 @@ public class AdminServiceImpl implements AdminService {
         List<RecruitmentView> recruitments = recruitmentService.findByGeneration(generationId);
         List<RecruitPartIntroductionView> recruitPartIntros =
                 recruitPartIntroductionService.findByGeneration(generationId);
-        List<FAQView> faqs = faqService.findAll();
+        List<FAQView> faqs = faqService.findLegacyPartFAQs();
         List<News> newsEntities = newsService.findAll();
         List<HomepageReview> reviews = homepageReviewService.findAll();
         List<ActivitySchedule> activitySchedules = activityScheduleService.findByGeneration(generationId);
@@ -1132,7 +1132,7 @@ public class AdminServiceImpl implements AdminService {
                         .toList())
                 .recruitQuestion(faqs.stream()
                         .map(faq -> GetAdminRecruitQuestionResponseRecordDto.builder()
-                                .part(faq.part().getValue())
+                                .part(faq.category().getDisplayName())
                                 .questions(faq.questions().stream()  // ✅ questions() 복수형!
                                         .map(q -> GetAdminQuestionResponseRecordDto.builder()
                                                 .question(q.question())

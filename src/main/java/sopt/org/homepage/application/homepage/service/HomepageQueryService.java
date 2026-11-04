@@ -253,7 +253,7 @@ public class HomepageQueryService {
                 recruitPartIntroductionService.findByGeneration(generationId);
 
         // 4. FAQs 조회
-        List<FAQView> faqs = faqService.findAll();
+        List<FAQView> faqs = faqService.findLegacyPartFAQs();
 
         // 5. Response 조합
         return RecruitPageResponse.builder()
@@ -290,7 +290,7 @@ public class HomepageQueryService {
                         .toList())
                 .recruitQuestion(faqs.stream()
                         .map(faq -> RecruitPageResponse.RecruitQuestion.builder()
-                                .part(faq.part().getValue())
+                                .part(faq.category().getDisplayName())
                                 .questions(faq.questions().stream()
                                         .map(q -> RecruitPageResponse.RecruitQuestion.Question.builder()
                                                 .question(q.question())

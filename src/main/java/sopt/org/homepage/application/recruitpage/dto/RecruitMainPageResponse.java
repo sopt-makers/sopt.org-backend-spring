@@ -100,7 +100,7 @@ public record RecruitMainPageResponse(
                         .toList())
                 .recruitQuestion(faqs.stream()
                         .map(f -> RecruitQuestion.builder()
-                                .part(f.part().getValue())
+                                .part(f.category().getDisplayName())
                                 .questions(f.questions().stream()
                                         .map(qav -> RecruitQuestion.Question.builder()
                                                 .question(qav.question())
