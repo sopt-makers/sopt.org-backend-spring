@@ -27,7 +27,10 @@ public record MainPageResponse(
         List<LatestNews> latestNews,
         List<RecruitSchedule> recruitSchedule,
         ActivitiesRecords activitiesRecords,
-        List<Review> reviews
+        List<Review> reviews,
+
+        @Schema(description = "카테고리별 자주 묻는 질문 목록")
+        List<FAQ> faq
 ) {
 
     @Builder
@@ -112,5 +115,20 @@ public record MainPageResponse(
             @Schema(description = "작성자 정보", example = "김솝트 | 36, 37기 활동 | 서버")
             String authorInfo
     ){
+    }
+
+    @Builder
+    public record FAQ(
+            @Schema(description = "FAQ 카테고리", example = "지원자격", allowableValues = {"지원자격", "면접", "활동"})
+            String category,
+
+            List<Question> questions
+    ) {
+        @Builder
+        public record Question(
+                String question,
+                String answer
+        ) {
+        }
     }
 }
