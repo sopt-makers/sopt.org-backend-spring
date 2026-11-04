@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminFAQRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
 
 @Schema(description = "어드민 모집안내 탭 배포")
@@ -37,7 +38,11 @@ public class AddAdminRecruitRequestDto {
     @Valid
     private List<AddAdminRecruitPartCurriculumRequestDto> recruitPartCurriculum;
 
-    @Schema(description = "자주 묻는 질문 목록")
+    @Schema(description = "파트별 자주 묻는 질문 목록 (레거시). 리브랜딩 이후에는 카테고리별 자주 묻는 질문 목록(faq)을 사용해주세요")
     @Valid
     private List<AddAdminRecruitQuestionRequestDto> recruitQuestion;
+
+    @Schema(description = "카테고리별 자주 묻는 질문 목록")
+    @Valid
+    private List<AddAdminFAQRequestDto> faq;
 }
