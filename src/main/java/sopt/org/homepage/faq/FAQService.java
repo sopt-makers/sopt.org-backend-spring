@@ -58,6 +58,13 @@ public class FAQService {
      */
     @Transactional
     public List<Long> replaceCategoryFAQs(BulkCreateFAQsCommand command) {
+        long distinctCategoryCount = command.faqs().stream()
+                .map(data -> FAQCategory.fromString(data.category()))
+                .distinct()
+                .count();
+        if (distinctCategoryCount != command.faqs().size()) {
+            throw new ClientBadRequestException("FAQ category must not be duplicated");
+        }
         faqRepository.deleteByCategoryIn(FAQCategory.currentValues());
 
         List<FAQ> faqs = command.faqs().stream()
