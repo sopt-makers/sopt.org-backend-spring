@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class AddAdminFAQRequestDto {
-    @Schema(description = "FAQ 카테고리", example = "지원자격", allowableValues = {"지원자격", "면접",
-            "활동"}, requiredMode = Schema.RequiredMode.REQUIRED)
+    @Schema(description = "FAQ 카테고리", example = "지원자격",
+            allowableValues = {"지원자격", "면접", "활동"},
+            requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "FAQ 카테고리는 필수입니다")
     private String category;
 
