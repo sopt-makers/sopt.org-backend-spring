@@ -7,6 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,11 +36,29 @@ public class News {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @Column(name = "title", nullable = false)
+    @Column(name = "title", nullable = false, columnDefinition = "text")
     private String title;
 
     @Column(name = "link", nullable = false)
     private String link;
+
+    @Column(name = "instagram_post_id", unique = true)
+    private String instagramPostId;
+
+    @Column(name = "published_at")
+    private Instant publishedAt;
+
+    public static News fromInstagramPost(String title, String link, String image, String postId, Instant publishedAt) {
+        News news = new News(image, title, link);
+        news.instagramPostId = postId;
+        news.publishedAt = publishedAt;
+        return news;
+    }
+
+    public String getPublishedDate() {
+        return publishedAt == null ? null : publishedAt.atZone(ZoneId.of("Asia/Seoul"))
+                .format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+    }
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

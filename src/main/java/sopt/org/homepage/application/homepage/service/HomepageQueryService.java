@@ -128,6 +128,7 @@ public class HomepageQueryService {
                                 .title(news.getTitle())
                                 .image(news.getImage())
                                 .link(news.getLink())
+                                .publishedDate(news.getPublishedDate())
                                 .build())
                         .toList())
                 .recruitSchedule(recruitments.stream()
