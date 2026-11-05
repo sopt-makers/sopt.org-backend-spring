@@ -1,6 +1,7 @@
 package sopt.org.homepage.infrastructure.aws.s3;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
@@ -105,23 +106,24 @@ public class S3ServiceImpl implements S3Service {
 
     public String uploadFile(MultipartFile file, String path) {
         String fileName = createFileName(file.getOriginalFilename());
-
-        String key = baseDir + path + fileName;
-        try {
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucket)
-                    .key(key)
-                    .contentType(file.getContentType())
-                    .build();
-
-            s3Client.putObject(putObjectRequest,
-                    RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
-
-            return getFileUrl(key);
+        try (InputStream input = file.getInputStream()) {
+            return uploadFile(input, file.getSize(), file.getContentType(), fileName, path);
         } catch (IOException e) {
             log.error("Error uploading file: {}", fileName, e);
             throw new RuntimeException("Failed to upload file", e);
         }
+    }
+
+    @Override
+    public String uploadFile(InputStream input, long size, String contentType, String fileName, String path) {
+        String key = baseDir + path + fileName;
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentType(contentType)
+                .build();
+        s3Client.putObject(request, RequestBody.fromInputStream(input, size));
+        return getFileUrl(key);
     }
 
     public String getFileUrl(String fileKey) {
