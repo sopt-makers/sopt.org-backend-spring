@@ -167,8 +167,9 @@ public class NewsService {
 
     @Transactional
     public void bulkCreate(BulkCreateNewsCommand command) {
-        newsRepository.deleteAll();
+        newsRepository.deleteByInstagramPostIdIsNull();
         List<News> newsList = command.news().stream()
+                .filter(n -> !newsRepository.existsByInstagramPostIdIsNotNullAndLink(n.link()))
                 .map(n -> News.builder()
                         .title(n.title())
                         .link(n.link())
@@ -201,12 +202,9 @@ public class NewsService {
                 .build();
     }
 
-    /**
-     * 전체 최신소식 조회
-     */
     @Transactional(readOnly = true)
     public List<News> findAll() {
-        return newsRepository.findAll();
+        return newsRepository.findAllByPublishedAtDesc();
     }
 
 }
