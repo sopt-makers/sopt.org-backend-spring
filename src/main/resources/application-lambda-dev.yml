@@ -175,5 +175,9 @@ logging:
     org.hibernate.SQL: WARN        # SQL 로깅 최소화
     com.zaxxer.hikari: WARN
 
-
-
+# Instagram NEWS 자동 수집 (Lambda에서는 기본 비활성화)
+news:
+  instagram:
+    enabled: ${INSTAGRAM_NEWS_ENABLED:false}
+    apify-token: ${APIFY_API_TOKEN:}
+    cron: ${INSTAGRAM_NEWS_CRON:0 0 9 * * MON}

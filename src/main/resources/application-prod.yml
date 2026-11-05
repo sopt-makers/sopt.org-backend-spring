@@ -86,3 +86,10 @@ sentry:
   logging:
     minimum-event-level: error
     minimum-breadcrumb-level: info
+
+# Instagram NEWS 자동 수집 (기본 비활성화)
+news:
+  instagram:
+    enabled: ${INSTAGRAM_NEWS_ENABLED:false}
+    apify-token: ${APIFY_API_TOKEN:}
+    cron: ${INSTAGRAM_NEWS_CRON:0 0 9 * * MON}

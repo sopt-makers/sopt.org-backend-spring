@@ -107,3 +107,10 @@ management:
       show-details: when-authorized
     metrics:
       enabled: true
+
+# Instagram NEWS 자동 수집 (기본 비활성화)
+news:
+  instagram:
+    enabled: ${INSTAGRAM_NEWS_ENABLED:false}
+    apify-token: ${APIFY_API_TOKEN:}
+    cron: ${INSTAGRAM_NEWS_CRON:0 0 9 * * MON}
