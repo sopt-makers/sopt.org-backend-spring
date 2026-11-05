@@ -30,6 +30,8 @@ spring:
         format_sql: false
         use_sql_comments: false
         default_schema: public
+  flyway:
+    default-schema: public
 
 springdoc:
   swagger-ui:
