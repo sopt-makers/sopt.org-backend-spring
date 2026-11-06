@@ -17,6 +17,7 @@ public class InstagramNewsPostProcessor {
     private final InstagramNewsFilter instagramNewsFilter;
     private final InstagramThumbnailStorage instagramThumbnailStorage;
 
+    /** 계정·기간·중복·캡션을 검증하고 게시물 하나를 독립된 트랜잭션으로 저장한다. */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void process(InstagramPost post) {
         if (post.id() == null || !post.id().matches("[0-9]+")

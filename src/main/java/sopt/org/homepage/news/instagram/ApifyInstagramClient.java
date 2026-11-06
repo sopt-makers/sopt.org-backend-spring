@@ -23,6 +23,7 @@ public class ApifyInstagramClient {
                 .defaultHeader("Authorization", "Bearer " + properties.apifyToken()).build();
     }
 
+    /** 2026년 KST 이후 계정 게시물을 비동기로 수집하고 실행 ID를 반환한다. */
     public String start() {
         JsonNode response = client.post().uri("/acts/apify~instagram-post-scraper/runs?timeout=3600")
                 .body(Map.of("username", List.of(ACCOUNT), "resultsLimit", 10000,
@@ -33,10 +34,12 @@ public class ApifyInstagramClient {
         return id;
     }
 
+    /** 수집 완료 여부를 판단할 실행 상태와 dataset ID를 조회한다. */
     public JsonNode run(String id) {
         return client.get().uri("/actor-runs/{id}", id).retrieve().body(JsonNode.class).path("data");
     }
 
+    /** 완료된 dataset을 오프셋 기준으로 10건씩 읽는다. */
     public List<InstagramPost> items(String dataset, int offset) {
         List<InstagramPost> posts = client.get()
                 .uri("/datasets/{id}/items?clean=true&format=json&offset={offset}&limit=10", dataset, offset)

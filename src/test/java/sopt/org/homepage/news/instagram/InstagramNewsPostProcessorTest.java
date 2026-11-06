@@ -83,8 +83,10 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         scheduler.poll();
         verify(apify, times(1)).run("run");
         when(thumbnails.store(eq("1"), anyString())).thenReturn("https://s3.example.com/retry.jpg");
-        processor.process(first);
-        assertThat(news.findAll()).hasSize(2);
+        scheduler.collect();
+        scheduler.poll();
+        verify(apify, times(2)).start();
+        assertThat(news.findAll()).extracting(News::getInstagramPostId).containsExactlyInAnyOrder("1", "2");
     }
 
     @Test
@@ -143,6 +145,36 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         assertThat(filter.shouldPublish("[OT 영상]\n함께한 첫 만남")).isTrue();
         assertThat(filter.shouldPublish("[첫 만남 현장 스케치]\nOT에서 만났어요")).isTrue();
         assertThat(filter.shouldPublish("[현장 스케치]\n세미나에서 만났어요")).isTrue();
+    }
+
+    @Test
+    @DisplayName("null 게시물 페이지도 처리 위치를 진행하고 다음 페이지를 저장")
+    void skipsNullItemsAndAdvancesPage() throws Exception {
+        when(apify.start()).thenReturn("run");
+        when(apify.run("run")).thenReturn(mapper.readTree("{\"status\":\"SUCCEEDED\",\"defaultDatasetId\":\"dataset\"}"));
+        when(apify.items("dataset", 0)).thenReturn(java.util.Collections.nCopies(10, null));
+        when(apify.items("dataset", 10)).thenReturn(List.of(post("1", "sopt_media_official", "2026-01-01T00:00:00Z")));
+        scheduler.collect();
+        scheduler.poll();
+        scheduler.poll();
+        scheduler.poll();
+        verify(apify).items("dataset", 10);
+        verify(apify, times(2)).run("run");
+        assertThat(news.findAll()).hasSize(1);
+        scheduler.collect();
+        verify(apify, times(2)).start();
+    }
+
+    @Test
+    @DisplayName("자식 썸네일이 null·공백이거나 자식 자체가 null이면 부모 커버 사용")
+    void fallsBackToParentThumbnail() {
+        for (String image : java.util.Arrays.asList(null, "", "  ")) {
+            var child = new InstagramPost(null, null, null, null, null, image, null);
+            assertThat(new InstagramPost("1", null, null, null, null, "parent.jpg", List.of(child)).thumbnail())
+                    .isEqualTo("parent.jpg");
+        }
+        assertThat(new InstagramPost("1", null, null, null, null, "parent.jpg", java.util.Arrays.asList((InstagramPost) null)).thumbnail())
+                .isEqualTo("parent.jpg");
     }
 
     private InstagramPost post(String id, String owner, String timestamp) {
