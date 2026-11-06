@@ -3,8 +3,6 @@ package sopt.org.homepage.news.instagram;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.news.News;
 import sopt.org.homepage.news.NewsRepository;
 
@@ -17,8 +15,7 @@ public class InstagramNewsPostProcessor {
     private final InstagramNewsFilter instagramNewsFilter;
     private final InstagramThumbnailStorage instagramThumbnailStorage;
 
-    /** 계정·기간·중복·캡션을 검증하고 게시물 하나를 독립된 트랜잭션으로 저장한다. */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    /** 계정·기간·중복·캡션을 검증하고 외부 I/O 후 repository 트랜잭션으로 저장한다. */
     public void process(InstagramPost post) {
         if (!shouldProcess(post)) return;
 

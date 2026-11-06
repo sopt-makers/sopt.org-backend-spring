@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 @Slf4j
 @Component
+@org.springframework.context.annotation.Profile("!lambda-dev")
 @ConditionalOnProperty(name = "news.instagram.enabled", havingValue = "true")
 @RequiredArgsConstructor
 public class InstagramNewsScheduler {
@@ -20,33 +21,45 @@ public class InstagramNewsScheduler {
 
     private String runId;
     private int itemOffset;
+    private int consecutiveFailures;
+    private java.time.Instant startedAt;
 
     /** 주간 수집 시작 실패는 기록하고 다음 예약 실행에서 재시도한다. */
     @Scheduled(cron = "${news.instagram.cron:0 0 9 * * MON}", zone = "Asia/Seoul")
     public synchronized void collect() {
         try { startCollection(); }
         catch (Exception e) {
-            log.error("Instagram news collection failed - type={}", e.getClass().getSimpleName());
+            log.error("Instagram news collection failed", e);
         }
     }
 
     /** 진행 중인 작업만 조회하며 조회 실패 시 같은 페이지를 다음 poll에서 재시도한다. */
     @Scheduled(fixedDelayString = "${news.instagram.poll-delay-ms:60000}")
     public synchronized void poll() {
-        try { processBatch(); }
+        try {
+            if (startedAt != null && startedAt.plusSeconds(7200).isBefore(java.time.Instant.now())) {
+                finish();
+                return;
+            }
+            processBatch();
+            consecutiveFailures = 0;
+        }
         catch (Exception e) {
-            log.error("Instagram news collection failed; retry next poll - type={}", e.getClass().getSimpleName());
+            log.error("Instagram news collection failed; retry next poll", e);
+            if (++consecutiveFailures >= 10) finish();
         }
     }
 
     /** 현재 작업이 있으면 재사용하고, 없으면 새 유료 수집 작업을 시작한다. */
     public synchronized String startCollection() {
         if (properties.apifyToken() == null || properties.apifyToken().isBlank()) {
-            throw new IllegalStateException("Apify API token is required");
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.SERVICE_UNAVAILABLE, "Apify API token is required");
         }
         if (runId == null) {
             runId = apify.start();
             itemOffset = 0;
+            startedAt = java.time.Instant.now();
             log.info("Instagram news collection started - runId={}", runId);
         }
         return runId;
@@ -57,12 +70,13 @@ public class InstagramNewsScheduler {
         if (runId == null) return;
         JsonNode run = apify.run(runId);
         String status = run.path("status").asText();
-        if (Set.of("FAILED", "ABORTED", "TIMED-OUT").contains(status)) {
+        boolean terminal = Set.of("SUCCEEDED", "FAILED", "ABORTED", "TIMED-OUT").contains(status);
+        if (!terminal) return;
+        if (!"SUCCEEDED".equals(status) && run.path("defaultDatasetId").asText().isBlank()) {
             log.error("Instagram collection failed - runId={}, status={}", runId, status);
             finish();
             return;
         }
-        if (!"SUCCEEDED".equals(status)) return;
         String dataset = run.path("defaultDatasetId").asText();
         if (dataset.isBlank()) throw new IllegalStateException("Apify dataset ID missing");
         List<InstagramPost> posts = apify.items(dataset, itemOffset);
@@ -70,8 +84,7 @@ public class InstagramNewsScheduler {
             if (post == null) continue;
             try { processor.process(post); }
             catch (Exception e) {
-                log.error("Instagram post failed; retry next weekly collection - postId={}, type={}",
-                        post.id(), e.getClass().getSimpleName());
+                log.error("Instagram post failed; retry next weekly collection - postId={}", post.id(), e);
             }
         }
         itemOffset += posts.size();
@@ -83,6 +96,8 @@ public class InstagramNewsScheduler {
 
     private void finish() {
         runId = null;
+        startedAt = null;
+        consecutiveFailures = 0;
         itemOffset = 0;
     }
 }

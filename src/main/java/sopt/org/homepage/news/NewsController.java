@@ -55,7 +55,8 @@ public class NewsController {
     public ResponseEntity<CollectInstagramNewsResponseDto> collectInstagramNews() {
         InstagramNewsScheduler scheduler = instagramScheduler.getIfAvailable();
         if (scheduler == null) {
-            throw new ClientBadRequestException("Instagram news collection is disabled");
+            throw new org.springframework.web.server.ResponseStatusException(
+                    HttpStatus.SERVICE_UNAVAILABLE, "Instagram news collection is disabled");
         }
         return ResponseEntity.accepted().body(new CollectInstagramNewsResponseDto(scheduler.startCollection()));
     }

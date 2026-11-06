@@ -270,6 +270,16 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         assertThat(news.count()).isEqualTo(1);
     }
 
+    @Test
+    @DisplayName("✅ 연속 폴링 실패 후 새 수집을 시작할 수 있음")
+    void recoversAfterPollingFailures() {
+        when(apify.start()).thenReturn("run", "next");
+        when(apify.run("run")).thenThrow(new IllegalStateException("expired"));
+        scheduler.startCollection();
+        for (int i = 0; i < 10; i++) scheduler.poll();
+        assertThat(scheduler.startCollection()).isEqualTo("next");
+    }
+
     private InstagramPost post(String id, String owner, String timestamp) {
         return new InstagramPost(id, owner, "APPJAM 활동 스케치", "https://www.instagram.com/p/post" + id + "/",
                 Instant.parse(timestamp), "https://scontent.cdninstagram.com/cover.jpg", List.of());
