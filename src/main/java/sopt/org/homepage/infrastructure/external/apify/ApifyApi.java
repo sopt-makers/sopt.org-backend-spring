@@ -10,11 +10,12 @@ import sopt.org.homepage.news.instagram.InstagramPost;
 @FeignClient(name = "ApifyApi", url = "${news.instagram.api-url:https://api.apify.com/v2}",
         configuration = ApifyFeignConfig.class)
 public interface ApifyApi {
-    @PostMapping("/acts/apify~instagram-post-scraper/runs?timeout=3600")
-    JsonNode start(@RequestHeader("Authorization") String authorization, @RequestBody Map<String, Object> input);
+    @PostMapping(value = "/actor-tasks/{taskId}/runs?timeout=3600", consumes = "application/json")
+    JsonNode start(@RequestHeader("Authorization") String authorization, @PathVariable("taskId") String taskId,
+                   @RequestBody Map<String, Object> input);
 
-    @GetMapping("/acts/apify~instagram-post-scraper/runs/last")
-    JsonNode lastRun(@RequestHeader("Authorization") String authorization);
+    @GetMapping("/actor-tasks/{taskId}/runs/last")
+    JsonNode lastRun(@RequestHeader("Authorization") String authorization, @PathVariable("taskId") String taskId);
 
     @GetMapping("/datasets/{id}/items?clean=true&format=json")
     List<InstagramPost> items(@RequestHeader("Authorization") String authorization,

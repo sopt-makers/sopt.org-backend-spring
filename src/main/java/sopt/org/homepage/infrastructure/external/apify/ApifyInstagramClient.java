@@ -19,7 +19,7 @@ public class ApifyInstagramClient {
     private final InstagramNewsConfig.Properties properties;
 
     public String start(Instant since) {
-        JsonNode response = api.start(authorization(), Map.of("username", List.of(ACCOUNT),
+        JsonNode response = api.start(authorization(), properties.taskId(), Map.of("username", List.of(ACCOUNT),
                 "resultsLimit", properties.resultsLimit(), "onlyPostsNewerThan", since.toString(),
                 "skipPinnedPosts", false));
         String id = response.path("data").path("id").asText();
@@ -30,7 +30,7 @@ public class ApifyInstagramClient {
     /** 실행 상태의 원본은 Apify이며, 로컬 실행 ID를 보관하지 않는다. */
     public JsonNode lastRun() {
         try {
-            return api.lastRun(authorization()).path("data");
+            return api.lastRun(authorization(), properties.taskId()).path("data");
         } catch (FeignException.NotFound e) {
             return MissingNode.getInstance();
         }

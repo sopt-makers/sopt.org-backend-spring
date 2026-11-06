@@ -93,4 +93,5 @@ news:
   instagram:
     enabled: ${INSTAGRAM_NEWS_ENABLED:false}
     apify-token: ${APIFY_API_TOKEN:}
+    task-id: ${APIFY_INSTAGRAM_PROD_TASK_ID:}
     cron: ${INSTAGRAM_NEWS_CRON:0 0 9 * * MON}

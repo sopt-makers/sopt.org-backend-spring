@@ -53,7 +53,7 @@ class ApifyInstagramClientTest extends InstagramNewsIntegrationTestBase {
                 })
                 .decoder((response, type) -> mapper.readValue(response.body().asInputStream(), mapper.constructType(type)))
                 .target(ApifyApi.class, "http://127.0.0.1:" + server.getAddress().getPort());
-        client = new ApifyInstagramClient(api, new InstagramNewsConfig.Properties("test-token"));
+        client = new ApifyInstagramClient(api, new InstagramNewsConfig.Properties("test-token", "test-task"));
     }
 
     @AfterEach
@@ -66,7 +66,7 @@ class ApifyInstagramClientTest extends InstagramNewsIntegrationTestBase {
     void readsRemoteState() {
         responseBody = "{\"data\":{\"id\":\"run\",\"status\":\"RUNNING\"}}";
         assertThat(client.lastRun().path("id").asText()).isEqualTo("run");
-        assertThat(requestUri.get()).isEqualTo("/acts/apify~instagram-post-scraper/runs/last");
+        assertThat(requestUri.get()).isEqualTo("/actor-tasks/test-task/runs/last");
         assertThat(authorization.get()).isEqualTo("Bearer test-token");
         responseStatus = 404;
         assertThat(client.lastRun().isMissingNode()).isTrue();
@@ -80,7 +80,7 @@ class ApifyInstagramClientTest extends InstagramNewsIntegrationTestBase {
         responseBody = "{\"data\":{\"id\":\"new\"}}";
         Instant since = Instant.parse("2026-02-01T00:00:00Z");
         assertThat(client.start(since)).isEqualTo("new");
-        assertThat(requestUri.get()).isEqualTo("/acts/apify~instagram-post-scraper/runs?timeout=3600");
+        assertThat(requestUri.get()).isEqualTo("/actor-tasks/test-task/runs?timeout=3600");
         var input = mapper.readTree(requestBody.get());
         assertThat(input.path("onlyPostsNewerThan").asText()).isEqualTo(since.toString());
         assertThat(input.path("resultsLimit").asInt()).isEqualTo(1000);
@@ -97,4 +97,23 @@ class ApifyInstagramClientTest extends InstagramNewsIntegrationTestBase {
         assertThatThrownBy(() -> client.start(Instant.now())).isInstanceOf(IllegalStateException.class)
                 .hasMessage("Apify run ID missing");
     }
+    @Test
+    @DisplayName("✅ 같은 API 계정을 사용해도 개발·운영 Task의 조회와 실행 경로가 분리")
+    void isolatesEnvironmentTasks() {
+        var api = org.mockito.Mockito.mock(ApifyApi.class);
+        var data = mapper.createObjectNode().set("data", mapper.createObjectNode().put("id", "run"));
+        org.mockito.Mockito.when(api.lastRun(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString())).thenReturn(data);
+        org.mockito.Mockito.when(api.start(org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyString(), org.mockito.ArgumentMatchers.anyMap())).thenReturn(data);
+        var dev = new ApifyInstagramClient(api, new InstagramNewsConfig.Properties("same-token", "dev-task"));
+        var prod = new ApifyInstagramClient(api, new InstagramNewsConfig.Properties("same-token", "prod-task"));
+        dev.lastRun();
+        prod.lastRun();
+        dev.start(Instant.parse("2026-01-01T00:00:00Z"));
+        prod.start(Instant.parse("2026-02-01T00:00:00Z"));
+        org.mockito.Mockito.verify(api).lastRun("Bearer same-token", "dev-task");
+        org.mockito.Mockito.verify(api).lastRun("Bearer same-token", "prod-task");
+        org.mockito.Mockito.verify(api).start(org.mockito.ArgumentMatchers.eq("Bearer same-token"), org.mockito.ArgumentMatchers.eq("dev-task"), org.mockito.ArgumentMatchers.anyMap());
+        org.mockito.Mockito.verify(api).start(org.mockito.ArgumentMatchers.eq("Bearer same-token"), org.mockito.ArgumentMatchers.eq("prod-task"), org.mockito.ArgumentMatchers.anyMap());
+    }
+
 }

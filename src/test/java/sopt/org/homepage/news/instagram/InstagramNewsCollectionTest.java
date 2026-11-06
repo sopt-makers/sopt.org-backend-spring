@@ -26,7 +26,7 @@ class InstagramNewsCollectionTest extends InstagramNewsIntegrationTestBase {
         for (int i = 1; i <= 25; i++) posts.add(post(String.valueOf(i), "sopt_media_official", "2026-01-01T00:00:00Z"));
         when(apify.items("dataset")).thenReturn(posts);
         collector.importLatest();
-        var restarted = new InstagramNewsCollector(apify, processor, new InstagramNewsConfig.Properties("test-token"), news);
+        var restarted = new InstagramNewsCollector(apify, processor, new InstagramNewsConfig.Properties("test-token", "test-task"), news);
         restarted.importLatest();
         assertThat(news.count()).isEqualTo(25);
         verify(apify, times(2)).items("dataset");
@@ -160,7 +160,7 @@ class InstagramNewsCollectionTest extends InstagramNewsIntegrationTestBase {
         when(apify.lastRun()).thenReturn(mapper.readTree("{\"id\":\"old\",\"status\":\"SUCCEEDED\"}"));
         when(apify.start(any())).thenReturn("new");
         assertThat(collector.startCollection()).isEqualTo("new");
-        verify(apify).start(new InstagramNewsConfig.Properties("token").since());
+        verify(apify).start(new InstagramNewsConfig.Properties("token", "test-task").since());
     }
 
     @Test
@@ -187,6 +187,14 @@ class InstagramNewsCollectionTest extends InstagramNewsIntegrationTestBase {
             release.countDown();
             executor.shutdownNow();
         }
+    }
+
+    @Test
+    @DisplayName("❌ 수집 활성화 시 환경별 Task ID 누락을 기동 설정 검증에서 거부")
+    void requiresTaskWhenEnabled() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(() -> new InstagramNewsConfig.Properties(
+                "token", true, "", Instant.parse("2025-12-31T15:00:00Z"), 7, 1000, List.of()))
+                .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("task-id");
     }
 
     private String adminToken() {

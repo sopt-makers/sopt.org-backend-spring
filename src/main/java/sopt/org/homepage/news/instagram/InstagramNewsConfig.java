@@ -35,6 +35,7 @@ public class InstagramNewsConfig {
     public record Properties(
             String apifyToken,
             @DefaultValue("false") boolean enabled,
+            @DefaultValue("") String taskId,
             @DefaultValue("2025-12-31T15:00:00Z") Instant since,
             @DefaultValue("7") int overlapDays,
             @DefaultValue("1000") int resultsLimit,
@@ -45,13 +46,20 @@ public class InstagramNewsConfig {
             if (enabled && (apifyToken == null || apifyToken.isBlank())) {
                 throw new IllegalArgumentException("news.instagram.apify-token is required when enabled");
             }
+            if (enabled && (taskId == null || taskId.isBlank())) {
+                throw new IllegalArgumentException("news.instagram.task-id is required when enabled");
+            }
             if (since == null || overlapDays < 1 || resultsLimit < 1) {
                 throw new IllegalArgumentException("Instagram collection limits must be positive and since must be configured");
             }
         }
 
         public Properties(String token) {
-            this(token, false, Instant.parse("2025-12-31T15:00:00Z"), 7, 1000, java.util.List.of());
+            this(token, "");
+        }
+
+        public Properties(String token, String taskId) {
+            this(token, false, taskId, Instant.parse("2025-12-31T15:00:00Z"), 7, 1000, java.util.List.of());
         }
 
         public Instant collectionSince(Instant checkpoint) {

@@ -44,8 +44,9 @@ public class InstagramNewsCollector {
 
     /** 관리자는 수집만 트리거한다. 다운로드·업로드 완료를 기다리지 않는다. */
     public String startCollection() {
-        if (properties.apifyToken() == null || properties.apifyToken().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Apify API token is required");
+        if (properties.apifyToken() == null || properties.apifyToken().isBlank()
+                || properties.taskId() == null || properties.taskId().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Apify API token and environment-specific task ID are required");
         }
         if (!starting.compareAndSet(false, true)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Instagram collection is starting");
