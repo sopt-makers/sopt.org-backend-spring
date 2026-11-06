@@ -38,7 +38,7 @@ public class FAQ {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "part", nullable = false, length = 20)
+    @Column(name = "category", nullable = false, length = 20)
     private FAQCategory category;
 
     @JdbcTypeCode(SqlTypes.JSON)
