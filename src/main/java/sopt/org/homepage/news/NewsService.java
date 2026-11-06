@@ -214,6 +214,7 @@ public class NewsService {
 
         return GetAdminNewsResponseDto.builder()
                 .id(news.getId())
+                .instagramPostId(news.getInstagramPostId())
                 .title(news.getTitle())
                 .link(news.getLink())
                 .image(news.getImage())

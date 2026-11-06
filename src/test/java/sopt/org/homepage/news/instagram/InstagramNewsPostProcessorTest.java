@@ -280,6 +280,14 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         assertThat(scheduler.startCollection()).isEqualTo("next");
     }
 
+    @Test
+    @DisplayName("🔍 제목 경계와 준비물 안내를 처리")
+    void handlesTitleBoundaries() {
+        assertThat(filter.title("[솝트룩북] 34기 OB편")).isEqualTo("솝트룩북 34기 OB편");
+        assertThat(filter.title("[A] 본문 [B]")).isEqualTo("A 본문 [B]");
+        assertThat(filter.shouldPublish("[OT 준비물 안내]")).isTrue();
+    }
+
     private InstagramPost post(String id, String owner, String timestamp) {
         return new InstagramPost(id, owner, "APPJAM 활동 스케치", "https://www.instagram.com/p/post" + id + "/",
                 Instant.parse(timestamp), "https://scontent.cdninstagram.com/cover.jpg", List.of());

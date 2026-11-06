@@ -40,7 +40,7 @@ public class InstagramNewsFilter {
         if (heading.contains("파트장을소개")) {
             return false;
         }
-        if (containsAny(heading, INTERNAL_NOTICES) || containsAny(heading, List.of("모집", "공지", "신청", "안내"))) {
+        if (containsAny(heading, INTERNAL_NOTICES) || containsAny(heading, List.of("모집", "공지", "신청"))) {
             return false;
         }
         if (containsAny(heading, SERIES)) return true;
@@ -62,8 +62,9 @@ public class InstagramNewsFilter {
     public String title(String caption) {
         if (caption == null) return "";
         String firstLine = caption.strip().lines().findFirst().orElse("").strip();
-        if (firstLine.startsWith("[") && firstLine.endsWith("]")) {
-            return firstLine.substring(1, firstLine.length() - 1).strip();
+        if (firstLine.startsWith("[") && firstLine.indexOf(']') > 0) {
+            int end = firstLine.indexOf(']');
+            firstLine = firstLine.substring(1, end) + firstLine.substring(end + 1);
         }
         return firstLine;
     }
