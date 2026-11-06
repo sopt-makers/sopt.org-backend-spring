@@ -62,7 +62,8 @@ public record MainPageResponse(
             int id,
             String title,
             String image,
-            String link
+            String link,
+            String publishedDate
     ) {
     }
 
@@ -95,6 +96,12 @@ public record MainPageResponse(
 
             @Schema(description = "스터디 수", example = "98")
             int studyCounts,
+
+            @Schema(description = "전체 기수 창업 중인 프로젝트 수", example = "10")
+            int foundingTeamCount,
+
+            @Schema(description = "전체 기수 이용 가능한 프로젝트 수", example = "20")
+            int availableServiceCount,
 
             @Schema(description = "운영 기간", example = "37")
             int operationPeriod

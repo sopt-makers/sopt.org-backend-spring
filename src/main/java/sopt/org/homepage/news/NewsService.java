@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.infrastructure.aws.s3.S3Service;
@@ -31,6 +32,9 @@ public class NewsService {
 
     private final S3Service s3Service;
     private final NewsRepository newsRepository;
+
+    @Value("${news.display-limit:4}")
+    private int newsDisplayLimit;
 
     // ===== Command 메서드 =====
 
@@ -152,11 +156,12 @@ public class NewsService {
                         "News not found with id: " + request.getId()
                 ));
 
-        // 2. S3에서 이미지 삭제
-        s3Service.deleteFile(news.getImage());
-
-        // 3. DB에서 삭제
-        newsRepository.delete(news);
+        if (news.getInstagramPostId() != null) {
+            news.hide();
+        } else {
+            s3Service.deleteFile(news.getImage());
+            newsRepository.delete(news);
+        }
 
         log.info("최신소식 삭제 완료 - id={}", request.getId());
 
@@ -165,18 +170,32 @@ public class NewsService {
                 .build();
     }
 
+    /** 동일 링크의 기존 뉴스를 갱신해 게시일을 보존하고 빠진 수동 뉴스만 삭제한다. */
     @Transactional
     public void bulkCreate(BulkCreateNewsCommand command) {
-        newsRepository.deleteAll();
-        List<News> newsList = command.news().stream()
-                .map(n -> News.builder()
-                        .title(n.title())
-                        .link(n.link())
-                        .image(n.imageUrl())
-                        .build())
-                .toList();
-        newsRepository.saveAll(newsList);
-        log.info("News 일괄 생성 완료 - count={}", newsList.size());
+        List<News> existing = newsRepository.findAll();
+        java.util.Set<Integer> retained = new java.util.HashSet<>();
+        for (var item : command.news()) {
+            News match = existing.stream()
+                    .filter(n -> canonicalLink(n.getLink()).equals(canonicalLink(item.link())))
+                    .findFirst().orElse(null);
+            if (match != null) {
+                retained.add(match.getId());
+                if (!match.isHidden()) match.update(item.imageUrl(), item.title(), item.link());
+            } else {
+                newsRepository.save(News.builder().title(item.title()).link(item.link()).image(item.imageUrl()).build());
+            }
+        }
+        existing.stream().filter(n -> n.getInstagramPostId() == null && !retained.contains(n.getId()))
+                .forEach(newsRepository::delete);
+    }
+
+    private String canonicalLink(String link) {
+        if (link == null) return "";
+        var matcher = java.util.regex.Pattern.compile(
+                "https?://(?:www[.])?instagram[.]com/(?:p|reel|tv)/([A-Za-z0-9_-]+)(?:[/?#].*)?")
+                .matcher(link);
+        return matcher.matches() ? "instagram:" + matcher.group(1) : link.replaceAll("/+$", "");
     }
 
     // ===== Query 메서드 =====
@@ -195,18 +214,23 @@ public class NewsService {
 
         return GetAdminNewsResponseDto.builder()
                 .id(news.getId())
+                .instagramPostId(news.getInstagramPostId())
                 .title(news.getTitle())
                 .link(news.getLink())
                 .image(news.getImage())
                 .build();
     }
 
-    /**
-     * 전체 최신소식 조회
-     */
+    /** 홈페이지에는 원본 게시일 최신순으로 설정된 개수만 노출한다. */
+    @Transactional(readOnly = true)
+    public List<News> findLatestForHomepage() {
+        return newsDisplayLimit > 0 ? newsRepository.findLatest(newsDisplayLimit)
+                : newsRepository.findAllByPublishedAtDesc();
+    }
+
     @Transactional(readOnly = true)
     public List<News> findAll() {
-        return newsRepository.findAll();
+        return newsRepository.findAllByPublishedAtDesc();
     }
 
 }

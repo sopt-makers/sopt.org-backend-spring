@@ -1,5 +1,6 @@
 package sopt.org.homepage.infrastructure.aws.s3;
 
+import java.io.InputStream;
 import org.springframework.web.multipart.MultipartFile;
 import sopt.org.homepage.infrastructure.aws.s3.dto.PresignedUrlRequest;
 import sopt.org.homepage.infrastructure.aws.s3.dto.PresignedUrlResponse;
@@ -16,6 +17,9 @@ public interface S3Service {
 
     // 파일 업로드 - Multipart
     String uploadFile(MultipartFile file, String path);
+
+    // 서버에서 받은 파일 스트림 업로드 (fileName은 저장할 파일명)
+    String uploadFile(InputStream input, long size, String contentType, String fileName, String path);
 
     // 파일 URL 생성
     String getFileUrl(String fileName);

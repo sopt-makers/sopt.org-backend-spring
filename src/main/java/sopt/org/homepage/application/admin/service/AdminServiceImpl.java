@@ -1109,6 +1109,7 @@ public class AdminServiceImpl implements AdminService {
                         .toList())
                 .latestNews(newsEntities.stream()
                         .map(news -> GetAdminLatestNewsResponseRecordDto.builder()
+                                .instagramPostId(news.getInstagramPostId())
                                 .id(news.getId())
                                 .title(news.getTitle())
                                 .build())
