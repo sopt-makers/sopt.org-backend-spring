@@ -98,7 +98,10 @@ public class HomepageQueryService {
         // 7. Reviews 조회
         List<HomepageReview> reviews = homepageReviewService.findAll();
 
-        // 8. Response 조합
+        // 8. FAQs 조회
+        List<FAQView> faqs = faqService.findCategoryFAQs();
+
+        // 9. Response 조합
         return MainPageResponse.builder()
                 .generation(generation.id())
                 .name(generation.name())
@@ -151,6 +154,17 @@ public class HomepageQueryService {
                                 .title(r.getTitle())
                                 .content(r.getContent())
                                 .authorInfo(r.getAuthorInfo())
+                                .build())
+                        .toList())
+                .faq(faqs.stream()
+                        .map(faq -> MainPageResponse.FAQ.builder()
+                                .category(faq.category().getDisplayName())
+                                .questions(faq.questions().stream()
+                                        .map(q -> MainPageResponse.FAQ.Question.builder()
+                                                .question(q.question())
+                                                .answer(q.answer())
+                                                .build())
+                                        .toList())
                                 .build())
                         .toList())
                 .build();
@@ -254,7 +268,7 @@ public class HomepageQueryService {
                 recruitPartIntroductionService.findByGeneration(generationId);
 
         // 4. FAQs 조회
-        List<FAQView> faqs = faqService.findAll();
+        List<FAQView> faqs = faqService.findLegacyPartFAQs();
 
         // 5. Response 조합
         return RecruitPageResponse.builder()
@@ -291,7 +305,7 @@ public class HomepageQueryService {
                         .toList())
                 .recruitQuestion(faqs.stream()
                         .map(faq -> RecruitPageResponse.RecruitQuestion.builder()
-                                .part(faq.part().getValue())
+                                .part(faq.category().getDisplayName())
                                 .questions(faq.questions().stream()
                                         .map(q -> RecruitPageResponse.RecruitQuestion.Question.builder()
                                                 .question(q.question())

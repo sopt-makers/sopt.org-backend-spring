@@ -3,11 +3,11 @@ package sopt.org.homepage.faq.dto;
 import java.util.List;
 import lombok.Builder;
 import sopt.org.homepage.faq.FAQ;
-import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.faq.vo.FAQCategory;
 
 @Builder
 public record CreateFAQCommand(
-        PartType part,
+        FAQCategory category,
         List<QuestionAnswerCommand> questions
 ) {
     public FAQ toEntity() {
@@ -16,7 +16,7 @@ public record CreateFAQCommand(
                 .map(q -> new FAQ.QuestionAnswer(q.question(), q.answer()))
                 .toList()
                 : List.of();
-        return FAQ.builder().part(part).questions(questionAnswers).build();
+        return FAQ.builder().category(category).questions(questionAnswers).build();
     }
 
     @Builder

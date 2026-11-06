@@ -27,6 +27,7 @@ import sopt.org.homepage.application.admin.dto.response.main.news.AddAdminNewsRe
 import sopt.org.homepage.application.admin.dto.request.main.curriculum.AddAdminPartCurriculumRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.introduction.AddAdminPartIntroductionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.curriculum.AddAdminRecruitPartCurriculumRequestDto;
+import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminFAQRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.question.AddAdminRecruitQuestionRequestDto;
 import sopt.org.homepage.application.admin.dto.request.main.recruit.schedule.AddAdminRecruitScheduleRequestDto;
 import sopt.org.homepage.activityschedule.ActivitySchedule;
@@ -47,6 +48,7 @@ import sopt.org.homepage.application.admin.dto.response.main.member.GetAdminSnsL
 import sopt.org.homepage.application.admin.dto.response.main.news.GetAdminLatestNewsResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.curriculum.GetAdminIntroductionResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.curriculum.GetAdminRecruitPartCurriculumResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminFAQResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminQuestionResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminRecruitQuestionResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
@@ -385,11 +387,11 @@ public class AdminServiceImpl implements AdminService {
         );
 
         // ===== 9. FAQ 일괄 생성 =====
-        faqService.bulkCreate(
+        faqService.replaceLegacyPartFAQs(
                 BulkCreateFAQsCommand.builder()
                         .faqs(cachedData.getRecruitQuestions().stream()
                                 .map(rq -> BulkCreateFAQsCommand.FAQData.builder()
-                                        .part(rq.getPart())
+                                        .category(rq.getPart())
                                         .question(rq.getQuestions().stream()
                                                 .map(q -> BulkCreateFAQsCommand.QuestionData.builder()
                                                         .question(q.getQuestion())
@@ -887,6 +889,9 @@ public class AdminServiceImpl implements AdminService {
         if (request.getRecruitQuestion() != null) {
             cachedData.setRecruitQuestions(new ArrayList<>(request.getRecruitQuestion()));
         }
+        if (request.getFaq() != null) {
+            cachedData.setFaqs(new ArrayList<>(request.getFaq()));
+        }
 
         cacheService.put(CacheType.ADMIN_MAIN_DATA, "recruit_" + generationId, cachedData);
         log.info("모집안내 탭 캐시 저장 완료 - generation={}", generationId);
@@ -994,12 +999,30 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (cachedData.getRecruitQuestions() != null) {
-            faqService.bulkCreate(
+            faqService.replaceLegacyPartFAQs(
                     BulkCreateFAQsCommand.builder()
                             .faqs(cachedData.getRecruitQuestions().stream()
                                     .map(rq -> BulkCreateFAQsCommand.FAQData.builder()
-                                            .part(rq.getPart())
+                                            .category(rq.getPart())
                                             .question(rq.getQuestions().stream()
+                                                    .map(q -> BulkCreateFAQsCommand.QuestionData.builder()
+                                                            .question(q.getQuestion())
+                                                            .answer(q.getAnswer())
+                                                            .build())
+                                                    .toList())
+                                            .build())
+                                    .toList())
+                            .build()
+            );
+        }
+
+        if (cachedData.getFaqs() != null) {
+            faqService.replaceCategoryFAQs(
+                    BulkCreateFAQsCommand.builder()
+                            .faqs(cachedData.getFaqs().stream()
+                                    .map(faq -> BulkCreateFAQsCommand.FAQData.builder()
+                                            .category(faq.getCategory())
+                                            .question(faq.getQuestions().stream()
                                                     .map(q -> BulkCreateFAQsCommand.QuestionData.builder()
                                                             .question(q.getQuestion())
                                                             .answer(q.getAnswer())
@@ -1049,7 +1072,8 @@ public class AdminServiceImpl implements AdminService {
         List<RecruitmentView> recruitments = recruitmentService.findByGeneration(generationId);
         List<RecruitPartIntroductionView> recruitPartIntros =
                 recruitPartIntroductionService.findByGeneration(generationId);
-        List<FAQView> faqs = faqService.findAll();
+        List<FAQView> faqs = faqService.findLegacyPartFAQs();
+        List<FAQView> categoryFaqs = faqService.findCategoryFAQs();
         List<News> newsEntities = newsService.findAll();
         List<HomepageReview> reviews = homepageReviewService.findAll();
         List<ActivitySchedule> activitySchedules = activityScheduleService.findByGeneration(generationId);
@@ -1133,8 +1157,19 @@ public class AdminServiceImpl implements AdminService {
                         .toList())
                 .recruitQuestion(faqs.stream()
                         .map(faq -> GetAdminRecruitQuestionResponseRecordDto.builder()
-                                .part(faq.part().getValue())
+                                .part(faq.category().getDisplayName())
                                 .questions(faq.questions().stream()  // ✅ questions() 복수형!
+                                        .map(q -> GetAdminQuestionResponseRecordDto.builder()
+                                                .question(q.question())
+                                                .answer(q.answer())
+                                                .build())
+                                        .toList())
+                                .build())
+                        .toList())
+                .faq(categoryFaqs.stream()
+                        .map(faq -> GetAdminFAQResponseRecordDto.builder()
+                                .category(faq.category().getDisplayName())
+                                .questions(faq.questions().stream()
                                         .map(q -> GetAdminQuestionResponseRecordDto.builder()
                                                 .question(q.question())
                                                 .answer(q.answer())
@@ -1273,6 +1308,7 @@ public class AdminServiceImpl implements AdminService {
         private List<AddAdminPartCurriculumRequestDto> partCurriculums;
         private List<AddAdminRecruitPartCurriculumRequestDto> recruitPartCurriculums;
         private List<AddAdminRecruitQuestionRequestDto> recruitQuestions;
+        private List<AddAdminFAQRequestDto> faqs;
     }
 
 }

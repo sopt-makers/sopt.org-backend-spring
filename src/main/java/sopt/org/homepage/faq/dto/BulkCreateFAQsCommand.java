@@ -7,7 +7,7 @@ import lombok.Builder;
 public record BulkCreateFAQsCommand(List<FAQData> faqs) {
 
     @Builder
-    public record FAQData(String part, List<QuestionData> question) {
+    public record FAQData(String category, List<QuestionData> question) {
     }
 
     @Builder
