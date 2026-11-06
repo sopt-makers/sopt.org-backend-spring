@@ -33,7 +33,7 @@ public class NewsService {
     private final S3Service s3Service;
     private final NewsRepository newsRepository;
 
-    @Value("${news.display-limit:0}")
+    @Value("${news.display-limit:4}")
     private int newsDisplayLimit;
 
     // ===== Command 메서드 =====

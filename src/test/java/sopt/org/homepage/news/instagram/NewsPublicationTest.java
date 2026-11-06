@@ -56,7 +56,7 @@ class NewsPublicationTest extends InstagramNewsIntegrationTestBase {
     @Test
     @DisplayName("🔍 홈페이지는 최신 뉴스 최대 4개만 조회하고 관리자 조회는 전체 유지")
     void homepageLimitsNewsAtQueryTime() {
-        org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 4);
+        assertThat(org.springframework.test.util.ReflectionTestUtils.getField(newsService, "newsDisplayLimit")).isEqualTo(4);
         assertThat(newsService.findLatestForHomepage()).isEmpty();
         for (int day : List.of(2, 1)) {
             news.saveAndFlush(News.fromInstagramPost("뉴스" + day, "https://www.instagram.com/p/post" + day + "/",
@@ -73,7 +73,7 @@ class NewsPublicationTest extends InstagramNewsIntegrationTestBase {
             org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 2);
             assertThat(newsService.findLatestForHomepage()).extracting(News::getInstagramPostId).containsExactly("6", "5");
         } finally {
-            org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 0);
+            org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 4);
         }
     }
 

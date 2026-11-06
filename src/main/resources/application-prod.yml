@@ -89,7 +89,7 @@ sentry:
 
 # Instagram NEWS 자동 수집 (기본 비활성화)
 news:
-  display-limit: ${NEWS_DISPLAY_LIMIT:0}
+  display-limit: ${NEWS_DISPLAY_LIMIT:4}
   instagram:
     enabled: ${INSTAGRAM_NEWS_ENABLED:false}
     apify-token: ${APIFY_API_TOKEN:}
