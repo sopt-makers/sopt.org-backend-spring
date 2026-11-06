@@ -85,7 +85,7 @@ public class HomepageQueryService {
                 partService.findIntroductionsByGeneration(generationId);
 
         // 4. Latest News 조회
-        List<News> newsEntities = newsService.findAll();
+        List<News> newsEntities = newsService.findLatestForHomepage();
 
         // 5. Recruitment Schedule 조회
         List<RecruitmentView> recruitments =
@@ -128,6 +128,7 @@ public class HomepageQueryService {
                                 .title(news.getTitle())
                                 .image(news.getImage())
                                 .link(news.getLink())
+                                .publishedDate(news.getPublishedDate())
                                 .build())
                         .toList())
                 .recruitSchedule(recruitments.stream()
