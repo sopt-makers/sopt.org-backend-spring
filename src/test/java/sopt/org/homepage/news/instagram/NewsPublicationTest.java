@@ -80,8 +80,12 @@ class NewsPublicationTest extends InstagramNewsIntegrationTestBase {
     @Test
     @DisplayName("✅ 반복 배포해도 수동 뉴스의 ID와 게시일 보존")
     void preservesManualPublicationOnDeploy() {
-        News manual = news.saveAndFlush(News.builder().title("수동").link("https://example.com").image("old.jpg").build());
-        Instant published = manual.getPublishedAt();
+        News manual = News.builder().title("수동").link("https://example.com").image("old.jpg").build();
+        org.springframework.test.util.ReflectionTestUtils.setField(manual, "publishedAt",
+                Instant.parse("2026-11-06T09:18:08.182662350Z"));
+        manual = news.saveAndFlush(manual);
+        // PostgreSQL에 실제 저장된 정밀도를 기준으로 재배포 전후 값을 비교한다.
+        Instant published = news.findById(manual.getId()).orElseThrow().getPublishedAt();
         var command = new BulkCreateNewsCommand(List.of(new BulkCreateNewsCommand.NewsData("수정", manual.getLink(), "new.jpg")));
         newsService.bulkCreate(command);
         newsService.bulkCreate(command);
