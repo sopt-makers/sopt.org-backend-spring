@@ -25,6 +25,7 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
     @Autowired NewsService newsService;
     @Autowired InstagramNewsPostProcessor processor;
     @Autowired ObjectMapper mapper;
+    @Autowired javax.sql.DataSource dataSource;
     @MockBean ApifyInstagramClient apify;
     @Autowired InstagramNewsFilter filter;
     @MockBean InstagramThumbnailStorage thumbnails;
@@ -175,6 +176,47 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         }
         assertThat(new InstagramPost("1", null, null, null, null, "parent.jpg", java.util.Arrays.asList((InstagramPost) null)).thumbnail())
                 .isEqualTo("parent.jpg");
+    }
+
+    @Test
+    @DisplayName("수동 뉴스도 등록 시각으로 정렬하며 인스타 원본 게시일은 보존")
+    void manualNewsHasPublicationTime() {
+        Instant original = Instant.parse("2026-01-01T00:00:00Z");
+        processor.process(post("1", "sopt_media_official", original.toString()));
+        News manual = news.saveAndFlush(News.builder().title("수동 최신소식").link("https://example.com").image("manual.jpg").build());
+        assertThat(manual.getPublishedAt()).isNotNull();
+        assertThat(manual.getPublishedDate()).matches("\\d{4}\\.\\d{2}\\.\\d{2}");
+        assertThat(newsService.findAll().get(0).getId()).isEqualTo(manual.getId());
+        assertThat(news.findAll().stream().filter(n -> "1".equals(n.getInstagramPostId())).findFirst().orElseThrow().getPublishedAt()).isEqualTo(original);
+    }
+
+    @Test
+    @DisplayName("관리자 일괄 저장에서 끝 슬래시 유무가 달라도 동일 인스타 링크 중복 방지")
+    void bulkCreateDeduplicatesBothSlashVariants() {
+        news.saveAndFlush(News.fromInstagramPost("수집1", "https://www.instagram.com/p/post1/", "one.jpg", "1", Instant.parse("2026-01-01T00:00:00Z")));
+        news.saveAndFlush(News.fromInstagramPost("수집2", "https://www.instagram.com/p/post2", "two.jpg", "2", Instant.parse("2026-01-02T00:00:00Z")));
+        newsService.bulkCreate(new BulkCreateNewsCommand(List.of(
+                new BulkCreateNewsCommand.NewsData("중복1", "https://www.instagram.com/p/post1", "one.jpg"),
+                new BulkCreateNewsCommand.NewsData("중복2", "https://www.instagram.com/p/post2/", "two.jpg"))));
+        assertThat(news.findAll()).extracting(News::getInstagramPostId).containsExactlyInAnyOrder("1", "2");
+    }
+
+    @Test
+    @DisplayName("기존 수동 뉴스 게시일 보정 마이그레이션은 인스타 게시일을 변경하지 않음")
+    void backfillsLegacyManualNewsPublicationTime() throws Exception {
+        News manual = news.saveAndFlush(News.builder().title("기존 수동 뉴스").link("https://example.com").image("image.jpg").build());
+        Instant original = Instant.parse("2026-01-01T00:00:00Z");
+        News imported = news.saveAndFlush(News.fromInstagramPost("수집 뉴스", "https://www.instagram.com/p/post1/", "image.jpg", "1", original));
+        try (var connection = dataSource.getConnection()) {
+            try (var statement = connection.prepareStatement("update main_news set published_at = null, created_at = timestamp '2025-12-31 15:00:00' where id = ?")) {
+                statement.setInt(1, manual.getId());
+                statement.executeUpdate();
+            }
+            org.springframework.jdbc.datasource.init.ScriptUtils.executeSqlScript(connection,
+                    new org.springframework.core.io.ClassPathResource("db/migration/V12__backfill_manual_news_published_at.sql"));
+        }
+        assertThat(news.findById(manual.getId()).orElseThrow().getPublishedAt()).isEqualTo(Instant.parse("2025-12-31T15:00:00Z"));
+        assertThat(news.findById(imported.getId()).orElseThrow().getPublishedAt()).isEqualTo(original);
     }
 
     private InstagramPost post(String id, String owner, String timestamp) {

@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.time.Instant;
@@ -48,6 +49,7 @@ public class News {
     @Column(name = "published_at")
     private Instant publishedAt;
 
+    /** 수집 게시물 식별자와 원본 업로드 시각을 보존해 뉴스를 생성한다. */
     public static News fromInstagramPost(String title, String link, String image, String postId, Instant publishedAt) {
         News news = new News(image, title, link);
         news.instagramPostId = postId;
@@ -55,6 +57,13 @@ public class News {
         return news;
     }
 
+    /** 수동 뉴스도 등록 시각으로 정렬하며, 인스타 원본 게시일은 그대로 보존한다. */
+    @PrePersist
+    private void initializePublishedAt() {
+        if (publishedAt == null) publishedAt = Instant.now();
+    }
+
+    /** 원본 게시 시각을 홈페이지 표시용 한국 날짜로 변환한다. */
     public String getPublishedDate() {
         return publishedAt == null ? null : publishedAt.atZone(ZoneId.of("Asia/Seoul"))
                 .format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));

@@ -165,11 +165,12 @@ public class NewsService {
                 .build();
     }
 
+    /** 수동 뉴스를 교체하되 기존 수집 뉴스와 동일 링크는 다시 생성하지 않는다. */
     @Transactional
     public void bulkCreate(BulkCreateNewsCommand command) {
         newsRepository.deleteByInstagramPostIdIsNull();
         List<News> newsList = command.news().stream()
-                .filter(n -> !newsRepository.existsByInstagramPostIdIsNotNullAndLink(n.link()))
+                .filter(n -> !isImportedInstagramLink(n.link()))
                 .map(n -> News.builder()
                         .title(n.title())
                         .link(n.link())
@@ -178,6 +179,14 @@ public class NewsService {
                 .toList();
         newsRepository.saveAll(newsList);
         log.info("News 일괄 생성 완료 - count={}", newsList.size());
+    }
+
+    /** 끝 슬래시 유무가 다른 동일 게시물도 기존 수집 뉴스로 취급한다. */
+    private boolean isImportedInstagramLink(String link) {
+        if (link == null) return false;
+        String withoutTrailingSlash = link.replaceAll("/+$", "");
+        return newsRepository.existsByInstagramPostIdIsNotNullAndLinkIn(
+                List.of(withoutTrailingSlash, withoutTrailingSlash + "/"));
     }
 
     // ===== Query 메서드 =====

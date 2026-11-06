@@ -17,5 +17,5 @@ public interface NewsRepository extends JpaRepository<News, Integer> {
     @Query("select n from News n order by n.publishedAt desc nulls last, n.createdAt desc, n.id desc")
     List<News> findAllByPublishedAtDesc();
 
-    boolean existsByInstagramPostIdIsNotNullAndLink(String link);
+    boolean existsByInstagramPostIdIsNotNullAndLinkIn(List<String> links);
 }
