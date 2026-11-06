@@ -3,6 +3,7 @@ package sopt.org.homepage.news.instagram;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
 /** 캡션 규칙으로만 분류한다. 제외 규칙을 노출 규칙보다 먼저 적용한다. */
@@ -16,10 +17,13 @@ public class InstagramNewsFilter {
             "파트소개", "파트티자랑대회", "밸런스게임", "솝든벨", "sopti", "soptlist",
             "솝일리룩", "sopt룩북", "솝트룩북", "sopt또간집", "솝트또간집");
     private static final List<String> TOPICS = List.of(
-            "appjam", "앱잼", "데모데이", "솝커톤", "합동세미나", "스터디", "번개", "컨퍼런스", "세미나", "ot", "오티");
+            "appjam", "앱잼", "데모데이", "솝커톤", "합동세미나", "스터디", "번개", "컨퍼런스", "세미나", "오티");
     private static final List<String> CONTENT_TYPES = List.of(
             "스케치", "꿀팁", "준비물", "후기", "소개", "톺아보기", "일상", "현장", "영상", "끝나지않은몰입");
 
+    private static final Pattern OT_TOPIC = Pattern.compile("(?<![a-z])ot(?![a-z])");
+
+    /** 공지는 제목으로 판단하고, 활동 주제는 본문에서 확인한다. */
     public boolean shouldPublish(String caption) {
         String title = title(caption);
         String heading = normalize(title);
@@ -36,11 +40,14 @@ public class InstagramNewsFilter {
         if (heading.contains("파트장을소개")) {
             return false;
         }
-        if (containsAny(body, INTERNAL_NOTICES) || containsAny(heading, List.of("모집", "공지", "신청", "안내"))) {
+        if (containsAny(heading, INTERNAL_NOTICES) || containsAny(heading, List.of("모집", "공지", "신청", "안내"))) {
             return false;
         }
         if (containsAny(heading, SERIES)) return true;
-        if (containsAny(body, TOPICS) && containsAny(heading, CONTENT_TYPES)) {
+        String lowerCaption = Normalizer.normalize(caption == null ? "" : caption, Normalizer.Form.NFKC)
+                .toLowerCase(Locale.ROOT);
+        boolean hasTopic = containsAny(body, TOPICS) || OT_TOPIC.matcher(lowerCaption).find();
+        if (hasTopic && containsAny(heading, CONTENT_TYPES)) {
             return true;
         }
         if (containsAny(heading, List.of("면접", "지원"))

@@ -127,6 +127,24 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         }
     }
 
+    @Test
+    @DisplayName("본문의 참가 신청 언급만으로 활동 스케치를 제외하지 않음")
+    void noticeChecksTitleOnly() {
+        assertThat(filter.shouldPublish("[APPJAM 현장 스케치]\n참가 신청부터 마무리까지 함께한 이야기")).isTrue();
+        assertThat(filter.shouldPublish("[APPJAM 참가 신청 안내]\n현장 스케치를 준비합니다")).isFalse();
+    }
+
+    @Test
+    @DisplayName("photo·hot 등의 일부인 ot는 주제 키워드로 인정하지 않음")
+    void otMatchesOnlyOutsideLatinWords() {
+        for (String word : List.of("photo", "hot", "spot", "not")) {
+            assertThat(filter.shouldPublish("[신규 서비스 소개]\n" + word)).as(word).isFalse();
+        }
+        assertThat(filter.shouldPublish("[OT 영상]\n함께한 첫 만남")).isTrue();
+        assertThat(filter.shouldPublish("[첫 만남 현장 스케치]\nOT에서 만났어요")).isTrue();
+        assertThat(filter.shouldPublish("[현장 스케치]\n세미나에서 만났어요")).isTrue();
+    }
+
     private InstagramPost post(String id, String owner, String timestamp) {
         return new InstagramPost(id, owner, "APPJAM 활동 스케치", "https://www.instagram.com/p/post" + id + "/",
                 Instant.parse(timestamp), "https://scontent.cdninstagram.com/cover.jpg", List.of());
