@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 import java.time.Instant;
+import sopt.org.homepage.infrastructure.external.apify.ApifyInstagramClient;
 import java.util.List;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -20,10 +21,8 @@ import sopt.org.homepage.news.NewsService;
 import sopt.org.homepage.news.dto.BulkCreateNewsCommand;
 
 abstract class InstagramNewsIntegrationTestBase extends IntegrationTestBase {
-    InstagramNewsScheduler scheduler;
+    InstagramNewsCollector collector;
     @Autowired org.springframework.context.ApplicationContext applicationContext;
-    @Autowired InstagramCollectionStore collectionStore;
-    @Autowired InstagramCollectionRepository collectionRepository;
     @Autowired NewsRepository news;
     @Autowired NewsService newsService;
     @Autowired InstagramNewsPostProcessor processor;
@@ -35,9 +34,9 @@ abstract class InstagramNewsIntegrationTestBase extends IntegrationTestBase {
 
     @BeforeEach
     void setUp() {
-        collectionRepository.deleteAll();
         org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 0);
-        scheduler = new InstagramNewsScheduler(apify, processor, new InstagramNewsConfig.Properties("test-token"), collectionStore);
+        collector = new InstagramNewsCollector(apify, processor, new InstagramNewsConfig.Properties("test-token"), news);
+        when(apify.lastRun()).thenReturn(com.fasterxml.jackson.databind.node.MissingNode.getInstance());
         when(thumbnails.store(anyString(), anyString())).thenReturn("https://s3.example.com/news.jpg");
     }
 

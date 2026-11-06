@@ -13,6 +13,9 @@ import org.springframework.data.repository.query.Param;
 public interface NewsRepository extends JpaRepository<News, Integer> {
     boolean existsByInstagramPostId(String instagramPostId);
 
+    @Query("select max(n.publishedAt) from News n where n.instagramPostId is not null")
+    java.time.Instant findLatestInstagramPublishedAt();
+
     void deleteByInstagramPostIdIsNull();
 
     @Query("select n from News n where n.hidden = false order by n.publishedAt desc nulls last, n.createdAt desc, n.id desc")

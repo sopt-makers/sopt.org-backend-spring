@@ -38,8 +38,6 @@ public class InstagramNewsConfig {
             @DefaultValue("2025-12-31T15:00:00Z") Instant since,
             @DefaultValue("7") int overlapDays,
             @DefaultValue("1000") int resultsLimit,
-            @DefaultValue("10") int maxFailures,
-            @DefaultValue("7200") int maxDurationSeconds,
             @DefaultValue("") java.util.List<String> additionalSeries) {
         @org.springframework.boot.context.properties.bind.ConstructorBinding
         public Properties {
@@ -47,13 +45,13 @@ public class InstagramNewsConfig {
             if (enabled && (apifyToken == null || apifyToken.isBlank())) {
                 throw new IllegalArgumentException("news.instagram.apify-token is required when enabled");
             }
-            if (since == null || overlapDays < 1 || resultsLimit < 1 || maxFailures < 1 || maxDurationSeconds < 1) {
+            if (since == null || overlapDays < 1 || resultsLimit < 1) {
                 throw new IllegalArgumentException("Instagram collection limits must be positive and since must be configured");
             }
         }
 
         public Properties(String token) {
-            this(token, false, Instant.parse("2025-12-31T15:00:00Z"), 7, 1000, 10, 7200, java.util.List.of());
+            this(token, false, Instant.parse("2025-12-31T15:00:00Z"), 7, 1000, java.util.List.of());
         }
 
         public Instant collectionSince(Instant checkpoint) {

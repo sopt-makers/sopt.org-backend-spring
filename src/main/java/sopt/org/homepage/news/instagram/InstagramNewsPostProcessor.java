@@ -1,6 +1,7 @@
 package sopt.org.homepage.news.instagram;
 
 import java.time.Instant;
+import sopt.org.homepage.infrastructure.external.apify.ApifyInstagramClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sopt.org.homepage.news.News;
@@ -31,9 +32,11 @@ public class InstagramNewsPostProcessor {
     }
 
     private boolean shouldProcess(InstagramPost post) {
-        return isValidPost(post)
-                && !newsRepository.existsByInstagramPostId(post.id())
-                && instagramNewsFilter.shouldPublish(post.caption());
+        return isEligible(post) && !newsRepository.existsByInstagramPostId(post.id());
+    }
+
+    boolean isEligible(InstagramPost post) {
+        return isValidPost(post) && instagramNewsFilter.shouldPublish(post.caption());
     }
 
     private boolean isValidPost(InstagramPost post) {

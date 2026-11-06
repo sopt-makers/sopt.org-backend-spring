@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.ObjectProvider;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
-import sopt.org.homepage.news.instagram.InstagramNewsScheduler;
+import sopt.org.homepage.news.instagram.InstagramNewsCollector;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
@@ -48,17 +48,17 @@ import sopt.org.homepage.news.dto.GetAdminNewsResponseDto;
 public class NewsController {
 
     private final NewsService newsService;
-    private final ObjectProvider<InstagramNewsScheduler> instagramScheduler;
+    private final ObjectProvider<InstagramNewsCollector> instagramCollector;
 
     @Operation(summary = "인스타 뉴스 수집 시작", description = "즉시 수집을 시작하고, 완료 후 노출 대상 게시물을 저장합니다")
     @PostMapping("/instagram/collect")
     public ResponseEntity<CollectInstagramNewsResponseDto> collectInstagramNews() {
-        InstagramNewsScheduler scheduler = instagramScheduler.getIfAvailable();
-        if (scheduler == null) {
+        InstagramNewsCollector collector = instagramCollector.getIfAvailable();
+        if (collector == null) {
             throw new org.springframework.web.server.ResponseStatusException(
                     HttpStatus.SERVICE_UNAVAILABLE, "Instagram news collection is disabled");
         }
-        return ResponseEntity.accepted().body(new CollectInstagramNewsResponseDto(scheduler.startCollection()));
+        return ResponseEntity.accepted().body(new CollectInstagramNewsResponseDto(collector.startCollection()));
     }
 
     @Operation(summary = "최신소식 추가", description = "최신소식을 추가합니다")

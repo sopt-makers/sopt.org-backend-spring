@@ -39,7 +39,7 @@ class InstagramNewsMigrationTest extends InstagramNewsIntegrationTestBase {
     }
 
     @Test
-    @DisplayName("✅ V13과 V14 마이그레이션을 실제 PostgreSQL에서 순서대로 실행")
+    @DisplayName("✅ V13 마이그레이션을 실제 PostgreSQL에서 실행")
     void appliesReviewMigrations() throws Exception {
         try (var connection = dataSource.getConnection(); var statement = connection.createStatement()) {
             statement.execute("create schema pr297_migration_test");
@@ -47,18 +47,13 @@ class InstagramNewsMigrationTest extends InstagramNewsIntegrationTestBase {
                 statement.execute("set search_path to pr297_migration_test");
                 statement.execute("create table main_news (id integer, published_at timestamptz, created_at timestamp)");
                 statement.execute("insert into main_news values (1, null, now())");
-                for (String resource : List.of("V13__add_news_hidden.sql", "V14__persist_instagram_collection_state.sql")) {
+                for (String resource : List.of("V13__add_news_hidden.sql")) {
                     org.springframework.jdbc.datasource.init.ScriptUtils.executeSqlScript(connection,
                             new org.springframework.core.io.ClassPathResource("db/migration/" + resource));
                 }
                 try (var rows = statement.executeQuery("select hidden from main_news where id = 1")) {
                     assertThat(rows.next()).isTrue();
                     assertThat(rows.getBoolean(1)).isFalse();
-                }
-                try (var rows = statement.executeQuery("select item_offset, failures from instagram_collection_state where id = 1")) {
-                    assertThat(rows.next()).isTrue();
-                    assertThat(rows.getInt(1)).isZero();
-                    assertThat(rows.getInt(2)).isZero();
                 }
             } finally {
                 statement.execute("set search_path to public");
