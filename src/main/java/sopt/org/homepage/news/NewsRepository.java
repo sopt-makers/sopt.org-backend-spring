@@ -3,6 +3,7 @@ package sopt.org.homepage.news;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * NewsRepository
@@ -16,6 +17,9 @@ public interface NewsRepository extends JpaRepository<News, Integer> {
 
     @Query("select n from News n order by n.publishedAt desc nulls last, n.createdAt desc, n.id desc")
     List<News> findAllByPublishedAtDesc();
+
+    @Query(value = "select * from main_news order by published_at desc nulls last, created_at desc, id desc limit :limit", nativeQuery = true)
+    List<News> findLatest(@Param("limit") int limit);
 
     boolean existsByInstagramPostIdIsNotNullAndLinkIn(List<String> links);
 }

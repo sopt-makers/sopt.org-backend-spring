@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 import sopt.org.homepage.infrastructure.aws.s3.S3Service;
@@ -31,6 +32,9 @@ public class NewsService {
 
     private final S3Service s3Service;
     private final NewsRepository newsRepository;
+
+    @Value("${news.display-limit:4}")
+    private int newsDisplayLimit;
 
     // ===== Command 메서드 =====
 
@@ -209,6 +213,12 @@ public class NewsService {
                 .link(news.getLink())
                 .image(news.getImage())
                 .build();
+    }
+
+    /** 홈페이지에는 원본 게시일 최신순으로 설정된 개수만 노출한다. */
+    @Transactional(readOnly = true)
+    public List<News> findLatestForHomepage() {
+        return newsRepository.findLatest(newsDisplayLimit);
     }
 
     @Transactional(readOnly = true)

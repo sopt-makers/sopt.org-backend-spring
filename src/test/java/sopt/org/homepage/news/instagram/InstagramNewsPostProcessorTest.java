@@ -219,6 +219,29 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         assertThat(news.findById(imported.getId()).orElseThrow().getPublishedAt()).isEqualTo(original);
     }
 
+    @Test
+    @DisplayName("🔍 홈페이지는 최신 뉴스 최대 4개만 조회하고 관리자 조회는 전체 유지")
+    void homepageLimitsNewsAtQueryTime() {
+        assertThat(newsService.findLatestForHomepage()).isEmpty();
+        for (int day : List.of(2, 1)) {
+            news.saveAndFlush(News.fromInstagramPost("뉴스" + day, "https://www.instagram.com/p/post" + day + "/",
+                    "image.jpg", String.valueOf(day), Instant.parse("2026-01-0" + day + "T00:00:00Z")));
+        }
+        assertThat(newsService.findLatestForHomepage()).extracting(News::getInstagramPostId).containsExactly("2", "1");
+        for (int day : List.of(6, 3, 5, 4)) {
+            news.saveAndFlush(News.fromInstagramPost("뉴스" + day, "https://www.instagram.com/p/post" + day + "/",
+                    "image.jpg", String.valueOf(day), Instant.parse("2026-01-0" + day + "T00:00:00Z")));
+        }
+        assertThat(newsService.findLatestForHomepage()).extracting(News::getInstagramPostId).containsExactly("6", "5", "4", "3");
+        assertThat(newsService.findAll()).hasSize(6);
+        try {
+            org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 2);
+            assertThat(newsService.findLatestForHomepage()).extracting(News::getInstagramPostId).containsExactly("6", "5");
+        } finally {
+            org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 4);
+        }
+    }
+
     private InstagramPost post(String id, String owner, String timestamp) {
         return new InstagramPost(id, owner, "APPJAM 활동 스케치", "https://www.instagram.com/p/post" + id + "/",
                 Instant.parse(timestamp), "https://scontent.cdninstagram.com/cover.jpg", List.of());
