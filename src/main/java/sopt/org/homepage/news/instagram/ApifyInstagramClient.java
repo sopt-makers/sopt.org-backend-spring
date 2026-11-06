@@ -12,9 +12,12 @@ import org.springframework.web.client.RestClient;
 @Component
 public class ApifyInstagramClient {
     public static final String ACCOUNT = "sopt_media_official";
+    public static final int PAGE_SIZE = 10;
     private final RestClient client;
+    private final InstagramNewsConfig.Properties properties;
 
     public ApifyInstagramClient(InstagramNewsConfig.Properties properties) {
+        this.properties = properties;
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofSeconds(10));
         factory.setReadTimeout(Duration.ofSeconds(60));
@@ -23,11 +26,11 @@ public class ApifyInstagramClient {
                 .defaultHeader("Authorization", "Bearer " + properties.apifyToken()).build();
     }
 
-    /** 2026년 KST 이후 계정 게시물을 비동기로 수집하고 실행 ID를 반환한다. */
-    public String start() {
+    /** 마지막 성공 시각의 중복 수집 구간 이후 게시물을 비동기로 수집한다. */
+    public String start(java.time.Instant since) {
         JsonNode response = client.post().uri("/acts/apify~instagram-post-scraper/runs?timeout=3600")
-                .body(Map.of("username", List.of(ACCOUNT), "resultsLimit", 10000,
-                        "onlyPostsNewerThan", "2025-12-31T15:00:00Z", "skipPinnedPosts", false))
+                .body(Map.of("username", List.of(ACCOUNT), "resultsLimit", properties.resultsLimit(),
+                        "onlyPostsNewerThan", since.toString(), "skipPinnedPosts", false))
                 .retrieve().body(JsonNode.class);
         String id = response.path("data").path("id").asText();
         if (id.isBlank()) throw new IllegalStateException("Apify run ID missing");

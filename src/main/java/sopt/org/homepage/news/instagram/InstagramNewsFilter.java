@@ -8,7 +8,10 @@ import org.springframework.stereotype.Component;
 
 /** 캡션 규칙으로만 분류한다. 제외 규칙을 노출 규칙보다 먼저 적용한다. */
 @Component
+@lombok.RequiredArgsConstructor
 public class InstagramNewsFilter {
+    private final InstagramNewsConfig.Properties properties;
+
     private static final List<String> INTERNAL_NOTICES = List.of(
             "명예의전당", "참가신청", "참여신청", "신청마감", "참여안내", "참가안내",
             "장비콘테스트안내", "노꾸자랑대회");
@@ -43,7 +46,8 @@ public class InstagramNewsFilter {
         if (containsAny(heading, INTERNAL_NOTICES) || containsAny(heading, List.of("모집", "공지", "신청"))) {
             return false;
         }
-        if (containsAny(heading, SERIES)) return true;
+        if (containsAny(heading, SERIES) || properties.additionalSeries().stream().map(this::normalize)
+                .filter(term -> !term.isBlank()).anyMatch(heading::contains)) return true;
         String lowerCaption = Normalizer.normalize(caption == null ? "" : caption, Normalizer.Form.NFKC)
                 .toLowerCase(Locale.ROOT);
         boolean hasTopic = containsAny(body, TOPICS) || OT_TOPIC.matcher(lowerCaption).find();
@@ -51,7 +55,7 @@ public class InstagramNewsFilter {
             return true;
         }
         if (containsAny(heading, List.of("면접", "지원"))
-                && containsAny(heading, List.of("팁", "꿀팁", "면접관앞에앉아있었다"))) {
+                && containsAny(heading, List.of("팁", "면접관앞에앉아있었다"))) {
             return true;
         }
         if (heading.contains("협업고수")) return true;
@@ -66,7 +70,9 @@ public class InstagramNewsFilter {
             int end = firstLine.indexOf(']');
             firstLine = firstLine.substring(1, end) + firstLine.substring(end + 1);
         }
-        return firstLine;
+        firstLine = firstLine.strip();
+        return firstLine.codePoints().limit(200).collect(StringBuilder::new,
+                StringBuilder::appendCodePoint, StringBuilder::append).toString();
     }
 
     private String normalize(String value) {

@@ -22,14 +22,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import sopt.org.homepage.common.IntegrationTestBase;
 import sopt.org.homepage.infrastructure.aws.s3.S3Service;
 
-class InstagramThumbnailStorageTest extends IntegrationTestBase {
+class InstagramThumbnailStorageTest extends InstagramNewsIntegrationTestBase {
     private static final String URL = "https://scontent.cdninstagram.com/cover.jpg";
-    @MockBean S3Service s3;
+    private S3Service s3;
     private HttpClient http;
     private InstagramThumbnailStorage storage;
 
     @BeforeEach
-    void setUp() {
+    void setUpStorage() {
+        s3 = mock(S3Service.class);
         http = mock(HttpClient.class);
         storage = new InstagramThumbnailStorage(s3, http, Duration.ofMillis(100));
         when(s3.isAllowedContentType("image/jpeg")).thenReturn(true);

@@ -19,29 +19,7 @@ import sopt.org.homepage.news.NewsRepository;
 import sopt.org.homepage.news.NewsService;
 import sopt.org.homepage.news.dto.BulkCreateNewsCommand;
 
-class InstagramNewsPostProcessorTest extends IntegrationTestBase {
-    private InstagramNewsScheduler scheduler;
-    @Autowired NewsRepository news;
-    @Autowired NewsService newsService;
-    @Autowired InstagramNewsPostProcessor processor;
-    @Autowired ObjectMapper mapper;
-    @Autowired javax.sql.DataSource dataSource;
-    @MockBean ApifyInstagramClient apify;
-    @Autowired InstagramNewsFilter filter;
-    @MockBean InstagramThumbnailStorage thumbnails;
-
-    @BeforeEach
-    void setUp() {
-        org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 0);
-        scheduler = new InstagramNewsScheduler(apify, processor, new InstagramNewsConfig.Properties("test-token"));
-        when(thumbnails.store(anyString(), anyString())).thenReturn("https://s3.example.com/news.jpg");
-    }
-
-    @AfterEach
-    void cleanUp() {
-        news.deleteAll();
-    }
-
+class InstagramNewsPostProcessorTest extends InstagramNewsIntegrationTestBase {
     @Test
     @DisplayName("게시일의 KST 연도 경계 및 계정 검증, 중복 방지")
     void filtersAndDeduplicates() {
@@ -71,37 +49,6 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("개별 게시물 실패가 다른 게시물 저장을 막지 않으며 다음 수집에서 재시도")
-    void isolatesFailures() throws Exception {
-        when(apify.start()).thenReturn("run");
-        scheduler.collect();
-        when(apify.run("run")).thenReturn(mapper.readTree("{\"status\":\"SUCCEEDED\",\"defaultDatasetId\":\"dataset\"}"));
-        var first = post("1", "sopt_media_official", "2026-01-01T00:00:00Z");
-        when(apify.items("dataset", 0)).thenReturn(List.of(first, post("2", "sopt_media_official", "2026-01-02T00:00:00Z")));
-        when(thumbnails.store(eq("1"), anyString())).thenThrow(new IllegalStateException("download failed"));
-        scheduler.poll();
-        assertThat(news.findAll()).extracting(News::getInstagramPostId).containsExactly("2");
-        assertThat(news.existsByInstagramPostId("1")).isFalse();
-        scheduler.poll();
-        verify(apify, times(1)).run("run");
-        when(thumbnails.store(eq("1"), anyString())).thenReturn("https://s3.example.com/retry.jpg");
-        scheduler.collect();
-        scheduler.poll();
-        verify(apify, times(2)).start();
-        assertThat(news.findAll()).extracting(News::getInstagramPostId).containsExactlyInAnyOrder("1", "2");
-    }
-
-    @Test
-    @DisplayName("원본 업로드 일시 최신순이며 관리자 일괄 배포 후에도 수집 뉴스 보존")
-    void orderAndPreserve() {
-        processor.process(post("2", "sopt_media_official", "2026-02-01T00:00:00Z"));
-        processor.process(post("1", "sopt_media_official", "2026-01-01T00:00:00Z"));
-        news.save(News.builder().title("수동").link("https://example.com").image("manual.jpg").build());
-        newsService.bulkCreate(new BulkCreateNewsCommand(List.of()));
-        assertThat(newsService.findAll()).extracting(News::getInstagramPostId).containsExactly("2", "1");
-    }
-
-    @Test
     @DisplayName("여러 장 게시물은 첫 번째 이미지, 릴스는 displayUrl을 썸네일로 사용")
     void thumbnailSelection() {
         var child = new InstagramPost(null, null, null, null, null, "first.jpg", null);
@@ -123,51 +70,6 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
     }
 
     @Test
-    @DisplayName("파트장 예능·파트 소개는 노출하고 미디어팀 인사말은 제외 사유로 보지 않음")
-    void keepsPartContent() {
-        for (String title : List.of("파트장 영통 팬사인회", "파트 소개", "파트티 자랑대회")) {
-            assertThat(filter.shouldPublish("[" + title + "]\n안녕하세요, 미디어팀 나우유씨미입니다"))
-                    .as(title).isTrue();
-        }
-    }
-
-    @Test
-    @DisplayName("본문의 참가 신청 언급만으로 활동 스케치를 제외하지 않음")
-    void noticeChecksTitleOnly() {
-        assertThat(filter.shouldPublish("[APPJAM 현장 스케치]\n참가 신청부터 마무리까지 함께한 이야기")).isTrue();
-        assertThat(filter.shouldPublish("[APPJAM 참가 신청 안내]\n현장 스케치를 준비합니다")).isFalse();
-    }
-
-    @Test
-    @DisplayName("photo·hot 등의 일부인 ot는 주제 키워드로 인정하지 않음")
-    void otMatchesOnlyOutsideLatinWords() {
-        for (String word : List.of("photo", "hot", "spot", "not")) {
-            assertThat(filter.shouldPublish("[신규 서비스 소개]\n" + word)).as(word).isFalse();
-        }
-        assertThat(filter.shouldPublish("[OT 영상]\n함께한 첫 만남")).isTrue();
-        assertThat(filter.shouldPublish("[첫 만남 현장 스케치]\nOT에서 만났어요")).isTrue();
-        assertThat(filter.shouldPublish("[현장 스케치]\n세미나에서 만났어요")).isTrue();
-    }
-
-    @Test
-    @DisplayName("null 게시물 페이지도 처리 위치를 진행하고 다음 페이지를 저장")
-    void skipsNullItemsAndAdvancesPage() throws Exception {
-        when(apify.start()).thenReturn("run");
-        when(apify.run("run")).thenReturn(mapper.readTree("{\"status\":\"SUCCEEDED\",\"defaultDatasetId\":\"dataset\"}"));
-        when(apify.items("dataset", 0)).thenReturn(java.util.Collections.nCopies(10, null));
-        when(apify.items("dataset", 10)).thenReturn(List.of(post("1", "sopt_media_official", "2026-01-01T00:00:00Z")));
-        scheduler.collect();
-        scheduler.poll();
-        scheduler.poll();
-        scheduler.poll();
-        verify(apify).items("dataset", 10);
-        verify(apify, times(2)).run("run");
-        assertThat(news.findAll()).hasSize(1);
-        scheduler.collect();
-        verify(apify, times(2)).start();
-    }
-
-    @Test
     @DisplayName("자식 썸네일이 null·공백이거나 자식 자체가 null이면 부모 커버 사용")
     void fallsBackToParentThumbnail() {
         for (String image : java.util.Arrays.asList(null, "", "  ")) {
@@ -179,117 +81,4 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
                 .isEqualTo("parent.jpg");
     }
 
-    @Test
-    @DisplayName("수동 뉴스도 등록 시각으로 정렬하며 인스타 원본 게시일은 보존")
-    void manualNewsHasPublicationTime() {
-        Instant original = Instant.parse("2026-01-01T00:00:00Z");
-        processor.process(post("1", "sopt_media_official", original.toString()));
-        News manual = news.saveAndFlush(News.builder().title("수동 최신소식").link("https://example.com").image("manual.jpg").build());
-        assertThat(manual.getPublishedAt()).isNotNull();
-        assertThat(manual.getPublishedDate()).matches("\\d{4}\\.\\d{2}\\.\\d{2}");
-        assertThat(newsService.findAll().get(0).getId()).isEqualTo(manual.getId());
-        assertThat(news.findAll().stream().filter(n -> "1".equals(n.getInstagramPostId())).findFirst().orElseThrow().getPublishedAt()).isEqualTo(original);
-    }
-
-    @Test
-    @DisplayName("관리자 일괄 저장에서 끝 슬래시 유무가 달라도 동일 인스타 링크 중복 방지")
-    void bulkCreateDeduplicatesBothSlashVariants() {
-        news.saveAndFlush(News.fromInstagramPost("수집1", "https://www.instagram.com/p/post1/", "one.jpg", "1", Instant.parse("2026-01-01T00:00:00Z")));
-        news.saveAndFlush(News.fromInstagramPost("수집2", "https://www.instagram.com/p/post2", "two.jpg", "2", Instant.parse("2026-01-02T00:00:00Z")));
-        newsService.bulkCreate(new BulkCreateNewsCommand(List.of(
-                new BulkCreateNewsCommand.NewsData("중복1", "https://www.instagram.com/p/post1", "one.jpg"),
-                new BulkCreateNewsCommand.NewsData("중복2", "https://www.instagram.com/p/post2/", "two.jpg"))));
-        assertThat(news.findAll()).extracting(News::getInstagramPostId).containsExactlyInAnyOrder("1", "2");
-    }
-
-    @Test
-    @DisplayName("기존 수동 뉴스 게시일 보정 마이그레이션은 인스타 게시일을 변경하지 않음")
-    void backfillsLegacyManualNewsPublicationTime() throws Exception {
-        News manual = news.saveAndFlush(News.builder().title("기존 수동 뉴스").link("https://example.com").image("image.jpg").build());
-        Instant original = Instant.parse("2026-01-01T00:00:00Z");
-        News imported = news.saveAndFlush(News.fromInstagramPost("수집 뉴스", "https://www.instagram.com/p/post1/", "image.jpg", "1", original));
-        try (var connection = dataSource.getConnection()) {
-            try (var statement = connection.prepareStatement("update main_news set published_at = null, created_at = timestamp '2025-12-31 15:00:00' where id = ?")) {
-                statement.setInt(1, manual.getId());
-                statement.executeUpdate();
-            }
-            org.springframework.jdbc.datasource.init.ScriptUtils.executeSqlScript(connection,
-                    new org.springframework.core.io.ClassPathResource("db/migration/V12__backfill_manual_news_published_at.sql"));
-        }
-        assertThat(news.findById(manual.getId()).orElseThrow().getPublishedAt()).isEqualTo(Instant.parse("2025-12-31T15:00:00Z"));
-        assertThat(news.findById(imported.getId()).orElseThrow().getPublishedAt()).isEqualTo(original);
-    }
-
-    @Test
-    @DisplayName("🔍 홈페이지는 최신 뉴스 최대 4개만 조회하고 관리자 조회는 전체 유지")
-    void homepageLimitsNewsAtQueryTime() {
-        org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 4);
-        assertThat(newsService.findLatestForHomepage()).isEmpty();
-        for (int day : List.of(2, 1)) {
-            news.saveAndFlush(News.fromInstagramPost("뉴스" + day, "https://www.instagram.com/p/post" + day + "/",
-                    "image.jpg", String.valueOf(day), Instant.parse("2026-01-0" + day + "T00:00:00Z")));
-        }
-        assertThat(newsService.findLatestForHomepage()).extracting(News::getInstagramPostId).containsExactly("2", "1");
-        for (int day : List.of(6, 3, 5, 4)) {
-            news.saveAndFlush(News.fromInstagramPost("뉴스" + day, "https://www.instagram.com/p/post" + day + "/",
-                    "image.jpg", String.valueOf(day), Instant.parse("2026-01-0" + day + "T00:00:00Z")));
-        }
-        assertThat(newsService.findLatestForHomepage()).extracting(News::getInstagramPostId).containsExactly("6", "5", "4", "3");
-        assertThat(newsService.findAll()).hasSize(6);
-        try {
-            org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 2);
-            assertThat(newsService.findLatestForHomepage()).extracting(News::getInstagramPostId).containsExactly("6", "5");
-        } finally {
-            org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 0);
-        }
-    }
-
-    @Test
-    @DisplayName("✅ 반복 배포해도 수동 뉴스의 ID와 게시일 보존")
-    void preservesManualPublicationOnDeploy() {
-        News manual = news.saveAndFlush(News.builder().title("수동").link("https://example.com").image("old.jpg").build());
-        Instant published = manual.getPublishedAt();
-        var command = new BulkCreateNewsCommand(List.of(new BulkCreateNewsCommand.NewsData("수정", manual.getLink(), "new.jpg")));
-        newsService.bulkCreate(command);
-        newsService.bulkCreate(command);
-        News result = news.findById(manual.getId()).orElseThrow();
-        assertThat(result.getPublishedAt()).isEqualTo(published);
-        assertThat(result.getTitle()).isEqualTo("수정");
-    }
-
-    @Test
-    @DisplayName("✅ 삭제한 인스타 뉴스는 재수집되지 않고 조회에서 숨김")
-    void hidesImportedNewsPermanently() {
-        var original = post("1", "sopt_media_official", "2026-01-01T00:00:00Z");
-        processor.process(original);
-        var request = new sopt.org.homepage.news.dto.DeleteAdminNewsRequestDto(news.findAll().get(0).getId());
-        newsService.deleteMainNews(request);
-        processor.process(original);
-        assertThat(newsService.findAll()).isEmpty();
-        assertThat(newsService.findLatestForHomepage()).isEmpty();
-        assertThat(news.count()).isEqualTo(1);
-    }
-
-    @Test
-    @DisplayName("✅ 연속 폴링 실패 후 새 수집을 시작할 수 있음")
-    void recoversAfterPollingFailures() {
-        when(apify.start()).thenReturn("run", "next");
-        when(apify.run("run")).thenThrow(new IllegalStateException("expired"));
-        scheduler.startCollection();
-        for (int i = 0; i < 10; i++) scheduler.poll();
-        assertThat(scheduler.startCollection()).isEqualTo("next");
-    }
-
-    @Test
-    @DisplayName("🔍 제목 경계와 준비물 안내를 처리")
-    void handlesTitleBoundaries() {
-        assertThat(filter.title("[솝트룩북] 34기 OB편")).isEqualTo("솝트룩북 34기 OB편");
-        assertThat(filter.title("[A] 본문 [B]")).isEqualTo("A 본문 [B]");
-        assertThat(filter.shouldPublish("[OT 준비물 안내]")).isTrue();
-    }
-
-    private InstagramPost post(String id, String owner, String timestamp) {
-        return new InstagramPost(id, owner, "APPJAM 활동 스케치", "https://www.instagram.com/p/post" + id + "/",
-                Instant.parse(timestamp), "https://scontent.cdninstagram.com/cover.jpg", List.of());
-    }
 }

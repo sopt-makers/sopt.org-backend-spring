@@ -9,7 +9,7 @@ import sopt.org.homepage.news.NewsRepository;
 @Service
 @RequiredArgsConstructor
 public class InstagramNewsPostProcessor {
-    private static final Instant INSTAGRAM_POSTS_SINCE = Instant.parse("2025-12-31T15:00:00Z");
+    private final InstagramNewsConfig.Properties properties;
 
     private final NewsRepository newsRepository;
     private final InstagramNewsFilter instagramNewsFilter;
@@ -41,7 +41,7 @@ public class InstagramNewsPostProcessor {
                 && post.id() != null && post.id().matches("[0-9]+")
                 && ApifyInstagramClient.ACCOUNT.equals(post.ownerUsername())
                 && post.timestamp() != null
-                && !post.timestamp().isBefore(INSTAGRAM_POSTS_SINCE)
+                && !post.timestamp().isBefore(properties.since())
                 && !post.timestamp().isAfter(Instant.now())
                 && post.url() != null
                 && post.url().matches("https://www[.]instagram[.]com/(p|reel|tv)/[A-Za-z0-9_-]+/?");
