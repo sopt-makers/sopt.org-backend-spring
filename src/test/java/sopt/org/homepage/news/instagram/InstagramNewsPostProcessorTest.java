@@ -242,6 +242,19 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         }
     }
 
+    @Test
+    @DisplayName("✅ 반복 배포해도 수동 뉴스의 ID와 게시일 보존")
+    void preservesManualPublicationOnDeploy() {
+        News manual = news.saveAndFlush(News.builder().title("수동").link("https://example.com").image("old.jpg").build());
+        Instant published = manual.getPublishedAt();
+        var command = new BulkCreateNewsCommand(List.of(new BulkCreateNewsCommand.NewsData("수정", manual.getLink(), "new.jpg")));
+        newsService.bulkCreate(command);
+        newsService.bulkCreate(command);
+        News result = news.findById(manual.getId()).orElseThrow();
+        assertThat(result.getPublishedAt()).isEqualTo(published);
+        assertThat(result.getTitle()).isEqualTo("수정");
+    }
+
     private InstagramPost post(String id, String owner, String timestamp) {
         return new InstagramPost(id, owner, "APPJAM 활동 스케치", "https://www.instagram.com/p/post" + id + "/",
                 Instant.parse(timestamp), "https://scontent.cdninstagram.com/cover.jpg", List.of());

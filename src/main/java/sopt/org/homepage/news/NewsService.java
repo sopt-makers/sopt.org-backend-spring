@@ -169,28 +169,32 @@ public class NewsService {
                 .build();
     }
 
-    /** 수동 뉴스를 교체하되 기존 수집 뉴스와 동일 링크는 다시 생성하지 않는다. */
+    /** 동일 링크의 기존 뉴스를 갱신해 게시일을 보존하고 빠진 수동 뉴스만 삭제한다. */
     @Transactional
     public void bulkCreate(BulkCreateNewsCommand command) {
-        newsRepository.deleteByInstagramPostIdIsNull();
-        List<News> newsList = command.news().stream()
-                .filter(n -> !isImportedInstagramLink(n.link()))
-                .map(n -> News.builder()
-                        .title(n.title())
-                        .link(n.link())
-                        .image(n.imageUrl())
-                        .build())
-                .toList();
-        newsRepository.saveAll(newsList);
-        log.info("News 일괄 생성 완료 - count={}", newsList.size());
+        List<News> existing = newsRepository.findAll();
+        java.util.Set<Integer> retained = new java.util.HashSet<>();
+        for (var item : command.news()) {
+            News match = existing.stream()
+                    .filter(n -> canonicalLink(n.getLink()).equals(canonicalLink(item.link())))
+                    .findFirst().orElse(null);
+            if (match != null) {
+                retained.add(match.getId());
+                match.update(item.imageUrl(), item.title(), item.link());
+            } else {
+                newsRepository.save(News.builder().title(item.title()).link(item.link()).image(item.imageUrl()).build());
+            }
+        }
+        existing.stream().filter(n -> n.getInstagramPostId() == null && !retained.contains(n.getId()))
+                .forEach(newsRepository::delete);
     }
 
-    /** 끝 슬래시 유무가 다른 동일 게시물도 기존 수집 뉴스로 취급한다. */
-    private boolean isImportedInstagramLink(String link) {
-        if (link == null) return false;
-        String withoutTrailingSlash = link.replaceAll("/+$", "");
-        return newsRepository.existsByInstagramPostIdIsNotNullAndLinkIn(
-                List.of(withoutTrailingSlash, withoutTrailingSlash + "/"));
+    private String canonicalLink(String link) {
+        if (link == null) return "";
+        var matcher = java.util.regex.Pattern.compile(
+                "https?://(?:www[.])?instagram[.]com/(?:p|reel|tv)/([A-Za-z0-9_-]+)(?:[/?#].*)?")
+                .matcher(link);
+        return matcher.matches() ? "instagram:" + matcher.group(1) : link.replaceAll("/+$", "");
     }
 
     // ===== Query 메서드 =====
