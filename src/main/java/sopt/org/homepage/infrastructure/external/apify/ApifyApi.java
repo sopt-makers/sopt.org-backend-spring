@@ -17,6 +17,9 @@ public interface ApifyApi {
     @GetMapping("/actor-tasks/{taskId}/runs/last")
     JsonNode lastRun(@RequestHeader("Authorization") String authorization, @PathVariable("taskId") String taskId);
 
+    @GetMapping("/key-value-stores/{storeId}/records/INPUT")
+    JsonNode input(@RequestHeader("Authorization") String authorization, @PathVariable("storeId") String storeId);
+
     @GetMapping("/datasets/{id}/items?clean=true&format=json")
     List<InstagramPost> items(@RequestHeader("Authorization") String authorization,
                               @PathVariable("id") String dataset, @RequestParam("limit") int limit);

@@ -36,6 +36,15 @@ public class ApifyInstagramClient {
         }
     }
 
+    public JsonNode input(String storeId) {
+        if (storeId == null || storeId.isBlank()) return MissingNode.getInstance();
+        try {
+            return api.input(authorization(), storeId);
+        } catch (FeignException.NotFound e) {
+            return MissingNode.getInstance();
+        }
+    }
+
     /** 한 번에 전체 결과를 읽는다. 한도 초과는 잘라 저장하지 않고 오류로 처리한다. */
     public List<InstagramPost> items(String dataset) {
         List<InstagramPost> posts = api.items(authorization(), dataset, properties.resultsLimit() + 1);

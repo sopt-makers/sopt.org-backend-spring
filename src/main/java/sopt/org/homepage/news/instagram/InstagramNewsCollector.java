@@ -58,27 +58,47 @@ public class InstagramNewsCollector {
                 if (id.isBlank()) throw new IllegalStateException("Apify run ID missing");
                 return id;
             }
-            // 미저장 결과의 기간을 다음 수집에도 포함해 개별 실패가 오래돼도 누락하지 않는다.
             Instant since = properties.collectionSince(news.findLatestInstagramPublishedAt());
-            List<InstagramPost> previous;
-            try {
-                previous = results(run);
-            } catch (feign.FeignException.NotFound | IllegalStateException e) {
-                // 만료된 dataset이나 잘못된 완료 결과가 다음 유료 실행까지 영구 차단하지 않게 한다.
-                log.warn("Previous Instagram dataset unavailable; restarting from configured lower bound", e);
-                previous = List.of();
-                since = properties.since();
-            }
-            if (previous.size() >= properties.resultsLimit()) since = properties.since();
-            for (InstagramPost post : previous) {
-                if (processor.isEligible(post) && !news.existsByInstagramPostId(post.id())
-                        && !post.timestamp().isAfter(since)) {
-                    Instant retrySince = post.timestamp().minusSeconds(1);
-                    since = retrySince.isBefore(properties.since()) ? properties.since() : retrySince;
-                }
-            }
+            if (!run.isMissingNode()) since = collectionSince(run, since);
             return apify.start(since);
         } finally { starting.set(false); }
+    }
+
+    /** 실패 실행은 원격 INPUT의 하한을 이어받으므로 연속 실패해도 재시도 범위가 사라지지 않는다. */
+    private Instant collectionSince(JsonNode run, Instant since) {
+        JsonNode input = apify.input(run.path("defaultKeyValueStoreId").asText());
+        java.util.Optional<Instant> inputSince = previousSince(input);
+        Instant previousSince = inputSince.orElse(properties.since());
+        if (!"SUCCEEDED".equals(run.path("status").asText()) || inputSince.isEmpty()) {
+            since = earlier(since, previousSince);
+        }
+        List<InstagramPost> previous;
+        try {
+            previous = results(run);
+        } catch (feign.FeignException.NotFound | IllegalStateException e) {
+            log.warn("Previous Instagram dataset unavailable; preserving its input window", e);
+            return earlier(since, previousSince);
+        }
+        if (previous.size() >= properties.resultsLimit()) since = properties.since();
+        for (InstagramPost post : previous) {
+            if (processor.isEligible(post) && !news.existsByInstagramPostId(post.id())) {
+                since = earlier(since, post.timestamp().minusSeconds(1));
+            }
+        }
+        return since.isBefore(properties.since()) ? properties.since() : since;
+    }
+
+    private java.util.Optional<Instant> previousSince(JsonNode input) {
+        try {
+            Instant since = Instant.parse(input.path("onlyPostsNewerThan").asText());
+            return java.util.Optional.of(since.isBefore(properties.since()) ? properties.since() : since);
+        } catch (java.time.format.DateTimeParseException e) {
+            return java.util.Optional.empty();
+        }
+    }
+
+    private Instant earlier(Instant first, Instant second) {
+        return first.isBefore(second) ? first : second;
     }
 
     private void importRun(JsonNode run) {

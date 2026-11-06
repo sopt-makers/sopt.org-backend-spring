@@ -190,11 +190,45 @@ class InstagramNewsCollectionTest extends InstagramNewsIntegrationTestBase {
     }
 
     @Test
+    @DisplayName("✅ 오래된 게시물 재시도 중 연속 실패해도 원격 INPUT의 수집 하한 유지")
+    void preservesRetryWindowAcrossConsecutiveFailedRuns() throws Exception {
+        news.saveAndFlush(News.fromInstagramPost("최신", "https://www.instagram.com/p/latest/", "image.jpg", "2",
+                Instant.parse("2026-03-01T00:00:00Z")));
+        when(apify.lastRun()).thenReturn(run("SUCCEEDED"));
+        when(apify.items("dataset")).thenReturn(List.of(post("1", "sopt_media_official", "2026-01-01T00:00:00Z")));
+        when(apify.start(any())).thenReturn("retry1", "retry2", "retry3");
+        collector.startCollection();
+        Instant retrySince = Instant.parse("2025-12-31T23:59:59Z");
+        when(apify.input("retry-input")).thenReturn(mapper.readTree(
+                "{\"onlyPostsNewerThan\":\"" + retrySince + "\",\"resultsLimit\":1000}"));
+        when(apify.lastRun()).thenReturn(mapper.readTree(
+                "{\"id\":\"retry1\",\"status\":\"FAILED\",\"defaultKeyValueStoreId\":\"retry-input\"}"));
+        collector.startCollection();
+        when(apify.lastRun()).thenReturn(mapper.readTree(
+                "{\"id\":\"retry2\",\"status\":\"TIMED-OUT\",\"defaultKeyValueStoreId\":\"retry-input\"}"));
+        collector.startCollection();
+        verify(apify, times(3)).start(retrySince);
+    }
+
+    @Test
     @DisplayName("❌ 수집 활성화 시 환경별 Task ID 누락을 기동 설정 검증에서 거부")
     void requiresTaskWhenEnabled() {
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> new InstagramNewsConfig.Properties(
                 "token", true, "", Instant.parse("2025-12-31T15:00:00Z"), 7, 1000, List.of()))
                 .isInstanceOf(IllegalArgumentException.class).hasMessageContaining("task-id");
+    }
+
+    @Test
+    @DisplayName("✅ 이전 INPUT이 만료되면 데이터 누락 방지를 위해 설정 하한부터 재수집")
+    void preservesWindowWhenInputExpired() throws Exception {
+        news.saveAndFlush(News.fromInstagramPost("최신", "https://www.instagram.com/p/latest/", "image.jpg", "2",
+                Instant.parse("2026-03-01T00:00:00Z")));
+        when(apify.lastRun()).thenReturn(run("SUCCEEDED"));
+        when(apify.input(anyString())).thenReturn(com.fasterxml.jackson.databind.node.MissingNode.getInstance());
+        when(apify.items("dataset")).thenReturn(List.of());
+        when(apify.start(any())).thenReturn("new");
+        collector.startCollection();
+        verify(apify).start(new InstagramNewsConfig.Properties("token", "test-task").since());
     }
 
     private String adminToken() {

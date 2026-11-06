@@ -116,4 +116,14 @@ class ApifyInstagramClientTest extends InstagramNewsIntegrationTestBase {
         org.mockito.Mockito.verify(api).start(org.mockito.ArgumentMatchers.eq("Bearer same-token"), org.mockito.ArgumentMatchers.eq("prod-task"), org.mockito.ArgumentMatchers.anyMap());
     }
 
+    @Test
+    @DisplayName("✅ 원격 INPUT은 JSON 본문을 그대로 읽고 만료되면 누락으로 반환")
+    void readsPreviousInput() {
+        responseBody = "{\"onlyPostsNewerThan\":\"2026-01-01T00:00:00Z\",\"resultsLimit\":1000}";
+        assertThat(client.input("store").path("onlyPostsNewerThan").asText()).isEqualTo("2026-01-01T00:00:00Z");
+        assertThat(requestUri.get()).isEqualTo("/key-value-stores/store/records/INPUT");
+        responseStatus = 404;
+        assertThat(client.input("store").isMissingNode()).isTrue();
+    }
+
 }

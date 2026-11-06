@@ -37,6 +37,8 @@ abstract class InstagramNewsIntegrationTestBase extends IntegrationTestBase {
         org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 0);
         collector = new InstagramNewsCollector(apify, processor, new InstagramNewsConfig.Properties("test-token", "test-task"), news);
         when(apify.lastRun()).thenReturn(com.fasterxml.jackson.databind.node.MissingNode.getInstance());
+        when(apify.input(anyString())).thenReturn(mapper.createObjectNode()
+                .put("onlyPostsNewerThan", "2025-12-31T15:00:00Z").put("resultsLimit", 1000));
         when(thumbnails.store(anyString(), anyString())).thenReturn("https://s3.example.com/news.jpg");
     }
 
