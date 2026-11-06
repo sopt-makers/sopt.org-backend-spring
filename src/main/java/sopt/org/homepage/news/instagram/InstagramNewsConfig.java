@@ -49,7 +49,7 @@ public class InstagramNewsConfig {
             if (enabled && (taskId == null || taskId.isBlank())) {
                 throw new IllegalArgumentException("news.instagram.task-id is required when enabled");
             }
-            if (since == null || overlapDays < 1 || resultsLimit < 1) {
+            if (since == null || overlapDays < 1 || resultsLimit < 1 || resultsLimit == Integer.MAX_VALUE) {
                 throw new IllegalArgumentException("Instagram collection limits must be positive and since must be configured");
             }
         }

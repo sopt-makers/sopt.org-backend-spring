@@ -211,6 +211,51 @@ class InstagramNewsCollectionTest extends InstagramNewsIntegrationTestBase {
     }
 
     @Test
+    @DisplayName("✅ 결과 한도 도달 후 동일 유료 수집을 반복하지 않고 409 반환")
+    void blocksRepeatedCappedCollection() throws Exception {
+        var properties = new InstagramNewsConfig.Properties("token", false, "test-task",
+                Instant.parse("2025-12-31T15:00:00Z"), 7, 2, List.of());
+        var limited = new InstagramNewsCollector(apify, processor, properties, news);
+        when(apify.input(anyString())).thenReturn(mapper.createObjectNode()
+                .put("onlyPostsNewerThan", properties.since().toString()).put("resultsLimit", 2));
+        when(apify.lastRun()).thenReturn(run("SUCCEEDED"));
+        when(apify.items("dataset")).thenReturn(List.of(post("1", "sopt_media_official", "2026-01-01T00:00:00Z"),
+                post("2", "sopt_media_official", "2026-01-02T00:00:00Z")));
+        for (int i = 0; i < 2; i++) {
+            org.assertj.core.api.Assertions.assertThatThrownBy(limited::startCollection)
+                    .isInstanceOf(org.springframework.web.server.ResponseStatusException.class)
+                    .satisfies(error -> assertThat(((org.springframework.web.server.ResponseStatusException) error).getStatusCode().value()).isEqualTo(409));
+        }
+        verify(apify, never()).start(any());
+        // 수집을 중단해도 이미 확보한 결과는 계속 저장한다.
+        limited.importLatest();
+        assertThat(news.count()).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("✅ 한도를 올린 재시도는 이전 INPUT 기간을 유지하며 이후 정상 증분 수집")
+    void retriesCappedWindowOnlyAfterIncreasingLimit() throws Exception {
+        Instant originalSince = Instant.parse("2026-01-31T23:59:59Z");
+        Instant latest = Instant.parse("2026-03-01T00:00:00Z");
+        news.saveAndFlush(News.fromInstagramPost("최신", "https://www.instagram.com/p/latest/", "image.jpg", "9", latest));
+        when(apify.lastRun()).thenReturn(mapper.readTree(
+                "{\"id\":\"old\",\"status\":\"SUCCEEDED\",\"defaultDatasetId\":\"dataset\",\"defaultKeyValueStoreId\":\"input\"}"));
+        when(apify.input("input")).thenReturn(mapper.readTree(
+                "{\"onlyPostsNewerThan\":\"" + originalSince + "\",\"resultsLimit\":2}"));
+        when(apify.items("dataset")).thenReturn(List.of(post("1", "sopt_media_official", "2026-02-01T00:00:00Z"),
+                post("2", "sopt_media_official", "2026-02-02T00:00:00Z")));
+        when(apify.start(any())).thenReturn("new");
+        collector.startCollection();
+        verify(apify).start(originalSince);
+        // 한도에 닿지 않은 정상 완료 이후에는 최근 중복 구간만 다시 읽는다.
+        collector.importLatest();
+        when(apify.input("input")).thenReturn(mapper.readTree(
+                "{\"onlyPostsNewerThan\":\"" + originalSince + "\",\"resultsLimit\":1000}"));
+        collector.startCollection();
+        verify(apify).start(latest.minus(java.time.Duration.ofDays(7)));
+    }
+
+    @Test
     @DisplayName("❌ 수집 활성화 시 환경별 Task ID 누락을 기동 설정 검증에서 거부")
     void requiresTaskWhenEnabled() {
         org.assertj.core.api.Assertions.assertThatThrownBy(() -> new InstagramNewsConfig.Properties(

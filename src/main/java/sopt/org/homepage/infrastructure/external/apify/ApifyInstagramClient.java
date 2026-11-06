@@ -49,7 +49,11 @@ public class ApifyInstagramClient {
     public List<InstagramPost> items(String dataset) {
         List<InstagramPost> posts = api.items(authorization(), dataset, properties.resultsLimit() + 1);
         if (posts == null) throw new IllegalStateException("Apify dataset missing");
-        if (posts.size() > properties.resultsLimit()) throw new IllegalStateException("Apify dataset exceeds configured limit");
+        if (posts.size() > properties.resultsLimit()) {
+            throw new org.springframework.web.server.ResponseStatusException(
+                    org.springframework.http.HttpStatus.CONFLICT,
+                    "Previous dataset exceeds news.instagram.results-limit; increase the limit before retrying");
+        }
         return posts;
     }
 

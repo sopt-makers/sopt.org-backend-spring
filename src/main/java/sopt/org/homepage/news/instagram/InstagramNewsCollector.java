@@ -79,7 +79,16 @@ public class InstagramNewsCollector {
             log.warn("Previous Instagram dataset unavailable; preserving its input window", e);
             return earlier(since, previousSince);
         }
-        if (previous.size() >= properties.resultsLimit()) since = properties.since();
+        int previousLimit = input.path("resultsLimit").asInt(properties.resultsLimit());
+        if (previousLimit < 1) previousLimit = properties.resultsLimit();
+        if (previous.size() >= previousLimit) {
+            if (properties.resultsLimit() <= previousLimit) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Previous collection reached its result limit; increase news.instagram.results-limit before retrying");
+            }
+            // 한도를 올린 재시도는 최초 기간이 아니라 해당 실행의 원래 기간만 다시 읽는다.
+            since = earlier(since, previousSince);
+        }
         for (InstagramPost post : previous) {
             if (processor.isEligible(post) && !news.existsByInstagramPostId(post.id())) {
                 since = earlier(since, post.timestamp().minusSeconds(1));
