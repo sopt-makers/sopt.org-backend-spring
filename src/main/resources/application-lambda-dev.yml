@@ -177,7 +177,7 @@ logging:
 
 # Instagram NEWS 자동 수집 (Lambda에서는 기본 비활성화)
 news:
-  display-limit: ${NEWS_DISPLAY_LIMIT:4}
+  display-limit: ${NEWS_DISPLAY_LIMIT:0}
   instagram:
     enabled: ${INSTAGRAM_NEWS_ENABLED:false}
     apify-token: ${APIFY_API_TOKEN:}

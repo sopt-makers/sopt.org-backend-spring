@@ -32,6 +32,7 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
 
     @BeforeEach
     void setUp() {
+        org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 0);
         scheduler = new InstagramNewsScheduler(apify, processor, new InstagramNewsConfig.Properties("test-token"));
         when(thumbnails.store(anyString(), anyString())).thenReturn("https://s3.example.com/news.jpg");
     }
@@ -222,6 +223,7 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
     @Test
     @DisplayName("🔍 홈페이지는 최신 뉴스 최대 4개만 조회하고 관리자 조회는 전체 유지")
     void homepageLimitsNewsAtQueryTime() {
+        org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 4);
         assertThat(newsService.findLatestForHomepage()).isEmpty();
         for (int day : List.of(2, 1)) {
             news.saveAndFlush(News.fromInstagramPost("뉴스" + day, "https://www.instagram.com/p/post" + day + "/",
@@ -238,7 +240,7 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
             org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 2);
             assertThat(newsService.findLatestForHomepage()).extracting(News::getInstagramPostId).containsExactly("6", "5");
         } finally {
-            org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 4);
+            org.springframework.test.util.ReflectionTestUtils.setField(newsService, "newsDisplayLimit", 0);
         }
     }
 

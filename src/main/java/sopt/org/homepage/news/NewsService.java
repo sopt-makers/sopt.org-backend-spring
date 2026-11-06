@@ -33,7 +33,7 @@ public class NewsService {
     private final S3Service s3Service;
     private final NewsRepository newsRepository;
 
-    @Value("${news.display-limit:4}")
+    @Value("${news.display-limit:0}")
     private int newsDisplayLimit;
 
     // ===== Command 메서드 =====
@@ -223,7 +223,8 @@ public class NewsService {
     /** 홈페이지에는 원본 게시일 최신순으로 설정된 개수만 노출한다. */
     @Transactional(readOnly = true)
     public List<News> findLatestForHomepage() {
-        return newsRepository.findLatest(newsDisplayLimit);
+        return newsDisplayLimit > 0 ? newsRepository.findLatest(newsDisplayLimit)
+                : newsRepository.findAllByPublishedAtDesc();
     }
 
     @Transactional(readOnly = true)
