@@ -255,6 +255,19 @@ class InstagramNewsPostProcessorTest extends IntegrationTestBase {
         assertThat(result.getTitle()).isEqualTo("수정");
     }
 
+    @Test
+    @DisplayName("✅ 삭제한 인스타 뉴스는 재수집되지 않고 조회에서 숨김")
+    void hidesImportedNewsPermanently() {
+        var original = post("1", "sopt_media_official", "2026-01-01T00:00:00Z");
+        processor.process(original);
+        var request = new sopt.org.homepage.news.dto.DeleteAdminNewsRequestDto(news.findAll().get(0).getId());
+        newsService.deleteMainNews(request);
+        processor.process(original);
+        assertThat(newsService.findAll()).isEmpty();
+        assertThat(newsService.findLatestForHomepage()).isEmpty();
+        assertThat(news.count()).isEqualTo(1);
+    }
+
     private InstagramPost post(String id, String owner, String timestamp) {
         return new InstagramPost(id, owner, "APPJAM 활동 스케치", "https://www.instagram.com/p/post" + id + "/",
                 Instant.parse(timestamp), "https://scontent.cdninstagram.com/cover.jpg", List.of());

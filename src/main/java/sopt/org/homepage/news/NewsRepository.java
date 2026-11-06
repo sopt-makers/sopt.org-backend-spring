@@ -15,10 +15,10 @@ public interface NewsRepository extends JpaRepository<News, Integer> {
 
     void deleteByInstagramPostIdIsNull();
 
-    @Query("select n from News n order by n.publishedAt desc nulls last, n.createdAt desc, n.id desc")
+    @Query("select n from News n where n.hidden = false order by n.publishedAt desc nulls last, n.createdAt desc, n.id desc")
     List<News> findAllByPublishedAtDesc();
 
-    @Query(value = "select * from main_news order by published_at desc nulls last, created_at desc, id desc limit :limit", nativeQuery = true)
+    @Query(value = "select * from main_news where hidden = false order by published_at desc nulls last, created_at desc, id desc limit :limit", nativeQuery = true)
     List<News> findLatest(@Param("limit") int limit);
 
     boolean existsByInstagramPostIdIsNotNullAndLinkIn(List<String> links);

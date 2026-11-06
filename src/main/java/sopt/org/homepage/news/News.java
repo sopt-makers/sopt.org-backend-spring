@@ -49,6 +49,11 @@ public class News {
     @Column(name = "published_at")
     private Instant publishedAt;
 
+    @Column(nullable = false)
+    private boolean hidden;
+
+    public void hide() { hidden = true; }
+
     /** 수집 게시물 식별자와 원본 업로드 시각을 보존해 뉴스를 생성한다. */
     public static News fromInstagramPost(String title, String link, String image, String postId, Instant publishedAt) {
         News news = new News(image, title, link);

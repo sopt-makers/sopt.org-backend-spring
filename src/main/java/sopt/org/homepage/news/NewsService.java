@@ -156,11 +156,12 @@ public class NewsService {
                         "News not found with id: " + request.getId()
                 ));
 
-        // 2. S3에서 이미지 삭제
-        s3Service.deleteFile(news.getImage());
-
-        // 3. DB에서 삭제
-        newsRepository.delete(news);
+        if (news.getInstagramPostId() != null) {
+            news.hide();
+        } else {
+            s3Service.deleteFile(news.getImage());
+            newsRepository.delete(news);
+        }
 
         log.info("최신소식 삭제 완료 - id={}", request.getId());
 
@@ -180,7 +181,7 @@ public class NewsService {
                     .findFirst().orElse(null);
             if (match != null) {
                 retained.add(match.getId());
-                match.update(item.imageUrl(), item.title(), item.link());
+                if (!match.isHidden()) match.update(item.imageUrl(), item.title(), item.link());
             } else {
                 newsRepository.save(News.builder().title(item.title()).link(item.link()).image(item.imageUrl()).build());
             }
