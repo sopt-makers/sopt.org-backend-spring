@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "homepage_review")
@@ -20,12 +21,9 @@ public class HomepageReview {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    /**
-     * @param type null이면 활동 후기(ACTIVITY)로 생성
-     */
     public static HomepageReview create(HomepageReviewType type, String title, String content, String authorInfo) {
         HomepageReview review = new HomepageReview();
-        review.type = HomepageReviewType.orDefault(type);
+        review.type = Objects.requireNonNull(type, "HomepageReview type must not be null");
         review.title = title;
         review.content = content;
         review.authorInfo = authorInfo;

@@ -1,13 +1,18 @@
 package sopt.org.homepage.homepagereview;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.tuple;
 import static sopt.org.homepage.application.homepage.review.domain.HomepageReviewType.ACTIVITY;
 import static sopt.org.homepage.application.homepage.review.domain.HomepageReviewType.RECRUITING;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -277,26 +282,8 @@ class HomepageReviewServiceTest extends IntegrationTestBase {
     class BulkCreate {
 
         @Test
-        @DisplayName("✅ 정상: 요청에 포함된 종류만 교체하고 나머지 종류는 유지")
-        void bulkCreate_ReplacesOnlyIncludedTypes() {
-            saveReviews(ACTIVITY, 3);
-            saveReviews(RECRUITING, 2);
-
-            homepageReviewService.bulkCreate(new BulkCreateHomepageReviewsCommand(List.of(
-                    reviewData(ACTIVITY, "새활동1"),
-                    reviewData(ACTIVITY, "새활동2")
-            )));
-
-            List<HomepageReview> all = homepageReviewRepository.findAllByOrderByIdAsc();
-            assertThat(all).filteredOn(r -> r.getType() == ACTIVITY)
-                    .extracting(HomepageReview::getTitle)
-                    .containsExactly("새활동1", "새활동2");
-            assertThat(all).filteredOn(r -> r.getType() == RECRUITING).hasSize(2);
-        }
-
-        @Test
-        @DisplayName("✅ 정상: 두 종류를 함께 보내면 모두 교체")
-        void bulkCreate_BothTypes() {
+        @DisplayName("✅ 정상: 요청 목록으로 전체 교체")
+        void bulkCreate_ReplacesAll() {
             saveReviews(ACTIVITY, 3);
             saveReviews(RECRUITING, 2);
 
@@ -306,22 +293,34 @@ class HomepageReviewServiceTest extends IntegrationTestBase {
             )));
 
             assertThat(homepageReviewRepository.findAllByOrderByIdAsc())
-                    .extracting(HomepageReview::getTitle)
-                    .containsExactly("새활동", "새지원");
+                    .extracting(HomepageReview::getType, HomepageReview::getTitle)
+                    .containsExactly(tuple(ACTIVITY, "새활동"), tuple(RECRUITING, "새지원"));
         }
 
         @Test
-        @DisplayName("✅ 정상: type 없는 항목은 활동 후기로 교체 (지원 후기 유지)")
-        void bulkCreate_WithoutType_TreatedAsActivity() {
+        @DisplayName("✅ 정상: 요청에 없는 종류의 후기는 삭제")
+        void bulkCreate_OmittedTypeIsDeleted() {
             saveReviews(ACTIVITY, 3);
             saveReviews(RECRUITING, 2);
 
             homepageReviewService.bulkCreate(new BulkCreateHomepageReviewsCommand(List.of(
-                    reviewData(null, "레거시")
+                    reviewData(ACTIVITY, "새활동")
             )));
 
             assertThat(homepageReviewRepository.countByType(ACTIVITY)).isEqualTo(1);
-            assertThat(homepageReviewRepository.countByType(RECRUITING)).isEqualTo(2);
+            assertThat(homepageReviewRepository.countByType(RECRUITING)).isZero();
+        }
+
+        @Test
+        @DisplayName("✅ 정상: type 없는 항목은 활동 후기로 생성")
+        void bulkCreate_WithoutType_TreatedAsActivity() {
+            homepageReviewService.bulkCreate(new BulkCreateHomepageReviewsCommand(List.of(
+                    reviewData(null, "레거시")
+            )));
+
+            assertThat(homepageReviewRepository.findAll())
+                    .extracting(HomepageReview::getType)
+                    .containsExactly(ACTIVITY);
         }
 
         @Test
@@ -337,8 +336,9 @@ class HomepageReviewServiceTest extends IntegrationTestBase {
 
         @Test
         @DisplayName("❌ 실패: 한 종류가 7개를 초과하면 기존 데이터 유지")
-        void bulkCreate_ExceedsMaxPerType_ThrowsException() {
+        void bulkCreate_ExceedsMaxPerType_KeepsExistingData() {
             saveReviews(ACTIVITY, 2);
+            saveReviews(RECRUITING, 2);
             List<ReviewData> reviews = IntStream.range(0, 8)
                     .mapToObj(i -> reviewData(RECRUITING, "지원" + i))
                     .toList();
@@ -347,7 +347,35 @@ class HomepageReviewServiceTest extends IntegrationTestBase {
                     .isInstanceOf(ClientBadRequestException.class)
                     .hasMessageContaining("최대 7개");
             assertThat(homepageReviewRepository.countByType(ACTIVITY)).isEqualTo(2);
-            assertThat(homepageReviewRepository.countByType(RECRUITING)).isZero();
+            assertThat(homepageReviewRepository.countByType(RECRUITING)).isEqualTo(2);
+        }
+    }
+
+    @Nested
+    @DisplayName("홈페이지 리뷰 목록 개수 검증")
+    class ValidateMaxCountPerType {
+
+        @Test
+        @DisplayName("✅ 정상: 종류별 7개씩 총 14개")
+        void validate_SevenPerType_Success() {
+            List<HomepageReviewType> types = Stream.concat(
+                    Collections.nCopies(7, ACTIVITY).stream(),
+                    Collections.nCopies(7, RECRUITING).stream()
+            ).toList();
+
+            assertThatCode(() -> homepageReviewService.validateMaxCountPerType(types))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("❌ 실패: type 생략 항목은 활동 후기로 집계되어 초과")
+        void validate_NullCountedAsActivity_ThrowsException() {
+            List<HomepageReviewType> types = new ArrayList<>(Collections.nCopies(7, ACTIVITY));
+            types.add(null);
+
+            assertThatThrownBy(() -> homepageReviewService.validateMaxCountPerType(types))
+                    .isInstanceOf(ClientBadRequestException.class)
+                    .hasMessageContaining("활동 후기는 최대 7개");
         }
     }
 }

@@ -581,6 +581,9 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (request.getReview() != null) {
+            homepageReviewService.validateMaxCountPerType(request.getReview().stream()
+                    .map(AddAdminReviewRequestDto::getType)
+                    .toList());
             cachedData.setReviews(new ArrayList<>(request.getReview()));
         }
 
