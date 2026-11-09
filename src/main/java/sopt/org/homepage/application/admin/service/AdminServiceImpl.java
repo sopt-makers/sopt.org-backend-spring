@@ -421,6 +421,7 @@ public class AdminServiceImpl implements AdminService {
                 BulkCreateHomepageReviewsCommand.builder()
                         .reviews(cachedData.getReviews().stream()
                                 .map(r -> BulkCreateHomepageReviewsCommand.ReviewData.builder()
+                                        .type(r.getType())
                                         .title(r.getTitle())
                                         .content(r.getContent())
                                         .authorInfo(r.getAuthorInfo())
@@ -580,6 +581,9 @@ public class AdminServiceImpl implements AdminService {
         }
 
         if (request.getReview() != null) {
+            homepageReviewService.validateMaxCountPerType(request.getReview().stream()
+                    .map(AddAdminReviewRequestDto::getType)
+                    .toList());
             cachedData.setReviews(new ArrayList<>(request.getReview()));
         }
 
@@ -639,6 +643,7 @@ public class AdminServiceImpl implements AdminService {
                     BulkCreateHomepageReviewsCommand.builder()
                             .reviews(cachedData.getReviews().stream()
                                     .map(r -> BulkCreateHomepageReviewsCommand.ReviewData.builder()
+                                            .type(r.getType())
                                             .title(r.getTitle())
                                             .content(r.getContent())
                                             .authorInfo(r.getAuthorInfo())
@@ -1180,6 +1185,7 @@ public class AdminServiceImpl implements AdminService {
                 .review(reviews.stream()
                         .map(r -> GetAdminReviewResponseRecordDto.builder()
                                 .id(r.getId())
+                                .type(r.getType())
                                 .title(r.getTitle())
                                 .content(r.getContent())
                                 .authorInfo(r.getAuthorInfo())

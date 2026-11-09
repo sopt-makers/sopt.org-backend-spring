@@ -70,7 +70,8 @@ public class AdminController {
 
     // ===== 탭별 배포 - 홈 =====
 
-    @Operation(summary = "홈 탭 배포", description = "홈 헤더 이미지 Presigned URL을 발급하고 리뷰/최신소식을 캐시에 저장합니다. 응답의 Presigned URL로 이미지 업로드 후 2단계를 호출하세요.")
+    @Operation(summary = "홈 탭 배포", description = "홈 헤더 이미지 Presigned URL을 발급하고 리뷰/최신소식을 캐시에 저장합니다. 응답의 Presigned URL로 이미지 업로드 후 2단계를 호출하세요. "
+            + "리뷰는 종류별 최대 7개(type 생략 시 ACTIVITY)이며, 초과 시 400을 반환합니다.")
     @PostMapping("home")
     public ResponseEntity<AddAdminHomeResponseDto> addHome(
             @RequestBody @Valid AddAdminHomeRequestDto request
@@ -79,7 +80,8 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @Operation(summary = "홈 탭 배포 확정", description = "이미지 업로드 완료 후 캐시 데이터를 DB에 반영합니다. 공통 탭 배포 이후에 호출해야 합니다.")
+    @Operation(summary = "홈 탭 배포 확정", description = "이미지 업로드 완료 후 캐시 데이터를 DB에 반영합니다. 공통 탭 배포 이후에 호출해야 합니다. "
+            + "리뷰는 1단계에서 보낸 목록으로 전체 교체됩니다(종류 무관, 빈 배열이면 전체 삭제, 생략 시 변경 없음).")
     @PostMapping("home/confirm")
     public ResponseEntity<AddAdminConfirmResponseDto> addHomeConfirm(
             @RequestBody @Valid AddAdminConfirmRequestDto request

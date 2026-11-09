@@ -23,7 +23,8 @@ public class AddAdminHomeRequestDto {
     @Schema(description = "홈 헤더 이미지 파일명 (생략 시 기존 이미지 유지)", requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "home_header.png")
     private String homeHeaderImageFileName;
 
-    @Schema(description = "리뷰 목록")
+    @Schema(description = "리뷰 목록. 활동/지원 후기를 모두 포함한 전체 목록으로 교체합니다. "
+            + "빈 배열이면 전체 삭제, 생략(null) 시 변경 없음. 종류별 최대 7개, type 생략 시 ACTIVITY")
     @Valid
     private List<AddAdminReviewRequestDto> review;
 
