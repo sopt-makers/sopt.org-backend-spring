@@ -63,6 +63,19 @@ public class HomepageQueryService {
     private final PlaygroundService playgroundService;
     private final AuthService authService;
 
+    public MainPageResponse.BrandingColor getBrandingColor() {
+        return toBrandingColor(generationService.findLatest().brandingColor());
+    }
+
+    private MainPageResponse.BrandingColor toBrandingColor(GenerationDetailView.BrandingColorView color) {
+        return MainPageResponse.BrandingColor.builder()
+                .darkModeKeyColor(color.darkModeKeyColor())
+                .darkModeTextColor(color.darkModeTextColor())
+                .lightModeKeyColor(color.lightModeKeyColor())
+                .lightModeTextColor(color.lightModeTextColor())
+                .build();
+    }
+
     /**
      * Main 페이지 데이터 조회
      * <p>
@@ -106,12 +119,7 @@ public class HomepageQueryService {
                 .generation(generation.id())
                 .name(generation.name())
                 .homeHeaderImage(homeHeaderImage)
-                .brandingColor(MainPageResponse.BrandingColor.builder()
-                        .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
-                        .darkModeTextColor(generation.brandingColor().darkModeTextColor())
-                        .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
-                        .lightModeTextColor(generation.brandingColor().lightModeTextColor())
-                        .build())
+                .brandingColor(toBrandingColor(generation.brandingColor()))
                 .coreValue(coreValues.stream()
                         .map(cv -> MainPageResponse.CoreValue.builder()
                                 .value(cv.value())
