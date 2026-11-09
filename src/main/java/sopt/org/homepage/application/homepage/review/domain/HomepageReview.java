@@ -20,13 +20,21 @@ public class HomepageReview {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    public static HomepageReview create(String title, String content, String authorInfo) {
+    /**
+     * @param type null이면 활동 후기(ACTIVITY)로 생성
+     */
+    public static HomepageReview create(HomepageReviewType type, String title, String content, String authorInfo) {
         HomepageReview review = new HomepageReview();
+        review.type = HomepageReviewType.orDefault(type);
         review.title = title;
         review.content = content;
         review.authorInfo = authorInfo;
         return review;
     }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false, length = 20)
+    private HomepageReviewType type;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -45,7 +53,13 @@ public class HomepageReview {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public void update(String title, String content, String authorInfo) {
+    /**
+     * @param type null이면 기존 종류 유지
+     */
+    public void update(HomepageReviewType type, String title, String content, String authorInfo) {
+        if (type != null) {
+            this.type = type;
+        }
         this.title = title;
         this.content = content;
         this.authorInfo = authorInfo;

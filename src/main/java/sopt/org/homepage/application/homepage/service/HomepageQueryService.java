@@ -159,6 +159,7 @@ public class HomepageQueryService {
                 .reviews(reviews.stream()
                         .map(r -> MainPageResponse.Review.builder()
                                 .id(r.getId().intValue())
+                                .type(r.getType())
                                 .title(r.getTitle())
                                 .content(r.getContent())
                                 .authorInfo(r.getAuthorInfo())

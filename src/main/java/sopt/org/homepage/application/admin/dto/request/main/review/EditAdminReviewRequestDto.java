@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import sopt.org.homepage.application.homepage.review.domain.HomepageReviewType;
 
 @Getter
 @RequiredArgsConstructor
@@ -23,4 +24,8 @@ public class EditAdminReviewRequestDto {
     @Schema(description = "작성자 정보", example = "김솝트 | 36,37기 활동 | 서버")
     @NotBlank
     private final String authorInfo;
+
+    @Schema(description = "후기 종류 (ACTIVITY: 활동 후기, RECRUITING: 지원 후기). 생략 시 기존 종류 유지",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED, example = "ACTIVITY")
+    private final HomepageReviewType type;
 }

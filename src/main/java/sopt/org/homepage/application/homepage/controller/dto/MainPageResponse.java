@@ -3,6 +3,7 @@ package sopt.org.homepage.application.homepage.controller.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
+import sopt.org.homepage.application.homepage.review.domain.HomepageReviewType;
 
 /**
  * MainPageResponse
@@ -112,6 +113,9 @@ public record MainPageResponse(
     public record Review(
             @Schema(description = "ID", example = "1")
             int id,
+
+            @Schema(description = "후기 종류 (ACTIVITY: 활동 후기, RECRUITING: 지원 후기)", example = "ACTIVITY")
+            HomepageReviewType type,
 
             @Schema(description = "제목", example = "후회없는 활동")
             String title,

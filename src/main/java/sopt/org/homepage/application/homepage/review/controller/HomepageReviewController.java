@@ -31,7 +31,7 @@ public class HomepageReviewController {
 
     private final HomepageReviewService homepageReviewService;
 
-    @Operation(summary = "홈페이지 리뷰 추가", description = "제목 최대 10자, 내용 최대 200자")
+    @Operation(summary = "홈페이지 리뷰 추가", description = "제목 최대 10자, 내용 최대 200자. type 생략 시 ACTIVITY, 종류별 최대 7개")
     @SecurityRequirement(name = SecurityConstants.SCHEME_NAME)
     @PostMapping
     public ResponseEntity<AddAdminReviewResponseRecordDto> createReview(
@@ -48,7 +48,7 @@ public class HomepageReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @Operation(summary = "홈페이지 리뷰 수정", description = "제목 최대 10자, 내용 최대 200자")
+    @Operation(summary = "홈페이지 리뷰 수정", description = "제목 최대 10자, 내용 최대 200자. type 생략 시 기존 종류 유지")
     @SecurityRequirement(name = SecurityConstants.SCHEME_NAME)
     @PatchMapping("/{id}")
     public ResponseEntity<EditAdminReviewResponseRecordDto> editReview(
