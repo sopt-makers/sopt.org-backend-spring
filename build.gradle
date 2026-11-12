@@ -50,9 +50,9 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // TestContainer
-    testImplementation 'org.testcontainers:testcontainers:1.19.3'
-    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
-    testImplementation 'org.testcontainers:postgresql:1.19.3'
+    testImplementation 'org.testcontainers:testcontainers:1.21.4'
+    testImplementation 'org.testcontainers:junit-jupiter:1.21.4'
+    testImplementation 'org.testcontainers:postgresql:1.21.4'
 
     // 🆕 Sentry (명시적 버전 관리)
     // 플러그인이 자동 설치하지만, 명시적으로 버전을 고정하기 위해 추가

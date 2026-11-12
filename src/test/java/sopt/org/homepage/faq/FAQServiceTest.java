@@ -13,14 +13,14 @@ import sopt.org.homepage.common.IntegrationTestBase;
 import sopt.org.homepage.faq.dto.BulkCreateFAQsCommand;
 import sopt.org.homepage.faq.dto.CreateFAQCommand;
 import sopt.org.homepage.faq.dto.FAQView;
-import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.faq.vo.FAQCategory;
 import sopt.org.homepage.global.exception.ClientBadRequestException;
 
 /**
  * FAQ 통합 테스트
  * <p>
- * 인수인계 목적: - FAQ는 파트별로 관리됨 (ANDROID, IOS, WEB, SERVER, PLAN, DESIGN, COMMON) - QuestionAnswer는 JSON으로 저장됨 - 동일 파트에 중복
- * FAQ 생성 불가
+ * 인수인계 목적: - FAQ는 카테고리별로 관리됨 (QUALIFICATION, INTERVIEW, ACTIVITY) - 기존 파트 FAQ는 레거시 응답(recruitQuestion)용으로 따로 관리됨 -
+ * QuestionAnswer는 JSON으로 저장됨 - 동일 카테고리에 중복 FAQ 생성 불가
  */
 @DisplayName("FAQ 서비스 통합 테스트")
 class FAQServiceTest extends IntegrationTestBase {
@@ -43,19 +43,19 @@ class FAQServiceTest extends IntegrationTestBase {
     class Create {
 
         @Test
-        @DisplayName("✅ 정상: 파트별 FAQ 생성")
+        @DisplayName("✅ 정상: 카테고리별 FAQ 생성")
         void create_Success() {
             // given
             CreateFAQCommand command = CreateFAQCommand.builder()
-                    .part(PartType.ANDROID)
+                    .category(FAQCategory.QUALIFICATION)
                     .questions(List.of(
                             CreateFAQCommand.QuestionAnswerCommand.builder()
-                                    .question("안드로이드 개발 경험이 필수인가요?")
-                                    .answer("필수는 아니지만, 기본적인 프로그래밍 이해가 필요합니다.")
+                                    .question("개발 경험이 없어도 지원할 수 있나요?")
+                                    .answer("네, 지원할 수 있습니다.")
                                     .build(),
                             CreateFAQCommand.QuestionAnswerCommand.builder()
-                                    .question("코틀린을 몰라도 되나요?")
-                                    .answer("활동하면서 배울 수 있습니다.")
+                                    .question("두 개 파트에 동시에 지원할 수 있나요?")
+                                    .answer("한 개 파트에만 지원할 수 있습니다.")
                                     .build()
                     ))
                     .build();
@@ -67,23 +67,23 @@ class FAQServiceTest extends IntegrationTestBase {
             assertThat(id).isNotNull();
 
             FAQView saved = faqService.findById(id);
-            assertThat(saved.part()).isEqualTo(PartType.ANDROID);
+            assertThat(saved.category()).isEqualTo(FAQCategory.QUALIFICATION);
             assertThat(saved.questions()).hasSize(2);
             assertThat(saved.questions().get(0).question())
-                    .isEqualTo("안드로이드 개발 경험이 필수인가요?");
+                    .isEqualTo("개발 경험이 없어도 지원할 수 있나요?");
         }
 
         @Test
-        @DisplayName("❌ 실패: 동일 파트 중복 생성 불가")
-        void create_DuplicatePart_ThrowsException() {
-            // given - 이미 ANDROID FAQ 존재
+        @DisplayName("❌ 실패: 동일 카테고리 중복 생성 불가")
+        void create_DuplicateCategory_ThrowsException() {
+            // given - 이미 QUALIFICATION FAQ 존재
             faqRepository.save(FAQ.builder()
-                    .part(PartType.ANDROID)
+                    .category(FAQCategory.QUALIFICATION)
                     .questions(List.of(new FAQ.QuestionAnswer("Q", "A")))
                     .build());
 
             CreateFAQCommand command = CreateFAQCommand.builder()
-                    .part(PartType.ANDROID)  // 동일 파트
+                    .category(FAQCategory.QUALIFICATION)  // 동일 카테고리
                     .questions(List.of(
                             CreateFAQCommand.QuestionAnswerCommand.builder()
                                     .question("새 질문")
@@ -99,49 +99,129 @@ class FAQServiceTest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("✅ 정상: 일괄 생성 (기존 데이터 전체 교체)")
-        void bulkCreate_ReplacesAllExisting() {
+        @DisplayName("✅ 정상: 레거시 파트 FAQ 일괄 교체 (신규 카테고리 FAQ 유지)")
+        void replaceLegacyPartFAQs_KeepsCategoryFAQs() {
             // given - 기존 데이터
-            faqRepository.saveAll(List.of(
-                    FAQ.builder().part(PartType.ANDROID).questions(List.of(new FAQ.QuestionAnswer("Q1", "A1"))).build(),
-                    FAQ.builder().part(PartType.IOS).questions(List.of(new FAQ.QuestionAnswer("Q2", "A2"))).build()
-            ));
-            assertThat(faqRepository.count()).isEqualTo(2);
+            faqRepository.save(FAQ.builder()
+                    .category(FAQCategory.SERVER)
+                    .questions(List.of(new FAQ.QuestionAnswer("Q1", "A1")))
+                    .build());
+            FAQ categoryFaq = faqRepository.save(FAQ.builder()
+                    .category(FAQCategory.QUALIFICATION)
+                    .questions(List.of(new FAQ.QuestionAnswer("Q2", "A2")))
+                    .build());
 
-            // when - 새로운 데이터로 전체 교체
+            // when - 레거시 파트 FAQ만 교체
             BulkCreateFAQsCommand command = BulkCreateFAQsCommand.builder()
                     .faqs(List.of(
                             BulkCreateFAQsCommand.FAQData.builder()
-                                    .part("SERVER")
+                                    .category("안드로이드")
                                     .question(List.of(
                                             BulkCreateFAQsCommand.QuestionData.builder()
-                                                    .question("서버 개발 언어는?")
-                                                    .answer("Spring Boot를 주로 사용합니다.")
-                                                    .build()
-                                    ))
-                                    .build(),
-                            BulkCreateFAQsCommand.FAQData.builder()
-                                    .part("WEB")
-                                    .question(List.of(
-                                            BulkCreateFAQsCommand.QuestionData.builder()
-                                                    .question("React를 사용하나요?")
-                                                    .answer("네, React를 주로 사용합니다.")
+                                                    .question("코틀린을 몰라도 되나요?")
+                                                    .answer("활동하면서 배울 수 있습니다.")
                                                     .build()
                                     ))
                                     .build()
                     ))
                     .build();
 
-            List<Long> ids = faqService.bulkCreate(command);
+            List<Long> ids = faqService.replaceLegacyPartFAQs(command);
+
+            // then
+            assertThat(ids).hasSize(1);
+            assertThat(faqService.findLegacyPartFAQs()).extracting(FAQView::category)
+                    .containsExactly(FAQCategory.ANDROID);
+            assertThat(faqService.findCategoryFAQs()).containsExactly(FAQView.from(categoryFaq));
+            // 기존 SERVER FAQ는 삭제, QUALIFICATION FAQ는 그대로 유지됨
+        }
+
+        @Test
+        @DisplayName("✅ 정상: 신규 카테고리 FAQ 일괄 교체 (레거시 파트 FAQ 유지)")
+        void replaceCategoryFAQs_KeepsLegacyPartFAQs() {
+            // given - 기존 데이터
+            FAQ legacyPartFaq = faqRepository.save(FAQ.builder()
+                    .category(FAQCategory.SERVER)
+                    .questions(List.of(new FAQ.QuestionAnswer("Q1", "A1")))
+                    .build());
+            faqRepository.save(FAQ.builder()
+                    .category(FAQCategory.QUALIFICATION)
+                    .questions(List.of(new FAQ.QuestionAnswer("Q2", "A2")))
+                    .build());
+
+            // when - 신규 카테고리 FAQ만 교체
+            BulkCreateFAQsCommand command = BulkCreateFAQsCommand.builder()
+                    .faqs(List.of(
+                            BulkCreateFAQsCommand.FAQData.builder()
+                                    .category("면접")
+                                    .question(List.of(
+                                            BulkCreateFAQsCommand.QuestionData.builder()
+                                                    .question("면접은 어떻게 진행되나요?")
+                                                    .answer("면접 일정은 개별 안내됩니다.")
+                                                    .build()
+                                    ))
+                                    .build(),
+                            BulkCreateFAQsCommand.FAQData.builder()
+                                    .category("활동")
+                                    .question(List.of(
+                                            BulkCreateFAQsCommand.QuestionData.builder()
+                                                    .question("활동 기간은 얼마나 되나요?")
+                                                    .answer("약 6개월입니다.")
+                                                    .build()
+                                    ))
+                                    .build()
+                    ))
+                    .build();
+
+            List<Long> ids = faqService.replaceCategoryFAQs(command);
 
             // then
             assertThat(ids).hasSize(2);
+            assertThat(faqService.findCategoryFAQs()).extracting(FAQView::category)
+                    .containsExactlyInAnyOrder(FAQCategory.INTERVIEW, FAQCategory.ACTIVITY);
+            assertThat(faqService.findLegacyPartFAQs()).containsExactly(FAQView.from(legacyPartFaq));
+            // 기존 QUALIFICATION FAQ는 삭제, SERVER FAQ는 그대로 유지됨
+        }
 
-            List<FAQView> result = faqService.findAll();
-            assertThat(result).hasSize(2);
-            assertThat(result).extracting(FAQView::part)
-                    .containsExactlyInAnyOrder(PartType.SERVER, PartType.WEB);
-            // 기존 ANDROID, IOS FAQ는 삭제됨
+        @Test
+        @DisplayName("❌ 실패: 신규 카테고리 FAQ에 레거시 파트 값이 있으면 전체 롤백")
+        void replaceCategoryFAQs_LegacyCategory_ThrowsException() {
+            // given - 기존 데이터
+            FAQ categoryFaq = faqRepository.save(FAQ.builder()
+                    .category(FAQCategory.QUALIFICATION)
+                    .questions(List.of(new FAQ.QuestionAnswer("Q1", "A1")))
+                    .build());
+
+            BulkCreateFAQsCommand command = BulkCreateFAQsCommand.builder()
+                    .faqs(List.of(
+                            BulkCreateFAQsCommand.FAQData.builder()
+                                    .category("면접")
+                                    .question(List.of(
+                                            BulkCreateFAQsCommand.QuestionData.builder()
+                                                    .question("새 질문")
+                                                    .answer("새 답변")
+                                                    .build()
+                                    ))
+                                    .build(),
+                            BulkCreateFAQsCommand.FAQData.builder()
+                                    .category("안드로이드")  // 레거시 파트 값
+                                    .question(List.of(
+                                            BulkCreateFAQsCommand.QuestionData.builder()
+                                                    .question("새 질문")
+                                                    .answer("새 답변")
+                                                    .build()
+                                    ))
+                                    .build()
+                    ))
+                    .build();
+
+            // when & then
+            assertThatThrownBy(() -> faqService.replaceCategoryFAQs(command))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessageContaining("Unknown FAQ category");
+
+            assertThat(faqService.findCategoryFAQs()).containsExactly(FAQView.from(categoryFaq));
+            // 기존 QUALIFICATION FAQ는 그대로 유지됨
         }
     }
 
@@ -152,28 +232,48 @@ class FAQServiceTest extends IntegrationTestBase {
     class Find {
 
         @Test
-        @DisplayName("🔍 조회: 전체 FAQ 조회 (파트 순서대로)")
-        void findAll_OrderedByPart() {
+        @DisplayName("🔍 조회: 레거시 파트 FAQ만 기존 순서대로 조회")
+        void findLegacyPartFAQs_ReturnsLegacyOnly() {
             // given
             faqRepository.saveAll(List.of(
-                    FAQ.builder().part(PartType.WEB).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build(),
-                    FAQ.builder().part(PartType.ANDROID).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build(),
-                    FAQ.builder().part(PartType.SERVER).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build()
+                    FAQ.builder().category(FAQCategory.WEB).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build(),
+                    FAQ.builder().category(FAQCategory.QUALIFICATION).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build(),
+                    FAQ.builder().category(FAQCategory.ANDROID).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build(),
+                    FAQ.builder().category(FAQCategory.SERVER).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build()
             ));
 
             // when
-            List<FAQView> result = faqService.findAll();
+            List<FAQView> result = faqService.findLegacyPartFAQs();
+
+            // then - 파트 알파벳 순서: ANDROID < SERVER < WEB
+            assertThat(result).extracting(FAQView::category)
+                    .containsExactly(FAQCategory.ANDROID, FAQCategory.SERVER, FAQCategory.WEB);
+        }
+
+        @Test
+        @DisplayName("🔍 조회: 신규 카테고리 FAQ만 조회")
+        void findCategoryFAQs_ReturnsCategoriesOnly() {
+            // given
+            faqRepository.saveAll(List.of(
+                    FAQ.builder().category(FAQCategory.ACTIVITY).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build(),
+                    FAQ.builder().category(FAQCategory.ANDROID).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build(),
+                    FAQ.builder().category(FAQCategory.QUALIFICATION).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build(),
+                    FAQ.builder().category(FAQCategory.INTERVIEW).questions(List.of(new FAQ.QuestionAnswer("Q", "A"))).build()
+            ));
+
+            // when
+            List<FAQView> result = faqService.findCategoryFAQs();
 
             // then
-            assertThat(result).hasSize(3);
-            // 파트 알파벳 순서: ANDROID < SERVER < WEB
+            assertThat(result).extracting(FAQView::category)
+                    .containsExactlyInAnyOrder(FAQCategory.QUALIFICATION, FAQCategory.INTERVIEW, FAQCategory.ACTIVITY);
         }
 
         @Test
         @DisplayName("🔍 조회: 빈 결과")
-        void findAll_Empty() {
+        void findCategoryFAQs_Empty() {
             // when
-            List<FAQView> result = faqService.findAll();
+            List<FAQView> result = faqService.findCategoryFAQs();
 
             // then
             assertThat(result).isEmpty();
@@ -215,15 +315,15 @@ class FAQServiceTest extends IntegrationTestBase {
         }
 
         @Test
-        @DisplayName("📌 규칙: FAQ는 part 필수")
-        void faq_RequiresPart() {
+        @DisplayName("📌 규칙: FAQ는 category 필수")
+        void faq_RequiresCategory() {
             // when & then
             assertThatThrownBy(() -> FAQ.builder()
-                    .part(null)
+                    .category(null)
                     .questions(List.of(new FAQ.QuestionAnswer("Q", "A")))
                     .build())
                     .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessageContaining("Part");
+                    .hasMessageContaining("FAQ category");
         }
     }
 }

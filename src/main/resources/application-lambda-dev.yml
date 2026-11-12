@@ -175,5 +175,12 @@ logging:
     org.hibernate.SQL: WARN        # SQL 로깅 최소화
     com.zaxxer.hikari: WARN
 
-
-
+# Instagram NEWS 자동 수집 (Lambda에서는 기본 비활성화)
+news:
+  display-limit: ${NEWS_DISPLAY_LIMIT:4}
+  # Lambda는 프로세스 내 예약 수집/폴링을 지원하지 않는다. EC2에서 수집한다.
+  instagram:
+    enabled: ${INSTAGRAM_NEWS_ENABLED:false}
+    apify-token: ${APIFY_API_TOKEN:}
+    task-id: ${APIFY_INSTAGRAM_DEV_TASK_ID:}
+    cron: ${INSTAGRAM_NEWS_CRON:0 0 9 * * MON}

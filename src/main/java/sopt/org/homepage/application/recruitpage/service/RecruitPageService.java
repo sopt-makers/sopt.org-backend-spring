@@ -46,7 +46,7 @@ public class RecruitPageService {
         List<PartIntroductionView> partIntroductions =
                 partService.findIntroductionsByGeneration(generationId);
 
-        List<FAQView> faqs = faqService.findAll();
+        List<FAQView> faqs = faqService.findLegacyPartFAQs();
 
         return RecruitMainPageResponse.from(generation, coreValues, partIntroductions, faqs);
 

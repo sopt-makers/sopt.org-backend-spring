@@ -15,6 +15,9 @@ public class GetAdminNewsResponseDto {
     @Schema(description = "이미지 ID", requiredMode = Schema.RequiredMode.REQUIRED, example = "1")
     private final int id;
 
+    @Schema(description = "인스타 게시물 ID (수동 등록은 null)")
+    private final String instagramPostId;
+
     @Schema(description = "이미지 링크", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://image.url")
     private final String image;
 

@@ -16,6 +16,7 @@ import sopt.org.homepage.application.admin.dto.response.main.news.GetAdminLatest
 import sopt.org.homepage.application.admin.dto.response.main.recruit.curriculum.GetAdminRecruitPartCurriculumResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.activityschedule.GetAdminActivityScheduleResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.review.GetAdminReviewResponseRecordDto;
+import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminFAQResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.question.GetAdminRecruitQuestionResponseRecordDto;
 import sopt.org.homepage.application.admin.dto.response.main.recruit.schedule.GetAdminRecruitScheduleResponseRecordDto;
 
@@ -51,7 +52,13 @@ public class GetAdminResponseDto {
     private String recruitHeaderImage;
 
     private List<GetAdminRecruitPartCurriculumResponseRecordDto> recruitPartCurriculum;
+
+    @Schema(description = "파트별 자주 묻는 질문 목록 (레거시). 리브랜딩 이후에는 카테고리별 자주 묻는 질문 목록(faq)을 사용해주세요")
     private List<GetAdminRecruitQuestionResponseRecordDto> recruitQuestion;
+
+    @Schema(description = "카테고리별 자주 묻는 질문 목록")
+    private List<GetAdminFAQResponseRecordDto> faq;
+
     private List<GetAdminReviewResponseRecordDto> review;
     private List<GetAdminActivityScheduleResponseRecordDto> activitySchedule;
 }

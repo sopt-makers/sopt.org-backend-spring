@@ -63,6 +63,19 @@ public class HomepageQueryService {
     private final PlaygroundService playgroundService;
     private final AuthService authService;
 
+    public MainPageResponse.BrandingColor getBrandingColor() {
+        return toBrandingColor(generationService.findLatest().brandingColor());
+    }
+
+    private MainPageResponse.BrandingColor toBrandingColor(GenerationDetailView.BrandingColorView color) {
+        return MainPageResponse.BrandingColor.builder()
+                .darkModeKeyColor(color.darkModeKeyColor())
+                .darkModeTextColor(color.darkModeTextColor())
+                .lightModeKeyColor(color.lightModeKeyColor())
+                .lightModeTextColor(color.lightModeTextColor())
+                .build();
+    }
+
     /**
      * Main 페이지 데이터 조회
      * <p>
@@ -85,7 +98,7 @@ public class HomepageQueryService {
                 partService.findIntroductionsByGeneration(generationId);
 
         // 4. Latest News 조회
-        List<News> newsEntities = newsService.findAll();
+        List<News> newsEntities = newsService.findLatestForHomepage();
 
         // 5. Recruitment Schedule 조회
         List<RecruitmentView> recruitments =
@@ -98,17 +111,15 @@ public class HomepageQueryService {
         // 7. Reviews 조회
         List<HomepageReview> reviews = homepageReviewService.findAll();
 
-        // 8. Response 조합
+        // 8. FAQs 조회
+        List<FAQView> faqs = faqService.findCategoryFAQs();
+
+        // 9. Response 조합
         return MainPageResponse.builder()
                 .generation(generation.id())
                 .name(generation.name())
                 .homeHeaderImage(homeHeaderImage)
-                .brandingColor(MainPageResponse.BrandingColor.builder()
-                        .darkModeKeyColor(generation.brandingColor().darkModeKeyColor())
-                        .darkModeTextColor(generation.brandingColor().darkModeTextColor())
-                        .lightModeKeyColor(generation.brandingColor().lightModeKeyColor())
-                        .lightModeTextColor(generation.brandingColor().lightModeTextColor())
-                        .build())
+                .brandingColor(toBrandingColor(generation.brandingColor()))
                 .coreValue(coreValues.stream()
                         .map(cv -> MainPageResponse.CoreValue.builder()
                                 .value(cv.value())
@@ -128,6 +139,7 @@ public class HomepageQueryService {
                                 .title(news.getTitle())
                                 .image(news.getImage())
                                 .link(news.getLink())
+                                .publishedDate(news.getPublishedDate())
                                 .build())
                         .toList())
                 .recruitSchedule(recruitments.stream()
@@ -147,9 +159,21 @@ public class HomepageQueryService {
                 .reviews(reviews.stream()
                         .map(r -> MainPageResponse.Review.builder()
                                 .id(r.getId().intValue())
+                                .type(r.getType())
                                 .title(r.getTitle())
                                 .content(r.getContent())
                                 .authorInfo(r.getAuthorInfo())
+                                .build())
+                        .toList())
+                .faq(faqs.stream()
+                        .map(faq -> MainPageResponse.FAQ.builder()
+                                .category(faq.category().getDisplayName())
+                                .questions(faq.questions().stream()
+                                        .map(q -> MainPageResponse.FAQ.Question.builder()
+                                                .question(q.question())
+                                                .answer(q.answer())
+                                                .build())
+                                        .toList())
                                 .build())
                         .toList())
                 .build();
@@ -253,7 +277,7 @@ public class HomepageQueryService {
                 recruitPartIntroductionService.findByGeneration(generationId);
 
         // 4. FAQs 조회
-        List<FAQView> faqs = faqService.findAll();
+        List<FAQView> faqs = faqService.findLegacyPartFAQs();
 
         // 5. Response 조합
         return RecruitPageResponse.builder()
@@ -290,7 +314,7 @@ public class HomepageQueryService {
                         .toList())
                 .recruitQuestion(faqs.stream()
                         .map(faq -> RecruitPageResponse.RecruitQuestion.builder()
-                                .part(faq.part().getValue())
+                                .part(faq.category().getDisplayName())
                                 .questions(faq.questions().stream()
                                         .map(q -> RecruitPageResponse.RecruitQuestion.Question.builder()
                                                 .question(q.question())
@@ -320,6 +344,13 @@ public class HomepageQueryService {
                             project.getGeneration().equals(generationId))
                     .toList().size();
 
+            int foundingTeamCount = (int) allProjects.stream()
+                    .filter(project -> Boolean.TRUE.equals(project.getIsFounding()))
+                    .count();
+            int availableServiceCount = (int) allProjects.stream()
+                    .filter(project -> Boolean.TRUE.equals(project.getIsAvailable()))
+                    .count();
+
             // Study 개수 조회 (Crew API)
             int studyCount = crewService.getStudyCount(generationId);
 
@@ -330,6 +361,8 @@ public class HomepageQueryService {
                     .activitiesMemberCount((int) activitiesMemberCount)
                     .projectCounts(projectCount)
                     .studyCounts(studyCount)
+                    .foundingTeamCount(foundingTeamCount)
+                    .availableServiceCount(availableServiceCount)
                     .operationPeriod(OPERATION_PERIOD)
                     .build();
 

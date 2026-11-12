@@ -19,12 +19,12 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
-import sopt.org.homepage.global.common.type.PartType;
+import sopt.org.homepage.faq.vo.FAQCategory;
 
 /**
  * FAQ 애그리거트 루트
  * <p>
- * 책임: - 파트별 FAQ 관리 - 질문과 답변 관리 - Generation과 독립적으로 관리
+ * 책임: - 카테고리별 FAQ 관리 - 질문과 답변 관리 - Generation과 독립적으로 관리
  */
 @Entity
 @Table(name = "faq")
@@ -38,8 +38,8 @@ public class FAQ {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "part", nullable = false, length = 20)
-    private PartType part;  // ANDROID, IOS, WEB, SERVER, PLAN, DESIGN, COMMON
+    @Column(name = "category", nullable = false, length = 20)
+    private FAQCategory category;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "questions", nullable = false, columnDefinition = "text")
@@ -54,11 +54,11 @@ public class FAQ {
     private LocalDateTime updatedAt;
 
     @Builder
-    public FAQ(PartType part, List<QuestionAnswer> questions) {
-        validatePart(part);
+    public FAQ(FAQCategory category, List<QuestionAnswer> questions) {
+        validateCategory(category);
         validateQuestions(questions);
 
-        this.part = part;
+        this.category = category;
         this.questions = questions != null ? new ArrayList<>(questions) : new ArrayList<>();
     }
 
@@ -66,9 +66,9 @@ public class FAQ {
 
     // === Validation ===
 
-    private void validatePart(PartType part) {
-        if (part == null) {
-            throw new IllegalArgumentException("Part must not be null");
+    private void validateCategory(FAQCategory category) {
+        if (category == null) {
+            throw new IllegalArgumentException("FAQ category must not be null");
         }
     }
 

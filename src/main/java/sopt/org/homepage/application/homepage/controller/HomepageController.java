@@ -26,6 +26,15 @@ public class HomepageController {
     private final HomepageQueryService homepageQueryService;
 
     @Operation(
+            summary = "브랜딩 컬러 조회",
+            description = "최신 기수의 다크 모드와 라이트 모드 키 컬러 및 텍스트 컬러를 조회합니다"
+    )
+    @GetMapping("branding-color")
+    public ResponseEntity<MainPageResponse.BrandingColor> getBrandingColor() {
+        return ResponseEntity.ok(homepageQueryService.getBrandingColor());
+    }
+
+    @Operation(
             summary = "메인 페이지 조회",
             description = "메인 페이지 데이터를 조회합니다"
     )

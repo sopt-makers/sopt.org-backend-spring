@@ -3,6 +3,7 @@ package sopt.org.homepage.application.homepage.controller.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
+import sopt.org.homepage.application.homepage.review.domain.HomepageReviewType;
 
 /**
  * MainPageResponse
@@ -27,7 +28,10 @@ public record MainPageResponse(
         List<LatestNews> latestNews,
         List<RecruitSchedule> recruitSchedule,
         ActivitiesRecords activitiesRecords,
-        List<Review> reviews
+        List<Review> reviews,
+
+        @Schema(description = "카테고리별 자주 묻는 질문 목록")
+        List<FAQ> faq
 ) {
 
     @Builder
@@ -59,7 +63,8 @@ public record MainPageResponse(
             int id,
             String title,
             String image,
-            String link
+            String link,
+            String publishedDate
     ) {
     }
 
@@ -93,6 +98,12 @@ public record MainPageResponse(
             @Schema(description = "스터디 수", example = "98")
             int studyCounts,
 
+            @Schema(description = "전체 기수 창업 중인 프로젝트 수", example = "10")
+            int foundingTeamCount,
+
+            @Schema(description = "전체 기수 이용 가능한 프로젝트 수", example = "20")
+            int availableServiceCount,
+
             @Schema(description = "운영 기간", example = "37")
             int operationPeriod
     ) {
@@ -103,6 +114,9 @@ public record MainPageResponse(
             @Schema(description = "ID", example = "1")
             int id,
 
+            @Schema(description = "후기 종류 (ACTIVITY: 활동 후기, RECRUITING: 지원 후기)", example = "ACTIVITY")
+            HomepageReviewType type,
+
             @Schema(description = "제목", example = "후회없는 활동")
             String title,
 
@@ -112,5 +126,20 @@ public record MainPageResponse(
             @Schema(description = "작성자 정보", example = "김솝트 | 36, 37기 활동 | 서버")
             String authorInfo
     ){
+    }
+
+    @Builder
+    public record FAQ(
+            @Schema(description = "FAQ 카테고리", example = "지원자격", allowableValues = {"지원자격", "면접", "활동"})
+            String category,
+
+            List<Question> questions
+    ) {
+        @Builder
+        public record Question(
+                String question,
+                String answer
+        ) {
+        }
     }
 }
