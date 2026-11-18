@@ -7,8 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sopt.org.homepage.global.common.response.RawResponse;
 
 
+@RawResponse
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("health")

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sopt.org.homepage.global.common.response.RawResponse;
 import sopt.org.homepage.global.config.AuthConfig;
 import sopt.org.homepage.global.exception.BusinessLogicException;
 import sopt.org.homepage.infrastructure.external.playground.dto.request.ScrapLinkRequestDto;
@@ -18,6 +19,8 @@ import sopt.org.homepage.infrastructure.external.scrap.dto.CreateScraperResponse
 import sopt.org.homepage.infrastructure.external.scrap.dto.ScrapArticleDto;
 import sopt.org.homepage.infrastructure.external.scrap.service.ScraperService;
 
+// Playground 서버가 호출하는 API라 응답 형식을 바꾸지 않는다
+@RawResponse
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("internal")

@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import sopt.org.homepage.global.common.response.BaseResponse;
 import sopt.org.homepage.global.exception.TokenException;
 
 @Component
@@ -25,7 +26,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         } catch (TokenException e) {
             val objectMapper = new ObjectMapper();
-            val jsonResponse = objectMapper.writeValueAsString(e.getMessage());
+            val jsonResponse = objectMapper.writeValueAsString(BaseResponse.ofFailure(e.getMessage()));
 
             httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
             httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
