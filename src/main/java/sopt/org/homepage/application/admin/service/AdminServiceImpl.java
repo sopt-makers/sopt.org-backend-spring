@@ -1,5 +1,7 @@
 package sopt.org.homepage.application.admin.service;
 
+import sopt.org.homepage.news.NewsType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -195,6 +197,7 @@ public class AdminServiceImpl implements AdminService {
             newsDataList.add(CachedAdminData.NewsData.builder()
                     .title(news.getTitle())
                     .link(news.getLink())
+                    .type(news.getType())
                     .imageUrl(newsImageUrl)
                     .build());
         }
@@ -410,6 +413,7 @@ public class AdminServiceImpl implements AdminService {
                                 .map(n -> BulkCreateNewsCommand.NewsData.builder()
                                         .title(n.getTitle())
                                         .link(n.getLink())
+                                        .type(n.getType())
                                         .imageUrl(s3Service.getOriginalUrl(n.getImageUrl()))
                                         .build())
                                 .toList())
@@ -574,6 +578,7 @@ public class AdminServiceImpl implements AdminService {
                 newsDataList.add(CachedAdminData.NewsData.builder()
                         .title(news.getTitle())
                         .link(news.getLink())
+                        .type(news.getType())
                         .imageUrl(newsImageUrl)
                         .build());
             }
@@ -631,6 +636,7 @@ public class AdminServiceImpl implements AdminService {
                                     .map(n -> BulkCreateNewsCommand.NewsData.builder()
                                             .title(n.getTitle())
                                             .link(n.getLink())
+                                            .type(n.getType())
                                             .imageUrl(s3Service.getOriginalUrl(n.getImageUrl()))
                                             .build())
                                     .toList())
@@ -1115,6 +1121,7 @@ public class AdminServiceImpl implements AdminService {
                 .latestNews(newsEntities.stream()
                         .map(news -> GetAdminLatestNewsResponseRecordDto.builder()
                                 .instagramPostId(news.getInstagramPostId())
+                                .type(news.getType())
                                 .id(news.getId())
                                 .title(news.getTitle())
                                 .build())
@@ -1270,6 +1277,7 @@ public class AdminServiceImpl implements AdminService {
         @lombok.Builder
         @lombok.Data
         public static class NewsData implements java.io.Serializable {
+            private NewsType type;
             private String title;
             private String link;
             private String imageUrl;

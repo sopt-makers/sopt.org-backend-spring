@@ -1,5 +1,7 @@
 package sopt.org.homepage.news.dto;
 
+import sopt.org.homepage.news.NewsType;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -31,4 +33,6 @@ public class EditAdminNewsV2RequestDto {
     @Schema(description = "링크", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://sopt.org/recruit")
     @NotBlank(message = "link must not be blank")
     private String link;
+    @Schema(description = "출처: BLOG, INSTAGRAM, OTHER (요청 시 생략하면 링크로 판단)")
+    private NewsType type;
 }

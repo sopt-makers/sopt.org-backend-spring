@@ -1,5 +1,7 @@
 package sopt.org.homepage.application.admin.dto.request.main.news;
 
+import sopt.org.homepage.news.NewsType;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -21,4 +23,6 @@ public class AddAdminNewsPresignedRequestDto {
     @Schema(description = "링크", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://disquiet.io/product/mind-23-%EC%98%A4%EB%8A%98%EB%8F%84-%EB%A9%88%EC%B6%94%EC%A7%80-%EC%95%8A%EB%8A%94-it%EC%9D%B8%EB%93%A4")
     @NotEmpty(message = "link must not be empty")
     private final String link;
+
+    private final NewsType type;
 }

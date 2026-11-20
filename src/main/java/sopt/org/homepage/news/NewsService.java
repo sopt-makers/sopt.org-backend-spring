@@ -50,6 +50,7 @@ public class NewsService {
 
         // 2. News 엔티티 생성 및 저장
         News news = News.builder()
+                .type(request.getType())
                 .title(request.getTitle())
                 .link(request.getLink())
                 .image(imageUrl)
@@ -75,6 +76,7 @@ public class NewsService {
 
         // 이미지는 이미 S3에 업로드됨 → DB에만 저장
         News news = News.builder()
+                .type(request.getType())
                 .title(request.getTitle())
                 .link(request.getLink())
                 .image(request.getImageUrl())
@@ -107,7 +109,7 @@ public class NewsService {
             imageUrl = s3Service.uploadFile(request.getImage(), "news/");
         }
 
-        news.update(imageUrl, request.getTitle(), request.getLink());
+        news.update(imageUrl, request.getTitle(), request.getLink(), request.getType());
 
         log.info("최신소식 수정 완료 - id={}", id);
 
@@ -134,7 +136,7 @@ public class NewsService {
             s3Service.deleteFile(news.getImage());
         }
 
-        news.update(request.getImageUrl(), request.getTitle(), request.getLink());
+        news.update(request.getImageUrl(), request.getTitle(), request.getLink(), request.getType());
 
         log.info("최신소식 수정 완료 (Presigned URL) - id={}", id);
 
@@ -181,9 +183,9 @@ public class NewsService {
                     .findFirst().orElse(null);
             if (match != null) {
                 retained.add(match.getId());
-                if (!match.isHidden()) match.update(item.imageUrl(), item.title(), item.link());
+                if (!match.isHidden()) match.update(item.imageUrl(), item.title(), item.link(), item.type());
             } else {
-                newsRepository.save(News.builder().title(item.title()).link(item.link()).image(item.imageUrl()).build());
+                newsRepository.save(News.builder().type(item.type()).title(item.title()).link(item.link()).image(item.imageUrl()).build());
             }
         }
         existing.stream().filter(n -> n.getInstagramPostId() == null && !retained.contains(n.getId()))
@@ -215,6 +217,7 @@ public class NewsService {
         return GetAdminNewsResponseDto.builder()
                 .id(news.getId())
                 .instagramPostId(news.getInstagramPostId())
+                .type(news.getType())
                 .title(news.getTitle())
                 .link(news.getLink())
                 .image(news.getImage())

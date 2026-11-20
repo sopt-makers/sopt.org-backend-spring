@@ -62,4 +62,49 @@ class InstagramNewsMigrationTest extends InstagramNewsIntegrationTestBase {
         }
     }
 
+    @Test
+    @DisplayName("✅ V16 백필은 HTTPS·HTTP·스킴 상대 링크를 런타임과 동일하게 분류한다")
+    void backfillsNewsTypesConsistentlyWithRuntime() throws Exception {
+        List<String> links = List.of(
+                "https://blog.naver.com/sopt/1", "//blog.naver.com/sopt/1",
+                "http://www.instagram.com/p/post/", "//www.instagram.com/p/post/",
+                "https://velog.io/@sopt/post", "//velog.io/@sopt/post",
+                "https://example.com/article", "//instagram.com.example.com/post",
+                "//blog.naver.com.example.com/post");
+        try (var connection = dataSource.getConnection(); var statement = connection.createStatement()) {
+            statement.execute("create schema news_type_migration_test");
+            try {
+                statement.execute("set search_path to news_type_migration_test");
+                statement.execute("create table main_news (id integer, link text, instagram_post_id text)");
+                try (var insert = connection.prepareStatement("insert into main_news values (?, ?, ?)")) {
+                    for (int index = 0; index < links.size(); index++) {
+                        insert.setInt(1, index);
+                        insert.setString(2, links.get(index));
+                        insert.setString(3, null);
+                        insert.executeUpdate();
+                    }
+                    insert.setInt(1, links.size());
+                    insert.setString(2, "https://example.com/imported");
+                    insert.setString(3, "instagram-post-id");
+                    insert.executeUpdate();
+                }
+                org.springframework.jdbc.datasource.init.ScriptUtils.executeSqlScript(connection,
+                        new org.springframework.core.io.ClassPathResource("db/migration/V16__add_news_type.sql"));
+                try (var rows = statement.executeQuery("select id, type from main_news order by id")) {
+                    for (String link : links) {
+                        assertThat(rows.next()).isTrue();
+                        assertThat(rows.getString("type")).as(link)
+                                .isEqualTo(sopt.org.homepage.news.NewsType.fromLink(link).name());
+                    }
+                    assertThat(rows.next()).isTrue();
+                    assertThat(rows.getString("type")).isEqualTo("INSTAGRAM");
+                    assertThat(rows.next()).isFalse();
+                }
+            } finally {
+                statement.execute("set search_path to public");
+                statement.execute("drop schema news_type_migration_test cascade");
+            }
+        }
+    }
+
 }

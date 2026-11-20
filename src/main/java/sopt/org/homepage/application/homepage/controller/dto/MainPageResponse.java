@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
 import sopt.org.homepage.application.homepage.review.domain.HomepageReviewType;
+import sopt.org.homepage.news.NewsType;
 
 /**
  * MainPageResponse
@@ -64,7 +65,8 @@ public record MainPageResponse(
             String title,
             String image,
             String link,
-            String publishedDate
+            String publishedDate,
+            NewsType type
     ) {
     }
 

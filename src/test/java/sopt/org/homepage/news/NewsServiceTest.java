@@ -43,6 +43,38 @@ class NewsServiceTest extends IntegrationTestBase {
         newsRepository.deleteAll();
     }
 
+    @Test
+    @DisplayName("✅ 블로그 출처를 저장하고 조회·수정 시 유지한다")
+    void preservesExplicitBlogType() {
+        newsService.addMainNewsV2(AddAdminNewsV2RequestDto.builder()
+                .title("블로그 글").link("https://custom.example/article")
+                .imageUrl("https://s3.example/news.jpg").type(NewsType.BLOG).build());
+        News saved = newsRepository.findAll().get(0);
+        assertThat(newsService.getMainNews(new GetAdminNewsRequestDto(saved.getId())).getType())
+                .isEqualTo(NewsType.BLOG);
+        newsService.editMainNewsV2(saved.getId(), EditAdminNewsV2RequestDto.builder()
+                .title("수정").link(saved.getLink()).imageUrl(saved.getImage()).build());
+        newsRepository.flush();
+        assertThat(saved.getType()).isEqualTo(NewsType.BLOG);
+    }
+
+    @Test
+    @DisplayName("✅ 기존 요청은 링크로 출처를 판단하고 인스타 수집은 INSTAGRAM으로 저장한다")
+    void infersTypesForLegacyRequests() {
+        for (String link : List.of("https://blog.naver.com/sopt/1",
+                "https://www.instagram.com/p/post/", "https://example.com/article")) {
+            newsService.addMainNewsV2(AddAdminNewsV2RequestDto.builder()
+                    .title("소식").link(link).imageUrl("https://s3.example/news.jpg").build());
+        }
+        assertThat(newsRepository.findAll()).extracting(News::getType)
+                .containsExactlyInAnyOrder(NewsType.BLOG, NewsType.INSTAGRAM, NewsType.OTHER);
+        News collected = News.fromInstagramPost("소식", "https://www.instagram.com/p/new/",
+                "image.jpg", "post-id", java.time.Instant.now());
+        newsRepository.saveAndFlush(collected);
+        collected.update(null, "수정", collected.getLink(), NewsType.BLOG);
+        assertThat(collected.getType()).isEqualTo(NewsType.INSTAGRAM);
+    }
+
     // ===== 생성 시나리오 =====
 
     @Nested
