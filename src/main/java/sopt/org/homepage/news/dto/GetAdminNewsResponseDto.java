@@ -1,5 +1,7 @@
 package sopt.org.homepage.news.dto;
 
+import sopt.org.homepage.news.NewsType;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +28,8 @@ public class GetAdminNewsResponseDto {
 
     @Schema(description = "링크", requiredMode = Schema.RequiredMode.REQUIRED, example = "https://disquiet.io/product/mind-23-%EC%98%A4%EB%8A%98%EB%8F%84-%EB%A9%88%EC%B6%94%EC%A7%80-%EC%95%8A%EB%8A%94-it%EC%9D%B8%EB%93%A4")
     private final String link;
+    @Schema(description = "출처: BLOG, INSTAGRAM, OTHER (요청 시 생략하면 링크로 판단)")
+    private final NewsType type;
 }
 
 

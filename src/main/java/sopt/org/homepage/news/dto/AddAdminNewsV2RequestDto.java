@@ -1,5 +1,7 @@
 package sopt.org.homepage.news.dto;
 
+import sopt.org.homepage.news.NewsType;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -39,4 +41,6 @@ public class AddAdminNewsV2RequestDto {
     )
     @NotEmpty(message = "link must not be empty")
     private String link;
+    @Schema(description = "출처: BLOG, INSTAGRAM, OTHER (요청 시 생략하면 링크로 판단)")
+    private NewsType type;
 }

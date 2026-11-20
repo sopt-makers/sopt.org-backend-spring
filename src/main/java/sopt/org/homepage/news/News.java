@@ -43,6 +43,10 @@ public class News {
     @Column(name = "link", nullable = false)
     private String link;
 
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private NewsType type;
+
     @Column(name = "instagram_post_id", unique = true)
     private String instagramPostId;
 
@@ -56,7 +60,7 @@ public class News {
 
     /** 수집 게시물 식별자와 원본 업로드 시각을 보존해 뉴스를 생성한다. */
     public static News fromInstagramPost(String title, String link, String image, String postId, Instant publishedAt) {
-        News news = new News(image, title, link);
+        News news = new News(image, title, link, NewsType.INSTAGRAM);
         news.instagramPostId = postId;
         news.publishedAt = publishedAt;
         return news;
@@ -83,13 +87,25 @@ public class News {
     private LocalDateTime updatedAt;
 
     @Builder
-    public News(String image, String title, String link) {
+    public News(String image, String title, String link, NewsType type) {
+        this.type = type != null ? type : NewsType.fromLink(link);
         this.image = image;
         this.title = title;
         this.link = link;
     }
 
     public void update(String image, String title, String link) {
+        update(image, title, link, null);
+    }
+
+    public void update(String image, String title, String link, NewsType type) {
+        if (instagramPostId != null) {
+            this.type = NewsType.INSTAGRAM;
+        } else if (type != null) {
+            this.type = type;
+        } else if (!java.util.Objects.equals(this.link, link)) {
+            this.type = NewsType.fromLink(link);
+        }
         if (image != null) this.image = image;
         this.title = title;
         this.link = link;

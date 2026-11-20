@@ -1,5 +1,7 @@
 package sopt.org.homepage.application.admin.dto.response.main.news;
 
+import sopt.org.homepage.news.NewsType;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -8,6 +10,7 @@ import lombok.Builder;
 public record GetAdminLatestNewsResponseRecordDto(
         @Schema(description = "최신소식 ID", example = "1", requiredMode = Schema.RequiredMode.REQUIRED) int id,
         @Schema(description = "최신소식 제목", example = "Mind 23", requiredMode = Schema.RequiredMode.REQUIRED) String title,
-        @Schema(description = "인스타 게시물 ID (수동 등록은 null)") String instagramPostId
+        @Schema(description = "인스타 게시물 ID (수동 등록은 null)") String instagramPostId,
+        NewsType type
 ) {
 }
